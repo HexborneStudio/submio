@@ -4,6 +4,8 @@ import { validateShareToken } from "@/lib/shareService";
 import { getReviewsForReceipt } from "@/lib/reviewService";
 import { SubmitReviewForm } from "./SubmitReviewForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function SharedReceiptPage({
   params,
 }: {
@@ -37,6 +39,9 @@ export default async function SharedReceiptPage({
   }
 
   const { link } = tokenResult;
+  if (!link) {
+    return notFound();
+  }
   const receipt = link.receipt;
   const receiptData = receipt.receiptData as {
     status: string;

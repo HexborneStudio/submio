@@ -4,7 +4,39 @@
 
 ---
 
-## TASK: Phase 13 - Post-MVP Planning
+## TASK: Fix Web App Build Infrastructure (CRITICAL)
+
+**Objective:** Resolve the Next.js static generation failure caused by PrismaClient module resolution through workspace package imports.
+
+**Root Cause:** TypeScript path aliases in `apps/web/tsconfig.json` point to source files (`../../packages/db/src/index.ts`) instead of compiled output. When Next.js bundles these imports, the `PrismaClient` class from `@prisma/client` is not properly resolved through the re-export chain.
+
+**Options:**
+
+1. **Option A (Recommended):** Restructure workspace packages to build to `dist/` and consume from there
+   - Modify `apps/web/tsconfig.json` to remove source file aliases
+   - Ensure workspace packages build before web app
+   - Use compiled JS output instead of TS source
+
+2. **Option B:** Lazy-load PrismaClient in service files
+   - Move `const prisma = new PrismaClient()` to function scope
+   - Use singleton pattern with lazy initialization
+
+3. **Option C:** Accept web app requires Node.js runtime
+   - Use `next start` instead of static export
+   - Configure for serverless-compatible deployment
+
+**Dependencies:**
+- Phase 12: Hardening (completed)
+
+**Verification:**
+```bash
+cd ~/authorship-receipt && npm run build --workspace=apps/web
+# Should complete without PrismaClient errors
+```
+
+---
+
+## Previous TASK: Phase 13 - Post-MVP Planning
 
 **Objective:** Plan the next set of features beyond the MVP core. Review what's been built, identify the highest-leverage next features, and define the Phase 13 scope.
 

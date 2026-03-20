@@ -60,7 +60,8 @@ export function handleRoute(req: IncomingMessage, res: ServerResponse): void {
 
   if (req.method === "OPTIONS") {
     res.writeHead(204);
-    return res.end();
+    res.end();
+    return;
   }
 
   handler(req, res);

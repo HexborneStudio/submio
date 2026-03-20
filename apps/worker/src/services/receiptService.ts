@@ -2,7 +2,7 @@
  * Receipt persistence — creates AuthorshipReceipt + ReceiptSection records.
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import type { AssembledReceipt, ReceiptSection } from "@authorship-receipt/analysis";
 
 const prisma = new PrismaClient();
@@ -17,7 +17,7 @@ export async function persistReceipt(
     data: {
       documentId,
       versionId,
-      receiptData: receipt as unknown as Record<string, unknown>,
+      receiptData: receipt as unknown as Prisma.InputJsonValue,
       status: receipt.status === "failed" ? "EXPIRED" : "AVAILABLE",
     },
   });
@@ -50,7 +50,7 @@ export async function persistReceipt(
           receiptId: authorshipReceipt.id,
           type: section.key,
           title: section.title,
-          content: section as unknown as Record<string, unknown>,
+          content: section as unknown as Prisma.InputJsonValue,
           sortOrder: i,
         },
       });

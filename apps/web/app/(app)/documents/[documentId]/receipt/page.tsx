@@ -18,7 +18,7 @@ export default async function ReceiptPage({
   const document = await prisma.document.findFirst({
     where: { id: documentId, userId: user!.id },
     include: {
-      authorshipReceipts: {
+      authorshipReceipt: {
         orderBy: { createdAt: "desc" },
         take: 1,
         include: {
@@ -34,7 +34,7 @@ export default async function ReceiptPage({
     notFound();
   }
 
-  const receipt = document.authorshipReceipts[0];
+  const receipt = document.authorshipReceipt[0];
 
   // Track receipt view (analytics scaffold)
   if (receipt) {

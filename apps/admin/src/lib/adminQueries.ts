@@ -1,4 +1,4 @@
-import { prisma } from "@authorship-receipt/db/client";
+import { prisma } from "@authorship-receipt/db";
 
 export async function getAdminStats() {
   const [

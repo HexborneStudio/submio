@@ -19,7 +19,6 @@ export async function GET(req: NextRequest) {
       status: true,
       fileSize: true,
       createdAt: true,
-      completedAt: true,
     },
   });
 

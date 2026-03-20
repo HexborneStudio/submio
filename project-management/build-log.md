@@ -632,3 +632,47 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Added `packages/config/tsconfig.json` for building src/ → dist/
 - Added exports for `./env` in package.json
 - Config package builds to `dist/env.js` (ESM)
+
+---
+
+## 2026-03-20
+
+### POST-MVP VALIDATION SPRINT ✅ COMPLETE
+
+**Completed at:** 16:52 CDT
+
+**Build Status:**
+- Worker: ✅ Builds successfully
+- Analysis: ✅ Builds successfully  
+- Admin: ⚠️ TypeScript compiles, prerender fails (DATABASE_URL missing - expected)
+- Web: ❌ Next.js static generation fails (PrismaClient module resolution issue)
+
+**Fixes Applied:**
+
+1. `packages/analysis/index.ts` — Added missing `receipts` export
+2. `apps/web/src/lib/auth/index.ts` — Removed `.ts` extension from re-exports
+3. `apps/web/src/lib/storage/index.ts` — Removed `.ts` extension
+4. `apps/worker/src/services/jobLifecycleService.ts` — Changed `unknown` to `object` for Prisma Json
+5. `apps/worker/src/services/receiptService.ts` — Used `Prisma.InputJsonValue` for casting
+6. `apps/worker/src/http-server.ts` — Fixed void return for res.end()
+7. `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — Fixed `authorshipReceipts` → `authorshipReceipt`
+8. `apps/web/app/api/export/history/route.ts` — Removed non-existent `completedAt` field
+9. `apps/web/app/share/[token]/page.tsx` — TypeScript narrowing fix for link
+10. `apps/web/src/app/api/share/[token]/route.ts` — TypeScript narrowing fix
+11. `packages/db/src/index.ts` — Changed export path (no extension)
+12. `apps/web/tsconfig.json` — Added path aliases for `@authorship-receipt/db`
+13. `apps/admin/tsconfig.json` — Added path aliases for `@authorship-receipt/db`
+14. `apps/web/tsconfig.json` — Excluded `vitest.config.ts`
+
+**Documents Created:**
+- `project-management/qa-report.md` — Full flow audit with status per flow
+- `project-management/ux-fixes.md` — UX improvements needed
+- `project-management/mvp-readiness.md` — Launch readiness assessment
+
+**Documents Updated:**
+- `docs/security-hardening.md` — Added verification section
+
+**Critical Finding:**
+- Web app cannot be statically generated due to PrismaClient initialization through workspace package imports
+- Root cause: TypeScript path aliases point to source files, not compiled output
+- Recommendation: Use `next dev` for development, or restructure workspace package consumption

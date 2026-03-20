@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 export interface JobUpdate {
   status?: AnalysisJobStatus;
   progress?: number;
-  result?: unknown;
+  result?: object;
   error?: string;
 }
 
@@ -84,7 +84,7 @@ export async function markJobFailed(
 export async function updateJobProgress(
   jobId: string,
   progress: number,
-  result?: unknown
+  result?: object
 ): Promise<void> {
   await updateJob(jobId, {
     status: "PROCESSING",

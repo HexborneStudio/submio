@@ -12,5 +12,9 @@ export async function GET(
     return NextResponse.json({ error: result.reason }, { status: 404 });
   }
 
+  if (!result.link) {
+    return NextResponse.json({ error: "Link not found" }, { status: 404 });
+  }
+
   return NextResponse.json({ receipt: result.link.receipt, linkId: result.link.id });
 }

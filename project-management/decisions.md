@@ -837,3 +837,26 @@ None yet.
 - Nginx proxies `/health` → `web:3000/api/health` for containerized deployments
 
 **Status:** Accepted
+
+---
+
+### DEC-045: Workspace Package Import Resolution
+
+**Decision:** The monorepo uses TypeScript path aliases pointing to workspace package source files, not compiled output.
+
+**Rationale (Past):**
+- Workspace packages (`@authorship-receipt/db`, etc.) are symlinked via npm workspaces
+- TypeScript path aliases pointed to source files for direct access during development
+- This worked for type-checking but broke at runtime when Next.js tried to bundle
+
+**Problem Found (2026-03-20):**
+- Next.js static generation fails with `PrismaClient is not a constructor`
+- Root cause: PrismaClient class not properly exported through the re-export chain in bundled output
+- Affects: All web app pages that import from workspace packages
+
+**Status:** Open — awaiting resolution (see next-step.md)
+
+**Resolution Options:**
+1. Consume compiled `dist/` output instead of TypeScript source
+2. Lazy-load PrismaClient in service files
+3. Accept Node.js runtime requirement (no static export)
