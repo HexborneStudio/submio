@@ -3,6 +3,7 @@
  */
 
 import { z } from "zod";
+import { MAX_FILE_SIZE } from "../constants/index.js";
 
 // ============================================================
 // User schemas
@@ -52,7 +53,7 @@ export const ALLOWED_MIME_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ] as const;
 
-export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+export { MAX_FILE_SIZE } from "../constants/index.js";
 
 export function validateFileType(mimeType: string): boolean {
   return (ALLOWED_MIME_TYPES as readonly string[]).includes(mimeType);

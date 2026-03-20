@@ -64,6 +64,9 @@ Background job for document analysis.
 - `id`, `documentId`, `versionId`, `status`, `progress`, `result`, `error`, timestamps
 - One version → many analysis jobs (retry support)
 - `@@index` on `status` for job queue queries
+- `result` (JSON) stores structured analysis output: `{ documentId, versionId, status, signals, rawTextLength }`
+  - `signals` contains `AuthorshipSignals` with ingestion type, text metrics, parsing info, citation analysis, structural analysis, and confidence indicators
+  - See `packages/analysis/src/types.ts` for the full `AnalysisResult` and `AuthorshipSignals` type definitions
 
 ### AuthorshipReceipt
 Generated receipt for a document version.

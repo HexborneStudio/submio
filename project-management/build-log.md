@@ -318,3 +318,51 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - WORKER_CONCURRENCY (default: 3)
 - JOB_MAX_ATTEMPTS (default: 3)
 - WORKER_URL (web→worker HTTP, default: http://localhost:3001)
+
+---
+
+## 2026-03-20
+
+### TASK 6: Document Parsing + Analysis V1 ✅ COMPLETE
+
+**Completed at:** ~07:55 CDT
+
+**Parser libraries added:**
+- `mammoth@^1.6.0` — DOCX text extraction
+- `pdf-parse@^1.1.1` — PDF text extraction
+
+**Files created (packages/analysis/src/):**
+- `types.ts` — `ParsedDocument`, `NormalizedText`, `ExtractedCitation`, `CitationAnalysisResult`, `SourceReference`, `AuthorshipSignals`, `AnalysisResult` interfaces
+- `normalizers/normalizeText.ts` — Text normalization (unicode spaces, line endings, blank lines), word/paragraph/sentence counting
+- `citations/extractCitations.ts` — Heuristic citation extraction (URLs, DOIs, bracket citations, parenthetical author-year, footnote markers, bibliography detection)
+- `signals/buildAuthorshipSignals.ts` — Builds structured `AuthorshipSignals` from normalized text + citation analysis
+- `pipeline/analyzeDocumentVersion.ts` — Main pipeline: parse → normalize → extract citations → build signals
+
+**Parser implementations updated:**
+- `parsers/documentParser.ts` — Added `lineCount` to metadata, updated `ParsedDocument` interface
+- `parsers/pdfParser.ts` — Real implementation using `pdf-parse` (pages, null byte removal, warnings)
+- `parsers/docxParser.ts` — Real implementation using `mammoth.extractRawText` (warnings from mammoth messages)
+- `parsers/textParser.ts` — Updated to return proper shape with `library: "direct"`
+- `parsers/index.ts` — `parseDocument()` function with `library` and `warnings` in return type
+
+**Package.json updates:**
+- Added `mammoth`, `pdf-parse` as dependencies
+- Updated tsconfig with `noEmit: false`, `module: commonjs`, `paths` for `@authorship-receipt/shared`
+
+**Worker updates:**
+- `apps/worker/src/jobs/analyzeDocumentJob.ts` — Replaced placeholder with real analysis pipeline call to `analyzeDocumentVersion()`
+- Progress: 10% (started) → 20% (loaded) → 90% (analyzed) → completed
+
+**Supporting changes:**
+- `packages/shared/types/index.ts` — Added `FileType = "pdf" | "docx" | "text"` (distinct from `UploadType`)
+- `packages/shared/validation/index.ts` — Fixed duplicate `MAX_FILE_SIZE` export (imported from constants)
+- `packages/shared/tsconfig.json` — Added `noEmit: false` to allow dist output
+- `packages/shared/dist/` — Built successfully
+- `packages/analysis/dist/` — Built successfully
+- `docs/database-spec.md` — Documented `AnalysisJob.result` JSON structure
+
+**npm workspace fix:**
+- Changed all `workspace:*` references to `file:` protocol in package.json files (npm 10.2.0 workspace protocol incompatibility)
+- `apps/worker/package.json`, `apps/web/package.json`, `apps/admin/package.json` all updated
+
+**Note:** `pdf-parse` has no @types package; created `src/pdf-parse.d.ts` with manual type declarations.

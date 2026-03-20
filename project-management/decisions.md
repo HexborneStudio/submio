@@ -166,6 +166,63 @@ None yet.
 
 ---
 
+## 2026-03-20 (Phase 6)
+
+### DEC-024: Heuristic-Only Citation Extraction
+
+**Decision:** Citation extraction uses regex patterns and heuristics only — it does NOT definitively identify or verify citations.
+
+**Rationale:**
+- True citation verification requires academic database lookups (CrossRef, Google Scholar, etc.)
+- MVP scope is evidence presentation, not authoritative citation checking
+- Heuristics detect patterns (URLs, DOIs, bracket numbers, author-year formats) reliably
+- Warnings are surfaced when citation details cannot be parsed
+- All results are labeled as indicators, not definitive findings
+
+**Alternatives Considered:**
+- CrossRef/Google Scholar API integration — Adds latency, cost, external dependency
+- Citation parsing libraries — Still require heuristic fallback for non-standard formats
+
+**Status:** Accepted
+
+---
+
+### DEC-025: File Protocol for Workspace Dependencies
+
+**Decision:** Use `file:` protocol instead of `workspace:` protocol for local package dependencies in package.json.
+
+**Rationale:**
+- `workspace:*` protocol has inconsistent npm support across npm 10.x versions
+- `file:../relative/path` works reliably with both npm and TypeScript module resolution
+- Combined with tsconfig `paths` mapping, TypeScript compiles cleanly
+- Trade-off: less elegant than `workspace:*`, but more reliable in this environment
+
+**Alternatives Considered:**
+- pnpm workspaces — Would resolve the protocol issue but adds new package manager
+- TypeScript project references — More correct but significantly more setup
+
+**Status:** Accepted (environment-specific workaround)
+
+---
+
+### DEC-026: Analysis Package Separate from Shared Types
+
+**Decision:** The `packages/analysis` package has its own `src/types.ts` with analysis-specific types rather than importing all types from `packages/shared`.
+
+**Rationale:**
+- `AuthorshipSignals`, `AnalysisResult`, `CitationAnalysisResult` are analysis-internal concepts
+- Keeping them in the analysis package maintains encapsulation
+- Shared package contains only cross-cutting types (User, Document, etc.)
+- Parser interfaces (`ParsedDocument`) live in `parsers/documentParser.ts` to co-locate with implementations
+
+**Alternatives Considered:**
+- All types in shared — Bloats shared package with analysis-specific concepts
+- Types scattered across packages — Hard to maintain, circular dependency risk
+
+**Status:** Accepted
+
+---
+
 ## 2026-03-19 (Phase 2)
 
 ### DEC-009: PostgreSQL as Primary Database

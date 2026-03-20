@@ -2,7 +2,7 @@
  * Plain Text Parser
  */
 
-import { BaseParser, type ParsedContent } from "./documentParser.js";
+import { BaseParser, type ParsedDocument } from "./documentParser.js";
 import type { FileType } from "@authorship-receipt/shared";
 
 export class TextParser extends BaseParser {
@@ -10,7 +10,9 @@ export class TextParser extends BaseParser {
     return fileType === "text";
   }
 
-  async parse(content: Buffer | string): Promise<ParsedContent> {
+  async parse(
+    content: Buffer | string
+  ): Promise<ParsedDocument & { library: string; warnings: string[] }> {
     const text = typeof content === "string" ? content : content.toString("utf-8");
 
     return {
@@ -22,6 +24,8 @@ export class TextParser extends BaseParser {
         lineCount: this.countLines(text),
         fileType: "text",
       },
+      library: "direct",
+      warnings: [],
     };
   }
 }

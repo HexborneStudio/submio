@@ -2,7 +2,15 @@
   "extends": "@authorship-receipt/config/tsconfig.node.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "paths": {
+      "@authorship-receipt/shared": ["../../packages/shared/dist/index.d.ts"],
+      "@authorship-receipt/analysis": ["../../packages/analysis/dist/index.d.ts"],
+      "@authorship-receipt/db": ["../../packages/db/src/index.ts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

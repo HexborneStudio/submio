@@ -1,8 +1,5 @@
 /**
- * Analysis job processor — the main workhorse for document analysis.
- *
- * This is a PLACEHOLDER implementation for Phase 5.
- * Phase 6 will replace the placeholderProcessing call with real parsing + analysis.
+ * Analysis job processor — Phase 6: Real parsing + analysis.
  */
 
 import { Job } from "bullmq";
@@ -17,6 +14,7 @@ import {
   updateDocumentStatus,
   getJobForProcessing,
 } from "../services/jobLifecycleService.js";
+import { analyzeDocumentVersion } from "@authorship-receipt/analysis";
 
 export async function processAnalyzeDocumentJob(
   job: Job<AnalysisJobData>
@@ -25,7 +23,6 @@ export async function processAnalyzeDocumentJob(
 
   logger.info("Starting analysis job", { jobId, documentId, versionId });
 
-  // Load job record for retry limit access in catch block
   let jobRecord: { maxAttempts: number } | null = null;
 
   try {
@@ -34,13 +31,14 @@ export async function processAnalyzeDocumentJob(
     await updateDocumentStatus(documentId, "PROCESSING");
 
     // Load job + version data from DB
-    jobRecord = await getJobForProcessing(jobId);
+    jobRecord = (await getJobForProcessing(jobId)) as { maxAttempts: number } | null;
+    const jobData = await getJobForProcessing(jobId);
 
-    if (!jobRecord) {
+    if (!jobData) {
       throw new Error(`AnalysisJob ${jobId} not found in database`);
     }
 
-    const version = jobRecord.version;
+    const version = jobData.version;
 
     logger.info("Job loaded", {
       jobId,
@@ -51,22 +49,55 @@ export async function processAnalyzeDocumentJob(
       fileType: version.fileType,
     });
 
-    // ============================================================
-    // PLACEHOLDER PROCESSING — Phase 6 will replace this
-    // ============================================================
+    // Progress: 10%
+    await updateJobProgress(jobId, 10);
+    await job.updateProgress(10);
 
-    const analysisResult = await placeholderProcessing(job, jobId, version);
+    // Determine ingestion type
+    const hasText = !!version.content;
+    const hasUpload = version.uploads.length > 0;
 
-    // ============================================================
-    // END PLACEHOLDER
-    // ============================================================
+    let storedPath: string | null = null;
+    let fileType: "pdf" | "docx" | "text" | undefined;
+    let originalName: string | undefined;
+
+    if (!hasText && hasUpload) {
+      const upload = version.uploads[0];
+      storedPath = upload.storedPath;
+      originalName = upload.originalName;
+      if (upload.mimeType.includes("pdf")) {
+        fileType = "pdf";
+      } else if (upload.mimeType.includes("wordprocessing")) {
+        fileType = "docx";
+      }
+    }
+
+    // Progress: 20%
+    await updateJobProgress(jobId, 20);
+    await job.updateProgress(20);
+
+    // Run the real analysis pipeline
+    const result = await analyzeDocumentVersion({
+      versionId: version.id,
+      content: version.content || undefined,
+      storedPath: storedPath || undefined,
+      fileType,
+      originalName,
+    });
+
+    // Progress: 90%
+    await updateJobProgress(jobId, 90);
+    await job.updateProgress(90);
+
+    if (result.status === "failed") {
+      throw new Error(result.error || "Analysis returned failed status");
+    }
 
     // Mark complete
-    await markJobCompleted(jobId, analysisResult);
+    await markJobCompleted(jobId, result);
     await updateDocumentStatus(documentId, "READY");
 
     logger.info("Job completed", { jobId, documentId, versionId });
-
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     const attempts = await incrementJobAttempts(jobId);
@@ -82,68 +113,4 @@ export async function processAnalyzeDocumentJob(
     // Re-throw so BullMQ can handle retry
     throw error;
   }
-}
-
-// Placeholder processing — simulates work with realistic progress updates
-async function placeholderProcessing(
-  job: Job<AnalysisJobData>,
-  jobId: string,
-  version: NonNullable<Awaited<ReturnType<typeof getJobForProcessing>>>["version"]
-): Promise<Record<string, unknown>> {
-  const { documentId, versionId } = job.data;
-
-  // Step 1: Loading (20%)
-  await updateJobProgress(jobId, 20);
-  await job.updateProgress(20);
-  logger.debug("Step 1/4: Loading document", { jobId });
-  await sleep(300);
-
-  // Step 2: Parsing (40%)
-  await updateJobProgress(jobId, 40);
-  await job.updateProgress(40);
-  logger.debug("Step 2/4: Parsing content", { jobId });
-
-  // Detect what we have
-  const hasText = !!version.content;
-  const hasUpload = version.uploads.length > 0;
-
-  if (hasText) {
-    logger.debug("Processing pasted text", { jobId, charCount: version.content.length });
-  } else if (hasUpload) {
-    const upload = version.uploads[0];
-    logger.debug("Processing uploaded file", { jobId, file: upload.originalName, type: upload.mimeType });
-  } else {
-    logger.warn("Version has neither content nor upload", { jobId, versionId });
-  }
-
-  await sleep(500);
-
-  // Step 3: Analyzing (70%)
-  await updateJobProgress(jobId, 70);
-  await job.updateProgress(70);
-  logger.debug("Step 3/4: Analyzing writing process", { jobId });
-  await sleep(300);
-
-  // Step 4: Assembling (90%)
-  await updateJobProgress(jobId, 90);
-  await job.updateProgress(90);
-  logger.debug("Step 4/4: Assembling receipt data", { jobId });
-  await sleep(200);
-
-  // Return placeholder result — Phase 6 will replace this with real analysis
-  return {
-    documentId,
-    versionId,
-    status: "placeholder",
-    placeholder: true,
-    note: "Real analysis will be implemented in Phase 6",
-    parsedAt: new Date().toISOString(),
-    contentLength: version.content?.length || 0,
-    hasFile: version.uploads.length > 0,
-    fileName: version.uploads[0]?.originalName || null,
-  };
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

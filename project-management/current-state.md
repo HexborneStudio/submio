@@ -67,6 +67,17 @@
 - [x] Queue helpers in web app (createAndEnqueueJob)
 - [x] Prisma schema: added attempts + maxAttempts fields to AnalysisJob
 
+### Phase 6: Document Parsing + Analysis V1 ✅
+- [x] Real DOCX parsing with mammoth
+- [x] Real PDF parsing with pdf-parse
+- [x] Text normalization (unicode spaces, line endings, blank lines)
+- [x] Citation extraction heuristics (URLs, DOIs, bracket, parenthetical, footnotes, bibliography)
+- [x] Structured authorship signals building
+- [x] Analysis pipeline: parse → normalize → extract citations → build signals
+- [x] Worker job calls real analysis instead of placeholder
+- [x] Analysis result stored in AnalysisJob.result (JSON)
+- [x] TypeScript compilation successful for analysis package
+
 ---
 
 ## What Works
@@ -83,7 +94,9 @@
 - Local filesystem storage abstraction (swappable to S3)
 - BullMQ + Redis job queue with worker
 - HTTP-based web→worker communication (native Node.js)
-- Placeholder document analysis with progress simulation
+- Real document parsing (PDF via pdf-parse, DOCX via mammoth)
+- Document text normalization and citation extraction heuristics
+- Structured authorship signals generation
 - Job retry with exponential backoff and capped attempts
 - Docker + Nginx infrastructure configured
 - Project memory system operational
@@ -94,8 +107,7 @@
 
 - No database migrations applied (schema defined but not deployed)
 - No actual email sending (magic link logged to console in dev)
-- No real document parsing (PDF/DOCX extraction is placeholder)
-- No real authorship analysis (heuristics are stubs)
+- No real authorship analysis beyond citation extraction and text metrics
 - No receipt generation (Phase 7)
 - No share link generation with tokens (Phase 8)
 - No PDF export (Phase 9)

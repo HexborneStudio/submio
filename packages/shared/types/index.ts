@@ -19,6 +19,9 @@ export interface User {
 export type DocumentStatus = "DRAFT" | "PROCESSING" | "READY" | "FAILED";
 export type UploadType = "FILE_UPLOAD" | "PASTE";
 
+/** File type for document parsing — distinct from UploadType which is for storage. */
+export type FileType = "pdf" | "docx" | "text";
+
 export interface Document {
   id: string;
   userId: string;

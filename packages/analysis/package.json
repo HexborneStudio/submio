@@ -15,7 +15,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@authorship-receipt/shared": "workspace:*",
+    "@authorship-receipt/shared": "file:../shared",
+    "mammoth": "^1.6.0",
+    "pdf-parse": "^1.1.1",
     "zod": "^3.22.0"
   },
   "devDependencies": {

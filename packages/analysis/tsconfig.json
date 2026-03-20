@@ -2,8 +2,14 @@
   "extends": "@authorship-receipt/config/tsconfig.node.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "paths": {
+      "@authorship-receipt/shared": ["../shared/dist/index.d.ts"]
+    }
   },
-  "include": ["*.ts", "parsers/**/*.ts", "heuristics/**/*.ts"],
+  "include": ["*.ts", "src/**/*.ts", "parsers/**/*.ts", "heuristics/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

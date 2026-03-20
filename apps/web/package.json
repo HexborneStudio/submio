@@ -13,8 +13,8 @@
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@authorship-receipt/shared": "workspace:*",
-    "@authorship-receipt/db": "workspace:*",
+    "@authorship-receipt/shared": "file:../../packages/shared",
+    "@authorship-receipt/db": "file:../../packages/db",
     "jose": "^5.2.0",
     "zod": "^3.22.0"
   },

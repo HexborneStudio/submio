@@ -4,14 +4,26 @@
 
 ## NOW (Current Phase)
 
-### Phase 6: Document Parsing + Analysis V1
-- [ ] Install mammoth (docx) and pdf-parse (pdf) libraries
-- [ ] Implement DocxParser.parse() with mammoth
-- [ ] Implement PdfParser.parse() with pdf-parse
-- [ ] Update typingAnalysis heuristics (real patterns)
-- [ ] Implement citation extraction heuristics
-- [ ] Implement originality risk detection
-- [ ] Wire real parsers into analyzeDocumentJob.ts
+### Phase 7: Receipt Generation
+- [ ] Build receipt data model (AuthorshipReceipt + ReceiptSection)
+- [ ] Create receipt assembly service
+- [ ] Design receipt UI sections
+- [ ] Build receipt view page
+- [ ] Add share link generation
+- [ ] Add educator review form
+
+---
+
+## DONE
+
+### Phase 6: Document Parsing + Analysis V1 ✅
+- [x] Install mammoth (docx) and pdf-parse (pdf) libraries
+- [x] Implement DocxParser.parse() with mammoth
+- [x] Implement PdfParser.parse() with pdf-parse
+- [x] Implement citation extraction heuristics
+- [x] Implement text normalization
+- [x] Implement authorship signals building
+- [x] Wire real parsers into analyzeDocumentJob.ts
 
 ---
 
