@@ -4,60 +4,26 @@
 
 ## NOW (Current Phase)
 
-### Phase 5: Analysis Job System
-- [ ] Set up Redis + BullMQ queues
-- [ ] Build worker job runner
-- [ ] Create job status tracking
-- [ ] Implement retry logic with exponential backoff
-- [ ] Add failure handling
-- [ ] Wire version creation API to dispatch analyzeDocument job
+### Phase 6: Document Parsing + Analysis V1
+- [ ] Install mammoth (docx) and pdf-parse (pdf) libraries
+- [ ] Implement DocxParser.parse() with mammoth
+- [ ] Implement PdfParser.parse() with pdf-parse
+- [ ] Update typingAnalysis heuristics (real patterns)
+- [ ] Implement citation extraction heuristics
+- [ ] Implement originality risk detection
+- [ ] Wire real parsers into analyzeDocumentJob.ts
 
 ---
 
 ## NEXT (Queued)
 
-### Phase 3 (Prerequisite — already built, apply schema)
-- [ ] Apply schema to database (npm run db:push)
-- [ ] Generate Prisma client
-- [ ] Verify connection
-
-### Phase 5: Analysis Job System
-- [ ] Set up Redis
-- [ ] Configure BullMQ queues
-- [ ] Build worker job runner
-- [ ] Create job status tracking
-- [ ] Implement retry logic
-- [ ] Add failure handling
-
-### Phase 5: Analysis Job System
-- [ ] Set up Redis + BullMQ queues
-- [ ] Build worker job runner
-- [ ] Create job status tracking
-- [ ] Implement retry logic with exponential backoff
-- [ ] Add failure handling
-- [ ] Wire version creation API to dispatch analyzeDocument job
-
----
-
-## LATER (Planned)
-
-### Phase 6: Document Parsing + Analysis V1
-- [ ] Implement DOCX parser
-- [ ] Implement PDF parser
-- [ ] Build text normalization
-- [ ] Add structure detection
-- [ ] Create citation extraction
-- [ ] Build typing/pasting heuristics
-- [ ] Implement authorship signals
-
 ### Phase 7: Receipt Generation
-- [ ] Design receipt data model
-- [ ] Build receipt assembly service
-- [ ] Create receipt UI
-- [ ] Implement receipt sections
-- [ ] Add summary blocks
-- [ ] Build evidence notes
-- [ ] Add caution language
+- [ ] Build receipt data model (AuthorshipReceipt + ReceiptSection)
+- [ ] Create receipt assembly service
+- [ ] Design receipt UI sections
+- [ ] Build receipt view page
+- [ ] Add share link generation
+- [ ] Add educator review form
 
 ### Phase 8: Share + Educator Review
 - [ ] Create signed share links
@@ -70,6 +36,10 @@
 - [ ] Build printable receipt view
 - [ ] Implement PDF generation
 - [ ] Create export history
+
+---
+
+## LATER (Planned)
 
 ### Phase 10: Admin Tools
 - [ ] Build admin login gate
@@ -100,9 +70,9 @@
 ## BLOCKED
 
 ### Phase 13: Post-MVP
-- [ ] Educator dashboard - waiting for Phase 2-10
-- [ ] Organization/team accounts - waiting for Phase 2-10
-- [ ] Institution workflows - waiting for Phase 2-10
-- [ ] LMS integrations - waiting for Phase 2-10
-- [ ] Advanced source analysis - waiting for Phase 6
-- [ ] Collaboration features - future consideration
+- [ ] Educator dashboard — waiting for Phase 2-10
+- [ ] Organization/team accounts — waiting for Phase 2-10
+- [ ] Institution workflows — waiting for Phase 2-10
+- [ ] LMS integrations — waiting for Phase 2-10
+- [ ] Advanced source analysis — waiting for Phase 6
+- [ ] Collaboration features — future consideration

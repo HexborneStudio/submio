@@ -255,6 +255,8 @@ model AnalysisJob {
   progress    Int              @default(0) // 0-100
   result      Json?            // Structured analysis result
   error       String?
+  attempts    Int              @default(0)  // Number of retry attempts
+  maxAttempts Int              @default(3)  // Max retries before giving up
   startedAt   DateTime?
   completedAt DateTime?
   createdAt   DateTime         @default(now())

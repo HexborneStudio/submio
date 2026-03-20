@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { pasteContentSchema, ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from "@authorship-receipt/shared";
 import { prisma } from "@authorship-receipt/db";
 import { saveFile } from "@/lib/storage";
+import { createAndEnqueueJob } from "@/lib/queue-helpers";
 
 // For multipart file uploads
 export const runtime = "nodejs";
@@ -91,6 +92,11 @@ export async function POST(
         return v;
       });
 
+      // Enqueue analysis job (fire-and-forget — worker processes async)
+      createAndEnqueueJob(documentId, version.id).catch((e) => {
+        console.error("Failed to enqueue analysis job:", e);
+      });
+
       return NextResponse.json(
         { version, documentId, mode: "upload" },
         { status: 201 }
@@ -128,6 +134,11 @@ export async function POST(
         });
 
         return v;
+      });
+
+      // Enqueue analysis job (fire-and-forget — worker processes async)
+      createAndEnqueueJob(documentId, version.id).catch((e) => {
+        console.error("Failed to enqueue analysis job:", e);
       });
 
       return NextResponse.json(

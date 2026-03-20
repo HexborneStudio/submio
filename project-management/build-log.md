@@ -275,3 +275,46 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 
 **Environment:**
 - `.env.example` updated with `STORAGE_LOCAL_DIR`, `STORAGE_S3_BUCKET`, `STORAGE_S3_REGION`
+
+---
+
+## 2026-03-20
+
+### TASK 5: Analysis Job System ✅ COMPLETE
+
+**Completed at:** 01:24 CDT
+
+**Queue library:** BullMQ + ioredis (already in worker package.json from Phase 1)
+
+**Prisma schema change:**
+- Added `attempts Int @default(0)` and `maxAttempts Int @default(3)` to AnalysisJob
+
+**Worker structure — apps/worker/src/:**
+- utils/env.ts — Redis, queue, job, app config from env vars
+- utils/logger.ts — Structured logger with timestamps + context
+- queues/analysisQueue.ts — BullMQ queue singleton (enqueue, get, close)
+- services/jobLifecycleService.ts — DB lifecycle ops (markStarted/Completed/Failed, updateProgress, getJobForProcessing)
+- jobs/analyzeDocumentJob.ts — Placeholder 4-step processor (20→40→70→90→100%), retry exhaustion handling
+- http-server.ts — Native Node.js HTTP server (no Express) with route registry
+- routes/enqueue.ts — GET /health, POST /enqueue
+- index.ts — BullMQ worker + HTTP server, graceful SIGTERM/SIGINT shutdown
+
+**Web app integration — apps/web/src/lib/:**
+- queue-helpers.ts — createAndEnqueueJob() (creates DB record + calls worker via HTTP)
+- api/documents/[documentId]/enqueue/route.ts — POST endpoint for manual enqueue
+
+**Job flow:**
+1. Version created → createAndEnqueueJob() called
+2. DB record created (status: PENDING)
+3. Worker notified via HTTP POST to port 3001
+4. Worker picks up job from BullMQ queue
+5. Progress: 0% → 20% → 40% → 70% → 90% → 100%
+6. Document status: DRAFT → PROCESSING → READY (or FAILED)
+7. Retry: exponential backoff (2s, 4s, 8s), max 3 attempts
+
+**Environment vars added:**
+- REDIS_URL, REDIS_HOST, REDIS_PORT
+- ANALYSIS_QUEUE_NAME (default: authorship-analysis)
+- WORKER_CONCURRENCY (default: 3)
+- JOB_MAX_ATTEMPTS (default: 3)
+- WORKER_URL (web→worker HTTP, default: http://localhost:3001)

@@ -57,6 +57,16 @@
 - [x] Document status transitions to PROCESSING on version creation
 - [x] Shared types synced with Prisma schema (UploadType enum)
 
+### Phase 5: Analysis Job System ✅
+- [x] BullMQ worker with Redis queue
+- [x] Job lifecycle service (markStarted/Completed/Failed, progress tracking)
+- [x] Worker HTTP server for web→worker communication (native Node.js, no Express)
+- [x] Native HTTP enqueue endpoint (POST /enqueue)
+- [x] Placeholder 4-step processing with realistic progress simulation
+- [x] Exponential retry (2s, 4s, 8s), max 3 attempts
+- [x] Queue helpers in web app (createAndEnqueueJob)
+- [x] Prisma schema: added attempts + maxAttempts fields to AnalysisJob
+
 ---
 
 ## What Works
@@ -65,13 +75,16 @@
 - TypeScript configured across all packages
 - Next.js 15 apps scaffolded with App Router
 - Tailwind CSS configured for web/admin apps
-- Prisma schema with all core entities defined (15 models, 11 enums, MagicLinkToken)
-- Magic link authentication with JWT sessions
-- Protected route middleware
+- Prisma schema with all core entities (16 models, 12 enums)
+- Magic link authentication with JWT sessions (jose)
+- Protected route middleware (public vs app route groups)
 - Server-rendered dashboard, documents, settings with real DB data
-- Route group separation (public vs app)
-- Worker has stub implementations for jobs and services
-- Analysis package has stubs for parsing and heuristics
+- Document ingestion: upload (.docx/.pdf) + paste text
+- Local filesystem storage abstraction (swappable to S3)
+- BullMQ + Redis job queue with worker
+- HTTP-based web→worker communication (native Node.js)
+- Placeholder document analysis with progress simulation
+- Job retry with exponential backoff and capped attempts
 - Docker + Nginx infrastructure configured
 - Project memory system operational
 
@@ -81,13 +94,12 @@
 
 - No database migrations applied (schema defined but not deployed)
 - No actual email sending (magic link logged to console in dev)
-- No actual document parsing (stubs only)
-- No real authorship analysis (stubs only)
-- No receipt generation logic
-- No share link generation with tokens
-- No PDF export
+- No real document parsing (PDF/DOCX extraction is placeholder)
+- No real authorship analysis (heuristics are stubs)
+- No receipt generation (Phase 7)
+- No share link generation with tokens (Phase 8)
+- No PDF export (Phase 9)
 - No admin functionality (placeholders only)
-- No Redis/BullMQ job queue (Phase 5)
 
 ---
 
@@ -99,30 +111,34 @@ authorship-receipt/
 │   ├── app/(public)/ — landing, pricing, privacy, terms
 │   ├── app/(app)/ — dashboard, documents, settings (auth-gated)
 │   ├── app/api/auth/ — login, signup, callback, logout, me
+│   ├── app/api/documents/ — document CRUD, versions, enqueue
 │   ├── app/auth/callback/
 │   ├── src/lib/auth/ — config, jwt, session, magic-link
+│   ├── src/lib/storage/ — local filesystem abstraction
+│   ├── src/lib/queue-helpers.ts — createAndEnqueueJob
 │   ├── src/components/app/AppShell.tsx
 │   └── src/middleware.ts
 ├── apps/admin (Next.js 15, Tailwind) - 6 pages (placeholder auth gate)
-├── apps/worker (BullMQ, Redis) - 5 services + 2 jobs
+├── apps/worker (BullMQ, Redis)
+│   ├── src/utils/ — env.ts, logger.ts
+│   ├── src/queues/ — BullMQ analysisQueue
+│   ├── src/services/ — jobLifecycleService, existing services
+│   ├── src/jobs/ — analyzeDocumentJob (placeholder), exportReceiptJob
+│   ├── src/routes/ — enqueue (HTTP endpoint)
+│   └── src/http-server.ts — native Node.js HTTP server
 ├── packages/
-│   ├── db/
-│   │   ├── prisma/schema.prisma (16 models, 11 enums + MagicLinkToken)
-│   │   ├── prisma/seed.ts
-│   │   └── src/
+│   ├── db/prisma/schema.prisma (16 models, 12 enums)
 │   ├── shared (types, constants, zod validation)
-│   ├── analysis (4 parsers, 3 heuristic modules)
+│   ├── analysis (4 parsers, 3 heuristic stubs)
 │   └── config (3 tsconfig files)
-├── infra/
-│   ├── docker/ (Dockerfile, docker-compose)
-│   └── nginx/ (nginx.conf, site config)
-├── docs/ (4 docs) + project-management/ (5 files)
+├── infra/ — docker/, nginx/
+├── docs/ (5 docs) + project-management/ (5 files)
 ```
 
 ---
 
 ## Next Priority
 
-**Phase 4: Document Ingestion** — Document creation and content upload/paste flow.
+**Phase 6: Document Parsing + Analysis V1** — Real PDF/DOCX parsing and authorship heuristics.
 
 See: [next-step.md](./next-step.md)

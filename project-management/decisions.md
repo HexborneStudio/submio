@@ -397,3 +397,62 @@ None yet.
 - Store files in database as BLOBs — Bad for large files, performance degrades
 
 **Status:** Accepted
+
+---
+
+### DEC-021: BullMQ + Redis for Job Queue
+
+**Decision:** Use BullMQ as the queue library with Redis as the backend.
+
+**Rationale:**
+- BullMQ is the de-facto standard for Node.js background jobs
+- Redis is lightweight and already minimal for the MVP
+- BullMQ handles retries, backoff, concurrency, and dead-letter management out of the box
+- BullMQ jobs are stored in Redis with persistence — survives restarts
+- `ioredis` is already in worker package.json from Phase 1
+
+**Alternatives Considered:**
+- pg-boss (PostgreSQL-backed) — Adds DB load, less mature than BullMQ
+- SQS + Lambda — More ops complexity, not local-first
+- In-memory queue (like Agenda with MongoDB) — No persistence, poor for production
+
+**Status:** Accepted
+
+---
+
+### DEC-022: HTTP-Based Web→Worker Communication
+
+**Decision:** Web app communicates with the worker via HTTP (POST /enqueue) rather than sharing a queue connection or using a separate service bus.
+
+**Rationale:**
+- Simplest MVP approach — no shared Redis credentials between apps
+- Worker exposes a tiny HTTP server on port 3001 (native Node.js, no Express)
+- Web app uses native `fetch()` — no additional dependencies in web app
+- Worker enqueues via BullMQ internally — no complexity leak
+- If worker is down, web gracefully marks job as FAILED without blocking user
+
+**Alternatives Considered:**
+- Web app connects directly to Redis — Shares Redis URL, more coupling, security risk
+- BullMQ in both apps — Adds BullMQ as web dependency, heavyweight
+- Message queue service (SQS/SNS) — Overkill for MVP, adds third-party dependency
+
+**Status:** Accepted
+
+---
+
+### DEC-023: Placeholder Processing Separated from Real Analysis
+
+**Decision:** Worker placeholder processing is a complete, runnable stub that clearly separates the processing pipeline from the job infrastructure, making it easy to swap in real implementations in Phase 6 without touching the job system.
+
+**Rationale:**
+- Phase 5 is infrastructure — job queue, not analysis logic
+- The placeholder has 4 clear steps (load, parse, analyze, assemble) matching the real pipeline
+- Each step updates progress (20%, 40%, 70%, 90%) for realistic UI feedback
+- Throwing errors triggers real BullMQ retry behavior
+- Replacing the placeholder only requires changing one function in `analyzeDocumentJob.ts`
+
+**Alternatives Considered:**
+- Skip placeholder, build real analysis in Phase 5 — Scope creep, delays job system testing
+- Use a "todo" comment instead of runnable code — Can't verify job infrastructure until Phase 6
+
+**Status:** Accepted

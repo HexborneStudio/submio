@@ -32,8 +32,15 @@ export const ANALYSIS_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
 // Queue names
 export const QUEUE_NAMES = {
-  ANALYSIS: "analysis",
-  EXPORT: "export",
+  ANALYSIS: process.env.ANALYSIS_QUEUE_NAME || "authorship-analysis",
+  EXPORT: "authorship-export",
+} as const;
+
+// Job configuration
+export const JOB_CONFIG = {
+  MAX_ATTEMPTS: 3,
+  RETRY_DELAY: 2000, // ms
+  CONCURRENCY: parseInt(process.env.WORKER_CONCURRENCY || "3", 10),
 } as const;
 
 // Receipt sections
