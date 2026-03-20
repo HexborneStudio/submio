@@ -34,6 +34,18 @@
 - [x] package.json scripts updated
 - [x] Schema NOT yet applied to a live database
 
+### Phase 3: Auth + App Shell ✅
+- [x] Magic link auth (JWT sessions, jose library)
+- [x] Prisma schema: MagicLinkToken model added
+- [x] Auth library: config, jwt, session, magic-link modules
+- [x] API routes: login, signup, callback, logout, me
+- [x] Next.js middleware: protected routes, auth redirects
+- [x] Route groups: (public) and (app)
+- [x] AppShell component with nav
+- [x] Dashboard, documents, settings server-rendered with real DB data
+- [x] AuthSecret generated and added to .env
+- [x] jose dependency added to web package
+
 ---
 
 ## What Works
@@ -42,8 +54,11 @@
 - TypeScript configured across all packages
 - Next.js 15 apps scaffolded with App Router
 - Tailwind CSS configured for web/admin apps
-- Prisma schema with all core entities defined (15 models, 11 enums)
-- All MVP pages created as placeholders
+- Prisma schema with all core entities defined (15 models, 11 enums, MagicLinkToken)
+- Magic link authentication with JWT sessions
+- Protected route middleware
+- Server-rendered dashboard, documents, settings with real DB data
+- Route group separation (public vs app)
 - Worker has stub implementations for jobs and services
 - Analysis package has stubs for parsing and heuristics
 - Docker + Nginx infrastructure configured
@@ -53,8 +68,8 @@
 
 ## What Does Not Exist Yet
 
-- No actual authentication implemented (no login/signup logic)
 - No database migrations applied (schema defined but not deployed)
+- No actual email sending (magic link logged to console in dev)
 - No actual document parsing (stubs only)
 - No real authorship analysis (stubs only)
 - No receipt generation logic
@@ -62,6 +77,7 @@
 - No PDF export
 - No admin functionality (placeholders only)
 - No actual storage integration
+- No document creation/upload flow (Phase 4)
 
 ---
 
@@ -69,15 +85,21 @@
 
 ```
 authorship-receipt/
-├── apps/web (Next.js 15, Tailwind) - 17 pages
-├── apps/admin (Next.js 15, Tailwind) - 6 pages
+├── apps/web (Next.js 15, Tailwind)
+│   ├── app/(public)/ — landing, pricing, privacy, terms
+│   ├── app/(app)/ — dashboard, documents, settings (auth-gated)
+│   ├── app/api/auth/ — login, signup, callback, logout, me
+│   ├── app/auth/callback/
+│   ├── src/lib/auth/ — config, jwt, session, magic-link
+│   ├── src/components/app/AppShell.tsx
+│   └── src/middleware.ts
+├── apps/admin (Next.js 15, Tailwind) - 6 pages (placeholder auth gate)
 ├── apps/worker (BullMQ, Redis) - 5 services + 2 jobs
 ├── packages/
 │   ├── db/
-│   │   ├── prisma/schema.prisma (15 models, 11 enums)
+│   │   ├── prisma/schema.prisma (16 models, 11 enums + MagicLinkToken)
 │   │   ├── prisma/seed.ts
-│   │   ├── src/index.ts
-│   │   └── src/client.ts
+│   │   └── src/
 │   ├── shared (types, constants, zod validation)
 │   ├── analysis (4 parsers, 3 heuristic modules)
 │   └── config (3 tsconfig files)
@@ -91,6 +113,6 @@ authorship-receipt/
 
 ## Next Priority
 
-**Phase 3: Auth + App Shell** — Scaffold auth flow and protected dashboard.
+**Phase 4: Document Ingestion** — Document creation and content upload/paste flow.
 
 See: [next-step.md](./next-step.md)

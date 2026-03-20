@@ -173,3 +173,60 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Run `npm run db:push --workspace=packages/db` to apply without migration history
 - Or `npm run db:migrate --workspace=packages/db` for full migration history
 - Then `npm run db:generate --workspace=packages/db` to regenerate client
+
+---
+
+## 2026-03-20
+
+### TASK 3: Auth + App Shell ✅ COMPLETE
+
+**Completed at:** 00:40 CDT
+
+**Auth approach:** Magic link via email with JWT session cookie (HS256, jose library)
+
+**Prisma schema change:**
+- Added `MagicLinkToken` model (id, email, token, expiresAt, createdAt, usedAt) with indexes
+
+**Auth library — apps/web/src/lib/auth/:**
+- config.ts — SESSION_COOKIE_NAME, SESSION_MAX_AGE, MAGIC_LINK_TOKEN_EXPIRY_MINUTES, Zod schema
+- jwt.ts — createSessionToken/verifySessionToken using jose (SignJWT)
+- session.ts — getSession, getCurrentUser, requireSession, requireUser, requireAdmin
+- magic-link.ts — generateToken, createMagicLinkToken, verifyMagicLinkToken
+- index.ts — re-exports
+
+**API routes — apps/web/app/api/auth/:**
+- POST /api/auth/login — finds/creates user, creates magic link token, logs URL (dev)
+- POST /api/auth/signup — creates user, 409 on existing, creates magic link
+- GET /api/auth/callback?token=xxx — verifies token, sets ar_session cookie, redirects /dashboard
+- POST /api/auth/logout — clears session cookie
+- GET /api/auth/me — returns current user or 401
+
+**Middleware — apps/web/src/middleware.ts:**
+- Protected: /dashboard, /documents, /settings
+- Redirects unauthenticated to /login?redirect=...
+- Redirects authenticated users away from /login, /signup, /auth
+
+**Route groups:**
+- (public)/ — page.tsx, pricing, privacy, terms (clean public layout)
+- (app)/ — dashboard, documents, settings (auth-gated via layout)
+
+**AppShell — apps/web/src/components/app/AppShell.tsx:**
+- Client component with header nav, user display, logout button
+
+**Pages updated/created:**
+- app/(public)/page.tsx — landing page
+- app/(public)/pricing/page.tsx
+- app/(public)/privacy/page.tsx
+- app/(public)/terms/page.tsx
+- app/(app)/layout.tsx — auth check + AppShell wrapper
+- app/(app)/dashboard/page.tsx — server component, real DB data, stats cards
+- app/(app)/documents/page.tsx — server component, real DB data
+- app/(app)/settings/page.tsx — server component, real user data
+- app/login/page.tsx — full magic link form with dev debug link
+- app/signup/page.tsx — full signup form with success state
+- app/auth/callback/page.tsx — redirect fallback
+
+**Environment:**
+- AUTH_SECRET added to .env (generated)
+- .env.example updated
+- jose@^5.2.0 added to apps/web/package.json

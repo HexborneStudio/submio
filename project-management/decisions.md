@@ -259,3 +259,100 @@ None yet.
 - Citation → Document — Loses version precision
 
 **Status:** Accepted
+
+---
+
+## 2026-03-20 (Phase 3)
+
+### DEC-014: Magic Link Auth (No Passwords)
+
+**Decision:** Use magic link authentication via email — no passwords.
+
+**Rationale:**
+- Better UX for occasional users (students)
+- No password storage or reset complexity
+- Lower security surface area
+- Works well with email-first use case
+- Clean to implement with JWT + database token table
+
+**Alternatives Considered:**
+- OAuth providers (Google, GitHub) — Adds dependency and account linking complexity
+- Passwords + 2FA — More friction for student users
+- Third-party auth (Auth0, Clerk, NextAuth) — Adds third-party dependency and cost
+
+**Status:** Accepted
+
+---
+
+### DEC-015: JWT Sessions via Cookie
+
+**Decision:** Use JWT stored in an httpOnly cookie for session management.
+
+**Rationale:**
+- Stateless sessions — no database lookup on every request
+- Cookie prevents XSS token theft (httpOnly)
+- HTTPS-only in production (secure flag)
+- Simple, no Redis session store needed for MVP
+- jose library is lightweight and fast
+
+**Alternatives Considered:**
+- Database sessions — Requires Redis or DB lookup on every request, more latency
+- localStorage + Bearer token — Vulnerable to XSS
+- NextAuth/database sessions — Adds dependency for simple MVP use case
+
+**Status:** Accepted
+
+---
+
+### DEC-016: Route Groups for Public vs Protected Separation
+
+**Decision:** Use Next.js route groups (public) and (app) to separate public and protected routes.
+
+**Rationale:**
+- Clean URL structure without nested directories
+- (app)/layout.tsx handles auth check for all protected routes
+- Middleware handles redirects for non-Next.js routes
+- Scalable — easy to add new protected/public routes
+
+**Alternatives Considered:**
+- Middleware-only — Would need auth check in every page/layout
+- Nested directories — Messy URL structure (/app/dashboard)
+- Parallel directories — More complex Next.js routing
+
+**Status:** Accepted
+
+---
+
+### DEC-017: Server Components for Dashboard/Documents/Settings
+
+**Decision:** Use Next.js server components for authenticated pages (dashboard, documents, settings).
+
+**Rationale:**
+- Direct database access without API overhead
+- Auth check via `getCurrentUser()` at the layout level
+- Simpler code — no client-side data fetching
+- Automatic caching benefits from Next.js
+
+**Alternatives Considered:**
+- Client components with SWR/fetch — More code, more API endpoints
+- API routes for everything — Extra network hop, more complex
+
+**Status:** Accepted
+
+---
+
+### DEC-018: Magic Link Logged to Console in Development
+
+**Decision:** In development mode, the magic link is logged to console and included in the API response (debugLink field).
+
+**Rationale:**
+- No email service needed for local development
+- Faster iteration
+- Clear UX: user sees the link immediately
+- Production will use a real email provider (SES, Resend, etc.)
+
+**Alternatives Considered:**
+- Real email in dev — Requires SMTP config or third-party API
+- File-based queue — More complexity for MVP
+
+**Status:** Accepted

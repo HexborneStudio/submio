@@ -4,57 +4,60 @@
 
 ---
 
-## TASK: Phase 3 - Auth + App Shell
+## TASK: Phase 4 - Document Ingestion
 
-**Objective:** Implement magic-link authentication and build the protected app shell with dashboard navigation.
+**Objective:** Build the document creation flow and content ingestion (upload + paste).
 
 **Dependencies:**
-- Phase 2 schema applied to database (can work in parallel — schema is stable)
-- Database must be accessible (local Postgres or Docker)
+- Phase 3 auth complete (user can authenticate)
+- Database accessible with schema applied
+- Storage setup (local filesystem or S3-compatible)
 
 **Expected Files to Change:**
-- `apps/web/app/login/page.tsx` — Magic link form
-- `apps/web/app/signup/page.tsx` — Signup form
-- `apps/web/app/api/auth/` — Auth API routes (magic link)
-- `apps/web/src/middleware.ts` — Route protection
-- `apps/web/src/components/` — Auth components (session provider, etc.)
-- `packages/db/` — User model already defined, just needs API routes
-- `apps/web/app/dashboard/page.tsx` — Update with real data
-- `apps/admin/app/layout.tsx` — Add admin auth gate
+- `apps/web/app/(app)/documents/new/page.tsx` — New document form
+- `apps/web/app/(app)/documents/[documentId]/page.tsx` — Document detail + content
+- `apps/web/app/(app)/documents/[documentId]/upload/page.tsx` — Upload flow
+- `apps/web/app/api/documents/route.ts` — Create document API
+- `apps/web/app/api/documents/[documentId]/versions/route.ts` — Create version API
+- `packages/shared/validation/index.ts` — Add document validation schemas
+- `apps/web/src/lib/storage.ts` — Storage helper (placeholder for S3/local)
+- `packages/db/prisma/schema.prisma` — Potentially add filename field to DocumentUpload
 
 **Steps:**
-1. Install auth dependencies (e.g., `next-auth` or custom magic link implementation)
-2. Create auth API routes for magic link login/signup
-3. Implement email sending (use a mock/log transport in MVP)
-4. Add session management (JWT or database sessions)
-5. Create auth middleware for protected routes
-6. Update dashboard with real document list from database
-7. Add user menu / sign-out to navigation
-8. Gate admin routes to ADMIN role
+1. Create document creation page (title input)
+2. Create document detail page with version list
+3. Build upload page (file input → validate → store → create version)
+4. Build paste page (text input → create version)
+5. Add file validation (type: .docx, .pdf, size limit: 10MB)
+6. Create document API routes (POST, GET)
+7. Create version API routes (POST for upload + paste)
+8. Set up storage helper (local /tmp uploads in dev, S3 in prod)
+9. Update document status on version creation
 
 **Completion Criteria:**
-- User can sign up and receive a magic link
-- User can log in via magic link
-- Dashboard shows user's actual documents
-- Protected routes redirect unauthenticated users
-- Admin routes protected by role check
+- User can create a new document (title)
+- User can upload a .docx or .pdf file
+- User can paste text directly
+- Document shows version history
+- File is validated (type + size)
+- Storage path recorded in DocumentUpload
 
 ---
 
 ## Next Five Tasks (Queue)
 
 1. ~~Phase 2: Data Model~~ ✅ DONE
-2. Phase 3: Auth + App Shell (current)
-3. Phase 4: Document Ingestion — Create document, upload, paste flows
+2. ~~Phase 3: Auth + App Shell~~ ✅ DONE
+3. Phase 4: Document Ingestion (current)
 4. Phase 5: Analysis Job System — Redis queue setup
 5. Phase 6: Document Parsing + Analysis V1 — Implement parsers
 6. Phase 7: Receipt Generation — Build receipt UI and logic
 
 ---
 
-## After Phase 3 — Database Setup Reminder
+## Database Setup Reminder
 
-After Phase 2 schema is applied, run these commands:
+Before Phase 4, apply Phase 2 schema:
 
 ```bash
 # Apply schema to database (no migration history)

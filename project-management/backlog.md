@@ -4,32 +4,32 @@
 
 ## NOW (Current Phase)
 
-### Phase 3: Auth + App Shell
-- [ ] Install auth dependencies
-- [ ] Create auth API routes for magic link
-- [ ] Implement email sending (mock in MVP)
-- [ ] Add session management
-- [ ] Create auth middleware
-- [ ] Update dashboard with real data
-- [ ] Add user menu / sign-out
-- [ ] Gate admin routes by role
+### Phase 4: Document Ingestion
+- [ ] Create document creation page
+- [ ] Create document detail page
+- [ ] Build upload flow (file input → validate → store → create version)
+- [ ] Build paste flow (text input → create version)
+- [ ] Add file validation (type + size)
+- [ ] Create document/version API routes
+- [ ] Set up storage helper (local dev, S3 prod)
+- [ ] Update document status on version creation
 
 ---
 
 ## NEXT (Queued)
 
-### Phase 2 (Prerequisite — apply schema)
+### Phase 3 (Prerequisite — already built, apply schema)
 - [ ] Apply schema to database (npm run db:push)
 - [ ] Generate Prisma client
 - [ ] Verify connection
 
-### Phase 4: Document Ingestion
-- [ ] Create document API routes
-- [ ] Implement file upload flow
-- [ ] Implement paste text flow
-- [ ] Set up storage integration
-- [ ] Add file validation
-- [ ] Create version tracking
+### Phase 5: Analysis Job System
+- [ ] Set up Redis
+- [ ] Configure BullMQ queues
+- [ ] Build worker job runner
+- [ ] Create job status tracking
+- [ ] Implement retry logic
+- [ ] Add failure handling
 
 ### Phase 4: Document Ingestion
 - [ ] Create document API routes

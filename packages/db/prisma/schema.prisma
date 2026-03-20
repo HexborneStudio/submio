@@ -137,6 +137,20 @@ model User {
   @@index([role])
 }
 
+// MagicLinkToken — magic link authentication tokens
+model MagicLinkToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  usedAt    DateTime?
+
+  @@index([email])
+  @@index([token])
+  @@index([expiresAt])
+}
+
 // Organization — schools, teams, institutions
 // Lightly used in MVP; enables Phase 3 multi-tenancy
 model Organization {
