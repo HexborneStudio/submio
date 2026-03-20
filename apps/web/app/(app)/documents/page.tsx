@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@authorship-receipt/db";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function DocumentsPage() {
   const user = await getCurrentUser();
@@ -23,18 +24,13 @@ export default async function DocumentsPage() {
       </div>
 
       {documents.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-lg border border-dashed">
-          <div className="text-4xl mb-4">📄</div>
-          <p className="text-gray-500 mb-4">No documents yet</p>
-          <p className="text-sm text-gray-400 mb-6">
-            Upload a document or paste your text to get started
-          </p>
-          <a
-            href="/documents/new"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
-          >
-            Create your first document
-          </a>
+        <div className="bg-white rounded-lg border">
+          <EmptyState
+            icon="📄"
+            title="No documents yet"
+            description="Upload or paste your first document to generate an authorship receipt."
+            action={{ label: "Create Document", href: "/documents/new" }}
+          />
         </div>
       ) : (
         <div className="grid gap-4">

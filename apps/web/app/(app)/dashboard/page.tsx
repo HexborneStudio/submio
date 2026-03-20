@@ -25,6 +25,28 @@ export default async function DashboardPage() {
         </p>
       </div>
 
+      {/* Onboarding banner for new users */}
+      {documents.length === 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-5">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">👋</span>
+            <div>
+              <h2 className="font-semibold text-blue-900 mb-1">Welcome to Authorship Receipt</h2>
+              <p className="text-blue-800 text-sm mb-3">
+                Upload or paste your first academic document to generate an authorship receipt.
+                Share it with your educator to start a transparent conversation.
+              </p>
+              <a
+                href="/documents/new"
+                className="inline-block px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+              >
+                Create Your First Document
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg border">
@@ -54,7 +76,7 @@ export default async function DashboardPage() {
           <div className="text-center py-12 bg-white rounded-lg border border-dashed">
             <p className="text-gray-500 mb-4">No documents yet</p>
             <a
-              href="/documents"
+              href="/documents/new"
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
             >
               Create your first document

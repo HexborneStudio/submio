@@ -523,3 +523,43 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 **Known issues:**
 - `@react-pdf/renderer` requires React 16-19 — works with current setup (React 19)
 - Package already installed at root (hoisted from web workspace dependency)
+
+---
+
+## 2026-03-20
+
+### TASK 11: Product Polish ✅ COMPLETE
+
+**Completed at:** 15:xx CDT
+
+**Files created — analytics scaffold:**
+- `apps/web/src/lib/analytics/trackEvent.ts` — AnalyticsEvent type, trackEvent(), trackPageView()
+- `apps/web/src/lib/analytics/index.ts` — barrel export
+
+**Files created — shared UI components:**
+- `apps/web/src/components/ui/LoadingSpinner.tsx` — Animated spinner (sm/md/lg)
+- `apps/web/src/components/ui/LoadingSkeleton.tsx` — Pulsing skeleton lines
+- `apps/web/src/components/ui/EmptyState.tsx` — Icon + title + description + optional action
+- `apps/web/src/components/ui/ErrorState.tsx` — Warning icon + message + optional retry
+- `apps/web/src/components/ui/PageLoader.tsx` — Full-page centered loading state
+
+**Pages rewritten:**
+- `apps/web/app/(public)/page.tsx` — Complete rewrite: nav, hero, how-it-works, what-is section, caution block, CTA, footer
+- `apps/web/app/(public)/pricing/page.tsx` — Complete rewrite: clean pricing card, feature grid, CTA
+
+**Pages updated:**
+- `apps/web/app/(app)/dashboard/page.tsx` — Added onboarding welcome banner for 0-document users (👋 welcome card with link to /documents/new)
+- `apps/web/app/(app)/documents/page.tsx` — Replaced empty div with EmptyState component
+- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — Added trackEvent("receipt_viewed") call; imports analytics module
+- `apps/web/app/(app)/documents/[documentId]/receipt/ExportPdfButton.tsx` — Added trackEvent("pdf_exported") after download
+- `apps/web/app/(app)/documents/[documentId]/receipt/ShareSection.tsx` — Added trackEvent("share_link_created") after link creation
+- `apps/web/app/api/documents/route.ts` — Added trackEvent("document_created") after Prisma create
+- `apps/web/app/share/[token]/SubmitReviewForm.tsx` — Added trackEvent("educator_review_submitted") after form submit
+
+**Environment:**
+- `.env.example` updated: added `NEXT_PUBLIC_ANALYTICS_ENABLED=false`
+
+**Notes:**
+- Analytics uses MVP console.log scaffold — ready to swap in real provider (Mixpanel, PostHog, etc.)
+- All analytics calls are no-ops in production (dev-only console.logs)
+- Loading states added as scaffold — documents list page remains a server component

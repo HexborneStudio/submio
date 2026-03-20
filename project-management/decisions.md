@@ -701,3 +701,62 @@ None yet.
 **Note:** If PDF generation becomes slow or requires external services (e.g., headless Chrome), this decision should be revisited and the worker queue approach implemented.
 
 **Status:** Accepted
+
+---
+
+## 2026-03-20 (Phase 11)
+
+### DEC-037: Analytics Scaffold Uses MVP Console-Log Pattern
+
+**Decision:** Analytics tracking uses a scaffold that logs to console in development and is a no-op in production, with a clear TODO to integrate a real provider.
+
+**Rationale:**
+- Analytics is essential for understanding user behavior and conversion
+- Integrating a real provider (Mixpanel, PostHog, Amplitude) requires account setup and SDK installation
+- The scaffold provides the type-safe interface (AnalyticsEvent union) so adding real tracking is a one-file change
+- Console logging in dev means developers see events without any external dependency
+- No third-party SDK loaded in the browser until a real provider is configured
+
+**Alternatives Considered:**
+- Integrate Mixpanel/PostHog immediately — Requires account, SDK, and privacy policy before the product is ready
+- Use a fake/mock analytics in tests — Overkill for MVP; scaffold is sufficient
+- Skip analytics entirely — Makes it impossible to understand usage patterns
+
+**Status:** Accepted
+
+---
+
+### DEC-038: Empty/Loading/Error States Use Shared Components
+
+**Decision:** Empty, loading, and error states across all pages use shared components from `components/ui/`.
+
+**Rationale:**
+- Consistent UX across the entire product — users see the same patterns everywhere
+- Shared components are easier to update (change in one place propagates everywhere)
+- LoadingSkeleton, EmptyState, ErrorState, PageLoader are generic enough to be reused
+- Specific pages can still provide custom content (icon, title, description, action) via props
+
+**Alternatives Considered:**
+- Inline empty/loading states per page — Duplication, inconsistent UX, harder to maintain
+- Only add states to critical pages — Inconsistent; users expect polish everywhere
+
+**Status:** Accepted
+
+---
+
+### DEC-039: Onboarding Banner for 0-Document Users on Dashboard
+
+**Decision:** New users (with 0 documents) see a welcome banner on the dashboard with a direct CTA to create their first document.
+
+**Rationale:**
+- Reduces time-to-first-receipt by guiding users to the create flow immediately after signup
+- The banner appears only when relevant (0 documents) — disappears automatically as users add content
+- Shows at a glance what the product does (transparency for academic work) without requiring exploration
+- Friendly emoji + copy reduces intimidation for first-time users
+
+**Alternatives Considered:**
+- Mandatory onboarding flow — Friction; users may abandon
+- Empty dashboard with just a button — Less informative, misses teaching moment
+- No onboarding guidance — Confusing for first-time users unfamiliar with the concept
+
+**Status:** Accepted

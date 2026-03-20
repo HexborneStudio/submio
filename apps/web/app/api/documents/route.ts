@@ -17,6 +17,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Track document creation (analytics scaffold)
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Analytics] document_created", { documentId: document.id });
+    }
+
     return NextResponse.json({ document }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {

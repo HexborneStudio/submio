@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@authorship-receipt/db";
 import { ShareSection } from "./ShareSection";
 import { ExportPdfButton } from "./ExportPdfButton";
+import { trackEvent } from "@/lib/analytics";
 
 export default async function ReceiptPage({
   params,
@@ -34,6 +35,11 @@ export default async function ReceiptPage({
   }
 
   const receipt = document.authorshipReceipts[0];
+
+  // Track receipt view (analytics scaffold)
+  if (receipt) {
+    trackEvent("receipt_viewed", { receiptId: receipt.id });
+  }
 
   if (!receipt) {
     // No receipt yet

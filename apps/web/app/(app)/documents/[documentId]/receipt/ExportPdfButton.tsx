@@ -31,6 +31,11 @@ export function ExportPdfButton({ receiptId }: Props) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      // Track PDF export (analytics scaffold)
+      if (process.env.NODE_ENV === "development") {
+        console.log("[Analytics] pdf_exported", { receiptId });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Export failed");
     } finally {

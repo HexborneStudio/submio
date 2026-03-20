@@ -4,36 +4,39 @@
 
 ---
 
-## TASK: Phase 10 - Admin Tools
+## TASK: Phase 12 - Hardening
 
-**Objective:** Build admin dashboard with user/receipt lookup, job inspection, audit logs, and support views.
+**Objective:** Add rate limiting, enhance file security, build storage cleanup, add monitoring hooks, environment validation, test coverage, and finalize production Docker/Nginx config.
 
 **Dependencies:**
-- Phase 9 PDF export (current phase)
+- Phase 11 Product Polish (current phase)
 
 **Expected Files to Change:**
-- `apps/admin/app/page.tsx` — Admin dashboard home
-- `apps/admin/app/users/page.tsx` — User lookup
-- `apps/admin/app/receipts/page.tsx` — Receipt lookup
-- `apps/admin/app/jobs/page.tsx` — Job inspection
-- `apps/admin/app/logs/page.tsx` — Audit log viewer
-- `apps/admin/app/support/page.tsx` — Support ticket view
-- `packages/db/prisma/schema.prisma` — Admin role check on User
+- `apps/web/src/middleware.ts` — rate limiting
+- `apps/web/src/lib/storage/` — file validation enhancements
+- `apps/worker/src/` — monitoring hooks
+- `.env.example` — environment validation
+- `infra/docker/docker-compose.yml` — production configuration
+- `infra/nginx/` — production Nginx config
+- `packages/db/prisma/schema.prisma` — potential cleanup job model
 
 **Steps:**
-1. Build admin middleware gate (requireAdmin from session)
-2. Create user lookup with document/receipt counts
-3. Create receipt lookup by ID or document
-4. Build job inspection view (status, progress, attempts)
-5. Create audit log viewer
-6. Build support logs view
+1. Add rate limiting middleware (IP-based, endpoint-specific)
+2. Enhance file upload security (magic byte validation, size hardening)
+3. Build storage cleanup job (delete orphaned files)
+4. Add monitoring hooks (structured logging, health check endpoints)
+5. Add environment variable validation at startup
+6. Add basic test coverage for critical paths
+7. Finalize production Docker/Nginx configuration
 
 **Completion Criteria:**
-- Admin can view all users and their documents
-- Admin can inspect any receipt by ID
-- Admin can view job queue status
-- Admin can view audit logs
-- Non-admin users cannot access admin routes
+- API endpoints have rate limiting
+- File uploads validated by magic bytes (not just MIME type)
+- Orphaned files cleaned up automatically
+- Worker and web app expose health check endpoints
+- All required env vars validated at startup with clear errors
+- Basic unit tests pass for critical services
+- Production docker-compose runs full stack
 
 ---
 
@@ -47,9 +50,10 @@
 6. ~~Phase 7: Receipt Generation~~ ✅ DONE
 7. ~~Phase 8: Share + Educator Review~~ ✅ DONE
 8. ~~Phase 9: PDF Export~~ ✅ DONE
-9. Phase 10: Admin Tools (current)
-10. Phase 11: Product Polish
-11. Phase 12: Hardening
+9. ~~Phase 10: Admin Tools~~ ✅ DONE
+10. ~~Phase 11: Product Polish~~ ✅ DONE
+11. Phase 12: Hardening (current)
+12. Phase 13: Post-MVP
 
 ---
 

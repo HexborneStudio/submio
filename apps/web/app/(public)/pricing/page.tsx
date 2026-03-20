@@ -1,43 +1,77 @@
+import Link from "next/link";
+
 export default function PricingPage() {
   return (
-    <main className="min-h-screen py-16">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center mb-4">Pricing</h1>
-        <p className="text-center text-muted-foreground mb-12">
-          Simple, transparent pricing for students and educators.
-        </p>
-        
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div className="p-8 border rounded-lg">
-            <h2 className="text-2xl font-bold mb-2">Free</h2>
-            <p className="text-4xl font-bold mb-6">$0</p>
-            <ul className="space-y-3 mb-8">
-              <li>✓ 3 documents per month</li>
-              <li>✓ Basic authorship receipt</li>
-              <li>✓ Share links</li>
-              <li>✓ PDF export (limited)</li>
-            </ul>
-            <a href="/signup" className="block text-center py-3 border rounded-md hover:bg-secondary">
-              Get Started
-            </a>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="text-lg font-bold">Authorship Receipt</Link>
+          <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">Sign in</Link>
+        </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto px-4 py-16">
+        <h1 className="text-3xl font-bold text-center mb-3">Simple, Transparent Pricing</h1>
+        <p className="text-gray-500 text-center mb-12">Start free. Upgrade when you need more.</p>
+
+        {/* Free Tier */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
+          <div className="p-6 border-b">
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-xl font-bold">Free</h2>
+              <div className="text-3xl font-bold">$0</div>
+            </div>
+            <p className="text-gray-500 text-sm mt-1">Forever free</p>
           </div>
-          
-          <div className="p-8 border-2 border-primary rounded-lg">
-            <h2 className="text-2xl font-bold mb-2">Pro Student</h2>
-            <p className="text-4xl font-bold mb-6">$9<span className="text-lg font-normal">/mo</span></p>
-            <ul className="space-y-3 mb-8">
-              <li>✓ Unlimited documents</li>
-              <li>✓ Full authorship receipt</li>
-              <li>✓ Unlimited share links</li>
-              <li>✓ Unlimited PDF exports</li>
-              <li>✓ Priority processing</li>
+          <div className="p-6">
+            <ul className="space-y-3">
+              {[
+                "Up to 5 document receipts per month",
+                "PDF export",
+                "Share links with educators",
+                "Email support",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2 text-sm">
+                  <span className="text-green-500 mt-0.5">✓</span>
+                  <span className="text-gray-600">{f}</span>
+                </li>
+              ))}
             </ul>
-            <a href="/signup" className="block text-center py-3 bg-primary text-primary-foreground rounded-md hover:opacity-90">
-              Get Started
-            </a>
+            <Link
+              href="/signup"
+              className="mt-6 block w-full text-center px-4 py-2 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-50"
+            >
+              Get Started Free
+            </Link>
           </div>
         </div>
+
+        {/* Features comparison */}
+        <div className="bg-white rounded-lg border p-6">
+          <h3 className="font-semibold mb-4">What&apos;s included in every receipt:</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              "Document text extraction",
+              "Citation pattern detection",
+              "Bibliography identification",
+              "Text metrics (word count, etc.)",
+              "Structural analysis",
+              "Evidence-based indicators",
+              "Confidence level",
+              "Shareable receipt link",
+            ].map((f) => (
+              <div key={f} className="flex items-center gap-2 text-sm text-gray-600">
+                <span className="text-green-500">✓</span>
+                {f}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="text-center text-gray-400 text-sm mt-8">
+          Questions? <Link href="/login" className="text-blue-600 hover:underline">Sign in to contact support</Link>
+        </p>
       </div>
-    </main>
+    </div>
   );
 }

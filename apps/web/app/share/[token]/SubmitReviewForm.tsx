@@ -38,6 +38,11 @@ export function SubmitReviewForm({ receiptId, sharedLinkId }: Props) {
 
     setSubmitted(true);
     router.refresh();
+
+    // Track educator review submission (analytics scaffold)
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Analytics] educator_review_submitted", { receiptId });
+    }
   }
 
   if (submitted) {

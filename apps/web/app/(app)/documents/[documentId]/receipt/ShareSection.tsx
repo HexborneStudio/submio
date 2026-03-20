@@ -55,6 +55,11 @@ export function ShareSection({ receiptId }: Props) {
       const url = `${window.location.origin}/share/${data.token}`;
       await navigator.clipboard.writeText(url);
       setTimeout(() => setCopiedId(null), 2000);
+
+      // Track share link creation (analytics scaffold)
+      if (process.env.NODE_ENV === "development") {
+        console.log("[Analytics] share_link_created", { receiptId });
+      }
     }
   }
 

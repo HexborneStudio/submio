@@ -104,6 +104,16 @@
 - [x] Export record tracked in existing Export model
 - [x] Owner-only access control via document ownership check
 
+### Phase 11: Product Polish ✅
+- [x] Analytics abstraction scaffold (trackEvent, trackPageView, AnalyticsEvent type)
+- [x] Shared UI components (LoadingSpinner, LoadingSkeleton, EmptyState, ErrorState, PageLoader)
+- [x] Complete rewrite of landing page (hero, how-it-works, what-is, caution, CTA, footer)
+- [x] Complete rewrite of pricing page (clean tier card, feature grid)
+- [x] Dashboard onboarding banner for 0-document users (👋 welcome card)
+- [x] Documents list empty state replaced with EmptyState component
+- [x] Analytics calls added: document_created, receipt_viewed, pdf_exported, share_link_created, educator_review_submitted
+- [x] NEXT_PUBLIC_ANALYTICS_ENABLED env var added to .env.example
+
 ---
 
 ## What Works
