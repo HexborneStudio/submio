@@ -1,6 +1,6 @@
 # Current State
 
-> Last updated: 2026-03-19
+> Last updated: 2026-03-20
 
 ## What Has Been Built
 
@@ -114,6 +114,19 @@
 - [x] Analytics calls added: document_created, receipt_viewed, pdf_exported, share_link_created, educator_review_submitted
 - [x] NEXT_PUBLIC_ANALYTICS_ENABLED env var added to .env.example
 
+### Phase 12: Hardening ✅
+- [x] Rate limiting (in-memory, IP-based, 6 endpoint-specific presets)
+- [x] File security (size validation, MIME-to-extension matching, path traversal, safe filename)
+- [x] Environment validation (Zod schema, fail-fast at startup)
+- [x] Test setup (Vitest + tests for fileSecurity and rateLimit modules)
+- [x] Production Dockerfiles (apps/web and apps/worker, node:20-alpine based)
+- [x] docker-compose.yml updated (postgres, redis, worker, web, nginx, storage volume)
+- [x] Nginx conf updated (health endpoints, clean upstream configs)
+- [x] Health check endpoint (GET /api/health with PostgreSQL SELECT 1)
+- [x] Worker structured JSON logger (replaces class-based Logger)
+- [x] Route conflict fixed (removed duplicate app/documents/ directory)
+- [x] docs/deployment.md and docs/security-hardening.md created
+
 ---
 
 ## What Works
@@ -144,10 +157,10 @@
 - No database migrations applied (schema defined but not deployed)
 - No actual email sending (magic link logged to console in dev)
 - No real authorship analysis beyond citation extraction and text metrics
-- No receipt generation (Phase 7) ✅ DONE
-- No share link generation with tokens (Phase 8) ✅ DONE
-- No PDF export (Phase 9) ✅ DONE
-- No admin functionality (placeholders only)
+- Admin tools are placeholders (Phase 10 not started)
+- No educator dashboard for reviewing submitted receipts
+- No organization/team account support
+- No storage cleanup job (orphaned files accumulate)
 
 ---
 
@@ -163,7 +176,9 @@ authorship-receipt/
 │   ├── app/api/documents/ — document CRUD, versions, enqueue
 │   ├── app/auth/callback/
 │   ├── src/lib/auth/ — config, jwt, session, magic-link
-│   ├── src/lib/storage/ — local filesystem abstraction
+│   ├── src/lib/storage/ — local filesystem abstraction + fileSecurity
+│   ├── src/middleware/rateLimit.ts — in-memory rate limiter + RATE_LIMITS presets
+│   ├── src/lib/rateLimitRoute.ts — withRateLimit() API route wrapper
 │   ├── src/lib/queue-helpers.ts — createAndEnqueueJob
 │   ├── src/components/app/AppShell.tsx
 │   └── src/middleware.ts
@@ -179,7 +194,7 @@ authorship-receipt/
 │   ├── db/prisma/schema.prisma (16 models, 12 enums)
 │   ├── shared (types, constants, zod validation)
 │   ├── analysis (4 parsers, citation heuristics, signals, receipts)
-│   └── config (3 tsconfig files)
+│   └── config (tsconfig files + src/env.ts → dist/env.js)
 ├── infra/ — docker/, nginx/
 ├── docs/ (5 docs) + project-management/ (5 files)
 ```
@@ -188,6 +203,6 @@ authorship-receipt/
 
 ## Next Priority
 
-**Phase 6: Document Parsing + Analysis V1** — Real PDF/DOCX parsing and authorship heuristics.
+**Phase 13: Post-MVP Planning** — Review what's been built, prioritize educator dashboard, organization accounts, LMS integrations, and other high-value next features.
 
 See: [next-step.md](./next-step.md)

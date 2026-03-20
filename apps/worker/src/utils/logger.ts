@@ -1,44 +1,21 @@
 /**
- * Structured logger for the worker.
+ * Structured JSON logger for the worker — production-minded.
  */
 
-type LogLevel = "debug" | "info" | "warn" | "error";
-
-interface LogContext {
-  jobId?: string;
-  documentId?: string;
-  versionId?: string;
-  [key: string]: unknown;
-}
-
-class Logger {
-  private format(level: LogLevel, message: string, ctx?: LogContext): string {
-    const timestamp = new Date().toISOString();
-    const ctxStr = ctx ? ` ${JSON.stringify(ctx)}` : "";
-    return `[${timestamp}] [${level.toUpperCase()}] ${message}${ctxStr}`;
-  }
-
-  debug(message: string, ctx?: LogContext): void {
-    if (this.isDev()) console.debug(this.format("debug", message, ctx));
-  }
-
-  info(message: string, ctx?: LogContext): void {
-    console.info(this.format("info", message, ctx));
-  }
-
-  warn(message: string, ctx?: LogContext): void {
-    console.warn(this.format("warn", message, ctx));
-  }
-
-  error(message: string, error?: unknown, ctx?: LogContext): void {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    const fullCtx = error ? { ...ctx, error: errorMsg } : ctx;
-    console.error(this.format("error", message, fullCtx));
-  }
-
-  private isDev(): boolean {
-    return process.env.NODE_ENV !== "production";
-  }
-}
-
-export const logger = new Logger();
+export const logger = {
+  info(msg: string, meta?: Record<string, unknown>) {
+    console.log(JSON.stringify({ level: "info", msg, ...meta, ts: new Date().toISOString() }));
+  },
+  warn(msg: string, meta?: Record<string, unknown>) {
+    console.warn(JSON.stringify({ level: "warn", msg, ...meta, ts: new Date().toISOString() }));
+  },
+  error(msg: string, error?: unknown, meta?: Record<string, unknown>) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error(JSON.stringify({ level: "error", msg, error: errMsg, ...meta, ts: new Date().toISOString() }));
+  },
+  debug(msg: string, meta?: Record<string, unknown>) {
+    if (process.env.NODE_ENV !== "production") {
+      console.debug(JSON.stringify({ level: "debug", msg, ...meta, ts: new Date().toISOString() }));
+    }
+  },
+};

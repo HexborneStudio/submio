@@ -760,3 +760,80 @@ None yet.
 - No onboarding guidance — Confusing for first-time users unfamiliar with the concept
 
 **Status:** Accepted
+
+---
+
+### DEC-040: In-Memory Rate Limiting for Single-Instance Deployments
+
+**Decision:** Use an in-memory Map-based rate limiter as the default implementation. Provide Redis-backed rate limiting as a production recommendation.
+
+**Rationale:**
+- Simple, zero-dependency implementation for development and single-instance deployments
+- Rate limit state is lost on restart but that's acceptable for the use case
+- Multi-instance production should use Redis (documented in security-hardening.md)
+- IP-based limiting with path-scoped keys provides adequate protection against script attacks
+
+**Alternatives Considered:**
+- Redis-based from day one — adds complexity for dev setup, requires Redis even for local dev
+- Third-party rate limiting library — adds a dependency; the implementation is simple enough to own
+
+**Status:** Accepted
+
+---
+
+### DEC-041: Fail-Fast Environment Validation at Startup
+
+**Decision:** All required environment variables are validated via Zod at startup using `validateEnv()`. The application exits immediately with a clear error message listing all missing/invalid variables.
+
+**Rationale:**
+- Prevents cryptic runtime errors from misconfigured deployments
+- Clear, actionable error messages (not just "DATABASE_URL is required")
+- Worker validates env at module import time (before connecting to Redis/Postgres)
+- Web app has `ensureEnvValid()` helper for server-side startup validation
+
+**Alternatives Considered:**
+- Validation on first use — errors appear mid-request, harder to diagnose
+- No validation — common cause of production incidents
+
+**Status:** Accepted
+
+---
+
+### DEC-042: Separate app-level and route-level rate limiting
+
+**Decision:** Rate limiting is applied at the API route level using `withRateLimit()` wrapper, not via Next.js middleware. The rate limit config presets are defined centrally.
+
+**Rationale:**
+- Next.js edge middleware runs before dynamic imports are resolved, making per-route config harder
+- `withRateLimit()` wrapper is explicit and easy to apply to specific routes
+- Config presets (RATE_LIMITS) are defined centrally for consistency
+- Middleware helper (`createRateLimitHandler`) still exists for HTTP handler wrapping
+
+**Status:** Accepted
+
+---
+
+### DEC-043: Remove Duplicate app/documents/ Route Group
+
+**Decision:** Removed the non-route-group `app/documents/` directory entirely, keeping only `app/(app)/documents/`.
+
+**Rationale:**
+- Next.js route groups `(app)` serve files at the path without the group name in the URL
+- Having both `app/documents/` and `app/(app)/documents/` creates a routing conflict where the non-group files would shadow or be shadowed by the route group
+- The `(app)` group provides the correct URL structure (`/documents/`) and should be the canonical location
+
+**Status:** Accepted
+
+---
+
+### DEC-044: Health Check Endpoint for Load Balancer Compatibility
+
+**Decision:** Added `GET /api/health` endpoint that validates database connectivity and returns `{ status: "ok", timestamp }` with HTTP 200 on success, HTTP 500 on failure.
+
+**Rationale:**
+- Kubernetes/load balancers need a liveness/readiness probe that doesn't require authentication
+- The endpoint intentionally does NOT check Redis (worker handles Redis health separately)
+- Returning 500 on DB failure signals the load balancer to stop routing traffic
+- Nginx proxies `/health` → `web:3000/api/health` for containerized deployments
+
+**Status:** Accepted

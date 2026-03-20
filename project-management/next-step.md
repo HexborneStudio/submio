@@ -4,39 +4,27 @@
 
 ---
 
-## TASK: Phase 12 - Hardening
+## TASK: Phase 13 - Post-MVP Planning
 
-**Objective:** Add rate limiting, enhance file security, build storage cleanup, add monitoring hooks, environment validation, test coverage, and finalize production Docker/Nginx config.
+**Objective:** Plan the next set of features beyond the MVP core. Review what's been built, identify the highest-leverage next features, and define the Phase 13 scope.
 
 **Dependencies:**
-- Phase 11 Product Polish (current phase)
+- Phase 12: Hardening (current phase) — completing
 
-**Expected Files to Change:**
-- `apps/web/src/middleware.ts` — rate limiting
-- `apps/web/src/lib/storage/` — file validation enhancements
-- `apps/worker/src/` — monitoring hooks
-- `.env.example` — environment validation
-- `infra/docker/docker-compose.yml` — production configuration
-- `infra/nginx/` — production Nginx config
-- `packages/db/prisma/schema.prisma` — potential cleanup job model
+**Key areas to consider:**
+1. **Educator dashboard** — educators need a way to see receipts submitted by students, track review status, flag suspicious work
+2. **Organization/team accounts** — multiple users per institution, shared settings
+3. **Institution workflows** — school-wide settings, integrations
+4. **LMS integrations** — Canvas, Blackboard, Moodle, Google Classroom
+5. **Advanced source analysis** — citation databases, plagiarism detection integration
+6. **Collaboration features** — shared documents, team analysis
+7. **Storage cleanup job** — delete orphaned uploaded files
 
 **Steps:**
-1. Add rate limiting middleware (IP-based, endpoint-specific)
-2. Enhance file upload security (magic byte validation, size hardening)
-3. Build storage cleanup job (delete orphaned files)
-4. Add monitoring hooks (structured logging, health check endpoints)
-5. Add environment variable validation at startup
-6. Add basic test coverage for critical paths
-7. Finalize production Docker/Nginx configuration
-
-**Completion Criteria:**
-- API endpoints have rate limiting
-- File uploads validated by magic bytes (not just MIME type)
-- Orphaned files cleaned up automatically
-- Worker and web app expose health check endpoints
-- All required env vars validated at startup with clear errors
-- Basic unit tests pass for critical services
-- Production docker-compose runs full stack
+1. Review current backlog items and prioritize by user value vs. implementation complexity
+2. Define scope for Phase 13 (target: 3-5 features)
+3. Create implementation plan with clear acceptance criteria
+4. Begin with highest-leverage feature
 
 ---
 
@@ -52,8 +40,8 @@
 8. ~~Phase 9: PDF Export~~ ✅ DONE
 9. ~~Phase 10: Admin Tools~~ ✅ DONE
 10. ~~Phase 11: Product Polish~~ ✅ DONE
-11. Phase 12: Hardening (current)
-12. Phase 13: Post-MVP
+11. ~~Phase 12: Hardening~~ ✅ DONE
+12. Phase 13: Post-MVP Planning (current)
 
 ---
 

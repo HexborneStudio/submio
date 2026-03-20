@@ -4,7 +4,7 @@
 
 ## NOW (Current Phase)
 
-### Phase 10: Admin Tools
+### Phase 13: Post-MVP Planning
 
 ---
 
@@ -60,14 +60,16 @@
 - [x] Add error/loading/empty states
 - [x] Set up analytics hooks
 
-### Phase 12: Hardening
-- [ ] Add rate limiting
-- [ ] Enhance file security
-- [ ] Build storage cleanup
-- [ ] Add monitoring hooks
-- [ ] Environment validation
-- [ ] Test coverage
-- [ ] Production Docker/Nginx config
+### Phase 12: Hardening ✅
+- [x] Add rate limiting (in-memory, IP-based, endpoint-specific presets)
+- [x] Enhance file security (size, MIME, extension, path traversal, safe filename)
+- [x] Add environment validation (Zod, fail-fast at startup)
+- [x] Test coverage (Vitest + fileSecurity + rateLimit tests)
+- [x] Production Docker/Nginx config (Dockerfiles, docker-compose, nginx conf)
+- [x] Health check endpoint (GET /api/health with DB connectivity check)
+- [x] Structured JSON logger (worker)
+- [x] Route conflict fixed (removed duplicate app/documents/ directory)
+- [x] Docs (deployment.md, security-hardening.md)
 
 ---
 

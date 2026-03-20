@@ -563,3 +563,72 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Analytics uses MVP console.log scaffold — ready to swap in real provider (Mixpanel, PostHog, etc.)
 - All analytics calls are no-ops in production (dev-only console.logs)
 - Loading states added as scaffold — documents list page remains a server component
+
+---
+
+## 2026-03-20
+
+### TASK 12: Hardening ✅ COMPLETE
+
+**Completed at:** 15:40 CDT
+
+**Route conflict fixed:**
+- Removed duplicate `app/documents/` directory (non-route-group) that conflicted with `app/(app)/documents/` route group
+- Next.js route groups `(app)` mean files are served at `/documents/`. The duplicate would have caused a routing conflict.
+
+**Environment validation — packages/config/src/env.ts:**
+- Created Zod schema for all environment variables (DATABASE_URL, AUTH_SECRET, REDIS_*, ADMIN_SECRET, STORAGE_*, WORKER_URL, NODE_ENV, NEXT_PUBLIC_ANALYTICS_ENABLED)
+- `validateEnv()` exits with code 1 + clear error messages if required vars are missing
+- Built to `packages/config/dist/env.js` for consumption
+- Worker has its own Zod validation in `apps/worker/src/utils/env.ts` (runs at module import time)
+
+**Rate limiting — apps/web/src/middleware/rateLimit.ts:**
+- In-memory rate limiter (Map-based) with configurable windows and limits
+- Config presets: auth (10/min), adminLogin (5/min), createDocument (20/min), shareLink (10/min), export (5/min), review (10/min)
+- `createRateLimitHandler()` for Next.js middleware wrapping
+- `withRateLimit()` helper for API route wrapping
+
+**File security — apps/web/src/lib/storage/fileSecurity.ts:**
+- `validateFile()` — size check (10MB max), extension whitelist (.pdf, .docx, .doc, .txt), MIME-to-extension validation
+- `safeFilename()` — strips path components, replaces dangerous chars with underscores
+- `isPathTraversal()` — detects `..` path traversal and absolute paths
+
+**Health endpoint — apps/web/src/app/api/health/route.ts:**
+- `GET /api/health` — runs `SELECT 1` against PostgreSQL, returns `{ status: "ok", timestamp }`
+
+**Test setup — apps/web:**
+- Vitest configured in `vitest.config.ts` with React plugin and path alias
+- `npm run test` and `npm run test:watch` scripts added to web package.json
+- Tests: `fileSecurity.test.ts` (validateFile, safeFilename, isPathTraversal), `rateLimit.test.ts` (within-limit, blocked, reset)
+- Vitest already in devDependencies (was installed before Phase 12)
+
+**Dockerfiles created:**
+- `apps/web/Dockerfile` — node:20-alpine, standalone output, production CMD
+- `apps/worker/Dockerfile` — node:20-alpine, dist output, production CMD
+
+**docker-compose.yml updated:**
+- Added `storage` named volume for persistent file storage
+- Added `ADMIN_SECRET` env var with default fallback
+- Worker and web services both reference `storage` volume
+- Separated web service with port mapping (3000:3000)
+- Full stack: postgres, redis, worker, web, nginx
+
+**Nginx conf updated — infra/nginx/conf.d/authorship-receipt.conf:**
+- Added worker health proxy (`/worker/health` → worker:3001)
+- Added `/health` proxy → web:3000/api/health
+- Removed rate limiting zones (moved to app-level rate limiting)
+- Clean upstream definitions for web and worker
+
+**Structured logger — apps/worker/src/utils/logger.ts:**
+- JSON output: `{ level, msg, ...meta, ts }`
+- Levels: info, warn, error, debug (debug only in non-production)
+- Replaces class-based Logger with plain object export
+
+**Docs created:**
+- `docs/deployment.md` — prerequisites, env vars, docker/local dev, production notes
+- `docs/security-hardening.md` — rate limits table, file security, env validation, admin access, monitoring
+
+**Config package build:**
+- Added `packages/config/tsconfig.json` for building src/ → dist/
+- Added exports for `./env` in package.json
+- Config package builds to `dist/env.js` (ESM)
