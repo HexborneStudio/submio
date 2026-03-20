@@ -1,0 +1,30 @@
+{
+  "name": "@authorship-receipt/db",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./client": "./dist/client.js",
+    "./schema": "./dist/schema.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.10.0",
+    "typescript": "^5.4.0",
+    "tsx": "^4.7.0"
+  }
+}

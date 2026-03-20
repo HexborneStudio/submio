@@ -1,0 +1,301 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  STUDENT
+  EDUCATOR
+  ADMIN
+}
+
+enum DocumentStatus {
+  DRAFT
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ShareLinkStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum ReviewStatus {
+  PENDING
+  REVIEWED
+  FLAGGED
+}
+
+// ============================================
+// CORE ENTITIES
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          UserRole  @default(STUDENT)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  documents       Document[]
+  memberships     Membership[]
+  educatorReviews EducatorReview[]
+  exports         Export[]
+  auditLogs       AuditLog[]
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   @default("school") // school, team, institution
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  memberships Membership[]
+}
+
+model Membership {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  role           String       @default("member") // admin, member
+  createdAt      DateTime     @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
+// ============================================
+// DOCUMENT ENTITIES
+// ============================================
+
+model Document {
+  id          String         @id @default(cuid())
+  userId      String
+  title       String
+  status      DocumentStatus @default(DRAFT)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions         DocumentVersion[]
+  analysisJobs     AnalysisJob[]
+  authorshipReceipt AuthorshipReceipt?
+}
+
+model DocumentVersion {
+  id         String   @id @default(cuid())
+  documentId String
+  version    Int
+  content    String?  // For pasted text
+  filePath   String?  // For uploaded files
+  fileType   String?  // docx, pdf, text
+  fileSize   Int?     // bytes
+  createdAt  DateTime @default(now())
+
+  // Relations
+  document           Document            @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  authorshipReceipt  AuthorshipReceipt?
+  analysisJob        AnalysisJob?
+
+  @@unique([documentId, version])
+}
+
+model DocumentUpload {
+  id          String   @id @default(cuid())
+  versionId   String   @unique
+  originalName String
+  storedPath  String
+  mimeType    String
+  size        Int      // bytes
+  createdAt   DateTime @default(now())
+
+  // Relations
+  version DocumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// ANALYSIS + RECEIPT ENTITIES
+// ============================================
+
+model AnalysisJob {
+  id          String    @id @default(cuid())
+  documentId  String
+  versionId   String    @unique
+  status      JobStatus @default(PENDING)
+  progress    Int       @default(0)
+  result      Json?     // Analysis result data
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  document Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  version DocumentVersion  @relation(fields: [versionId], references: [id], onDelete: Cascade)
+}
+
+model AuthorshipReceipt {
+  id          String   @id @default(cuid())
+  documentId  String   @unique
+  versionId   String   @unique
+  receiptData Json     // Structured receipt data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  document           Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  version            DocumentVersion    @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  sharedLinks        SharedLink[]
+  educatorReviews    EducatorReview[]
+  exports            Export[]
+}
+
+model ReceiptSection {
+  id        String   @id @default(cuid())
+  receiptId String
+  type      String   // overview, timeline, citations, etc.
+  title     String
+  content   Json     // Section-specific data
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  // Relations
+  receipt AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@unique([receiptId, type])
+}
+
+// ============================================
+// CITATION ENTITIES
+// ============================================
+
+model Citation {
+  id         String   @id @default(cuid())
+  versionId  String
+  type       String   // web, book, journal, other
+  raw        String   // Raw citation text
+  title      String?
+  authors    String[]
+  year       String?
+  url        String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  version       DocumentVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  sourceReferences SourceReference[]
+}
+
+model SourceReference {
+  id         String   @id @default(cuid())
+  citationId String
+  text       String   // The referenced text excerpt
+  startPos   Int?     // Position in document
+  endPos     Int?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  citation Citation @relation(fields: [citationId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// SHARE + REVIEW ENTITIES
+// ============================================
+
+model SharedLink {
+  id          String         @id @default(cuid())
+  receiptId   String
+  token       String         @unique
+  status      ShareLinkStatus @default(ACTIVE)
+  expiresAt   DateTime?
+  createdAt   DateTime       @default(now())
+  lastAccessedAt DateTime?
+
+  // Relations
+  receipt AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+}
+
+model EducatorReview {
+  id         String       @id @default(cuid())
+  receiptId  String
+  educatorId String?       // Optional: if educator has an account
+  educatorEmail String?   // For anonymous educators
+  status     ReviewStatus @default(PENDING)
+  notes      String?      // Review notes
+  reviewedAt DateTime?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // Relations
+  receipt  AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  educator User?             @relation(fields: [educatorId], references: [id], onDelete: SetNull)
+}
+
+// ============================================
+// EXPORT ENTITIES
+// ============================================
+
+model Export {
+  id        String   @id @default(cuid())
+  receiptId String
+  userId    String
+  format    String   @default("pdf")
+  filePath  String
+  fileSize  Int
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+
+  // Relations
+  receipt AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// AUDIT + LOGGING
+// ============================================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // e.g., "receipt.view", "document.create"
+  entity    String?  // e.g., "Document", "Receipt"
+  entityId  String?
+  metadata  Json?    // Additional context
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}

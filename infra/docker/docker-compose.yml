@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      target: runner
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/authorship_receipt
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      target: runner
+    command: node apps/worker/dist/index.js
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/authorship_receipt
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - WORKER_PORT=3001
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=authorship_receipt
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

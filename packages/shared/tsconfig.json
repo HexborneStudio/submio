@@ -1,0 +1,9 @@
+{
+  "extends": "@authorship-receipt/config/tsconfig.node.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "."
+  },
+  "include": ["*.ts", "types/**/*.ts", "constants/**/*.ts", "validation/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
