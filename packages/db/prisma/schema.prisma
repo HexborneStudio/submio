@@ -95,6 +95,7 @@ enum ReviewStatus {
   PENDING
   REVIEWED
   FLAGGED
+  NEEDS_FOLLOW_UP
 }
 
 // Export format/status
@@ -131,6 +132,7 @@ model User {
   educatorReviews EducatorReview[]
   exports         Export[]
   auditLogs       AuditLog[]
+  sharedLinks     SharedLink[]
 
   // Indexes
   @@index([email])
@@ -218,9 +220,8 @@ model DocumentVersion {
   document          Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
   uploads          DocumentUpload[]
   analysisJob      AnalysisJob?
-  authorshipReceipt AuthorshipReceipt?
   citations        Citation[]
-  sourceReferences SourceReference[]
+  receipts         AuthorshipReceipt[]
 
   @@unique([documentId, version])
   @@index([documentId])
@@ -250,7 +251,7 @@ model DocumentUpload {
 model AnalysisJob {
   id          String           @id @default(cuid())
   documentId  String
-  versionId   String
+  versionId   String           @unique
   status      AnalysisJobStatus @default(PENDING)
   progress    Int              @default(0) // 0-100
   result      Json?            // Structured analysis result
@@ -359,15 +360,20 @@ model SourceReference {
 // Token is a cryptographically random string; signed URLs in Phase 3
 model SharedLink {
   id             String          @id @default(cuid())
-  receiptId      String
   token          String          @unique
   status         SharedLinkStatus @default(ACTIVE)
   expiresAt      DateTime?
+  receiptId      String
+  createdById    String
+  revokedAt      DateTime?
   createdAt      DateTime        @default(now())
-  lastAccessedAt DateTime?
+  updatedAt      DateTime        @updatedAt
 
-  receipt AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  receipt         AuthorshipReceipt  @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  createdBy       User               @relation(fields: [createdById], references: [id])
+  educatorReviews EducatorReview[]
 
+  @@index([token])
   @@index([receiptId])
   @@index([status])
 }
@@ -376,19 +382,22 @@ model SharedLink {
 // Educators can review anonymously (via email link) or with an account
 model EducatorReview {
   id             String       @id @default(cuid())
+  reviewerName   String
+  reviewerEmail  String?
+  status         ReviewStatus @default(PENDING)
+  note           String       @db.Text
   receiptId      String
   educatorId     String?      // Set if educator has an Authorship Receipt account
-  educatorEmail  String?      // Used for anonymous educators
-  status         ReviewStatus @default(PENDING)
-  notes          String?      @db.Text // Free-text review notes
-  reviewedAt     DateTime?
+  sharedLinkId   String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  receipt  AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
-  educator User?             @relation(fields: [educatorId], references: [id], onDelete: SetNull)
+  receipt    AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  educator   User?            @relation(fields: [educatorId], references: [id], onDelete: SetNull)
+  sharedLink SharedLink?      @relation(fields: [sharedLinkId], references: [id])
 
   @@index([receiptId])
+  @@index([sharedLinkId])
   @@index([status])
 }
 

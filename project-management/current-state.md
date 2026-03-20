@@ -86,6 +86,15 @@
 - [x] Worker updated to assemble + persist receipt after analysis
 - [x] Document detail page updated with processing status indicator
 
+### Phase 8: Share Links + Educator Review ✅
+- [x] Share link service (createShareLink, validateShareToken, revokeShareLink, getShareLinksForReceipt)
+- [x] Educator review service (submitReview, getReviewsForReceipt)
+- [x] Share link API routes (POST create, GET list, POST revoke, GET validate, POST review)
+- [x] ShareSection client component with create/copy/revoke UI
+- [x] Full shared receipt page (server component, public, no auth)
+- [x] SubmitReviewForm client component for educator reviews
+- [x] Prisma schema: SharedLink and EducatorReview models updated with proper relations
+
 ---
 
 ## What Works
@@ -117,7 +126,7 @@
 - No actual email sending (magic link logged to console in dev)
 - No real authorship analysis beyond citation extraction and text metrics
 - No receipt generation (Phase 7) ✅ DONE
-- No share link generation with tokens (Phase 8)
+- No share link generation with tokens (Phase 8) ✅ DONE
 - No PDF export (Phase 9)
 - No admin functionality (placeholders only)
 

@@ -589,3 +589,74 @@ None yet.
 - Disclaimer in hover/tooltip — Too subtle for a legal-safety message
 
 **Status:** Accepted
+
+---
+
+### DEC-031: Share Tokens Use Cryptographically Random 256-bit Values
+
+**Decision:** Share link tokens are generated using Node.js `crypto.randomBytes(32)` encoded as base64url, producing 43 characters with 256 bits of entropy.
+
+**Rationale:**
+- Tokens must be unguessable even with partial knowledge of the creator
+- cuid() is sequential and predictable — not suitable for security tokens
+- 256 bits exceeds the 128-bit minimum recommended for URL-safe tokens
+- base64url encoding avoids URL-unsafe characters (+, /, =)
+- No need for signed/JWT tokens at MVP stage — token is the secret
+
+**Alternatives Considered:**
+- cuid() — Sequential, predictable, exposes receipt enumeration
+- UUID v4 — Only 122 bits of entropy, slightly weaker
+- JWT signed tokens — More complexity, requires key management, no benefit at MVP
+
+**Status:** Accepted
+
+---
+
+### DEC-032: Share Token Validation Returns 404 for All Invalid States
+
+**Decision:** When a share token is invalid, revoked, or expired, the API returns HTTP 404 with no information about which state applies.
+
+**Rationale:**
+- Any information distinguishing "revoked" from "expired" from "invalid" is metadata that could aid an attacker
+- Security through no information leakage: all invalid tokens look identical
+- The shared receipt page itself shows different user-facing messages (revoked/expired/invalid) but only after server-side validation confirms the token format is valid
+- The educator review form is public, so any feedback about token validity would be an information leak
+
+**Alternatives Considered:**
+- Return 403 for revoked, 410 for expired, 404 for invalid — Leaks information about token lifecycle
+- Return same message for all cases in API but different messages in UI — Extra complexity with no security benefit
+
+**Status:** Accepted
+
+---
+
+### DEC-033: Educator Reviews Are Public (No Auth Required)
+
+**Decision:** The educator review form on shared receipt pages requires no authentication. Any visitor with the share link can submit a review.
+
+**Rationale:**
+- Reduces friction for educators reviewing student work
+- Educator identity (name + optional email) is captured in the review itself
+- The share link creator can revoke access at any time, limiting who can review
+- No account creation required for educators
+- Reviewer email is optional — educators can remain pseudonymous
+
+**Alternatives Considered:**
+- Require educator account — Adds friction, requires invite flow
+- Magic link for educators — Same friction as student flow, no benefit
+
+**Status:** Accepted
+
+---
+
+### DEC-034: ReviewStatus Includes NEEDS_FOLLOW_UP (Not Just FLAGGED)
+
+**Decision:** The `ReviewStatus` enum includes both `FLAGGED` (from prior schema) and `NEEDS_FOLLOW_UP` as distinct statuses.
+
+**Rationale:**
+- `FLAGGED` implies something is wrong; `NEEDS_FOLLOW_UP` is more neutral and actionable
+- "Needs follow-up" is language educators actually use in academic review workflows
+- Both statuses coexist: FLAGGED for serious concerns, NEEDS_FOLLOW_UP for routine questions
+- Preserves backwards compatibility with any code that checks for FLAGGED
+
+**Status:** Accepted

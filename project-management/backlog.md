@@ -4,12 +4,10 @@
 
 ## NOW (Current Phase)
 
-### Phase 8: Share + Educator Review
-- [ ] Create signed share links
-- [ ] Build public receipt view
-- [ ] Implement educator review form
-- [ ] Add review status tracking
-- [ ] Create review notes
+### Phase 9: PDF Export
+- [ ] Build printable receipt view
+- [ ] Implement PDF generation
+- [ ] Create export history
 
 ---
 
@@ -20,8 +18,13 @@
 - [x] Create receipt assembly service
 - [x] Design receipt UI sections
 - [x] Build receipt view page
-- [x] Add share link generation (share link is Phase 8)
-- [x] Add educator review form (educator review is Phase 8)
+
+### Phase 8: Share Links + Educator Review ✅
+- [x] Create signed share links (256-bit cryptographically random tokens)
+- [x] Build public receipt view (unauthenticated, token-gated)
+- [x] Implement educator review form (public, no auth required)
+- [x] Add review status tracking (PENDING, REVIEWED, FLAGGED, NEEDS_FOLLOW_UP)
+- [x] Create review notes display on shared receipt page
 
 ### Phase 6: Document Parsing + Analysis V1 ✅
 - [x] Install mammoth (docx) and pdf-parse (pdf) libraries
@@ -35,13 +38,6 @@
 ---
 
 ## NEXT (Queued)
-
-### Phase 8: Share + Educator Review
-- [ ] Create signed share links
-- [ ] Build public receipt view
-- [ ] Implement educator review form
-- [ ] Add review status tracking
-- [ ] Create review notes
 
 ### Phase 9: PDF Export
 - [ ] Build printable receipt view

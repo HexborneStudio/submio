@@ -91,13 +91,17 @@ Text excerpt linked to a citation.
 
 ### SharedLink
 Signed share link to a receipt.
-- `id`, `receiptId`, `token` (unique), `status`, `expiresAt`, `lastAccessedAt`
-- Token is cryptographically random; signed URLs in Phase 3
+- `id`, `token` (unique, cryptographically random), `status`, `expiresAt`, `receiptId`, `createdById`, `revokedAt`, `createdAt`, `updatedAt`
+- Token is 256-bit random (base64url), never guessable
+- `createdById` → User who created the link
+- Reverse: `SharedLink.educatorReviews` → EducatorReview[]
 
 ### EducatorReview
 Educator feedback on a shared receipt.
-- `id`, `receiptId`, `educatorId` (optional), `educatorEmail` (for anonymous), `status`, `notes`, `reviewedAt`
-- Supports both authenticated educators and anonymous email-based review
+- `id`, `reviewerName`, `reviewerEmail` (optional), `status`, `note`, `receiptId`, `educatorId` (optional), `sharedLinkId` (optional), `createdAt`, `updatedAt`
+- Supports both authenticated educators and anonymous reviewers
+- `status`: PENDING, REVIEWED, FLAGGED, NEEDS_FOLLOW_UP
+- `sharedLinkId` links review to the specific share link used
 
 ### Export
 PDF/export artifact tracking.

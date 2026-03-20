@@ -4,35 +4,35 @@
 
 ---
 
-## TASK: Phase 8 - Share + Educator Review
+## TASK: Phase 9 - PDF Export
 
-**Objective:** Build share link generation, public receipt view, and educator review form.
+**Objective:** Build printable receipt view and PDF generation with export history.
 
 **Dependencies:**
-- Phase 7 receipt generation (receipts are persisted and viewable)
-- Phase 4 document ingestion (documents can be created with content)
+- Phase 7 receipt generation (receipts are rendered)
+- Phase 8 share links (receipt is shareable)
 
 **Expected Files to Change:**
-- `packages/db/prisma/schema.prisma` — Check SharedLink + EducatorReview models
-- `apps/web/src/lib/share.ts` — Share link generation service
-- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — Add "Share" button
-- `apps/web/app/share/[token]/page.tsx` — Public read-only receipt view
-- `apps/web/app/api/share/route.ts` — POST to create share link
-- `apps/worker/src/services/reviewService.ts` — Educator review persistence
-- `apps/web/app/api/review/route.ts` — POST to submit educator review
+- `packages/db/prisma/schema.prisma` — Check Export model exists
+- `apps/web/src/lib/exportService.ts` — PDF generation service
+- `apps/web/app/(app)/documents/[documentId]/receipt/export/route.ts` — Trigger export
+- `apps/web/app/(app)/documents/[documentId]/receipt/print/page.tsx` — Printable receipt view
+- `apps/web/app/api/share/[token]/print/page.tsx` — Printable shared receipt
+- `apps/worker/src/services/exportPdfService.ts` — Worker-side PDF generation
+- `apps/worker/src/jobs/exportReceiptJob.ts` — Export queue job
 
 **Steps:**
-1. Create share link generation with signed token
-2. Build public receipt view page (unauthenticated, token-gated)
-3. Implement educator review form with notes and status
-4. Add review status tracking to receipt view
-5. Create review notes display on public receipt
+1. Build printable receipt page (print CSS, no nav)
+2. Implement PDF generation (puppeteer or @react-pdf/renderer)
+3. Create export history tracking (Export model)
+4. Wire export through worker queue
+5. Add download button to receipt page
 
 **Completion Criteria:**
-- User can generate a share link for any available receipt
-- Share link opens public receipt view without authentication
-- Educator can submit review with notes and status (Verified, Concerns, Rejected)
-- Review appears on the shared receipt view
+- User can download receipt as PDF
+- Shared receipt can be downloaded as PDF
+- Export history is tracked per receipt per user
+- PDF is stored and retrievable
 
 ---
 
@@ -44,8 +44,8 @@
 4. ~~Phase 5: Analysis Job System~~ ✅ DONE
 5. ~~Phase 6: Document Parsing + Analysis V1~~ ✅ DONE
 6. ~~Phase 7: Receipt Generation~~ ✅ DONE
-7. Phase 8: Share + Educator Review (current)
-8. Phase 9: PDF Export
+7. ~~Phase 8: Share + Educator Review~~ ✅ DONE
+8. Phase 9: PDF Export (current)
 9. Phase 10: Admin Tools
 10. Phase 11: Product Polish
 11. Phase 12: Hardening

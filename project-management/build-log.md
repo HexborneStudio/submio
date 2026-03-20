@@ -413,3 +413,55 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - `receiptData` JSON on `AuthorshipReceipt` stores the full `AssembledReceipt` for audit/export
 - Disclaimer appears on every receipt (evidence-based, not definitive)
 - Confidence level (low/medium/high) drives badge color in UI
+
+---
+
+## 2026-03-20
+
+### TASK 8: Share Links + Educator Review ✅ COMPLETE
+
+**Completed at:** ~08:36 CDT
+
+**Prisma schema changes (packages/db/prisma/schema.prisma):**
+- Added `NEEDS_FOLLOW_UP` to `ReviewStatus` enum
+- Updated `SharedLink` model: added `createdById` (→ User), `revokedAt`, `updatedAt`; added `@@index([token])`; removed `lastAccessedAt`
+- Updated `EducatorReview` model: replaced `notes`/`educatorEmail`/`reviewedAt` with `reviewerName`, `reviewerEmail`, `note`, `sharedLinkId`; added relation to `SharedLink`
+- Added `sharedLinks SharedLink[]` reverse relation to `User` model
+- Added `receipts AuthorshipReceipt[]` to `DocumentVersion` (reverse of one-to-many receipt relation)
+- Removed `@unique` from `AuthorshipReceipt.versionId` (one-to-many per version)
+- Added `@unique` to `AnalysisJob.versionId` (one-to-one per version)
+- Removed orphan `sourceReferences` field from `DocumentVersion`
+- Named relations resolved: `AuthorshipReceipt.version` and `DocumentVersion.receipts`
+
+**Files created:**
+- `apps/web/src/lib/shareService.ts` — createShareLink, validateShareToken, revokeShareLink, getShareLinksForReceipt
+- `apps/web/src/lib/reviewService.ts` — submitReview, getReviewsForReceipt
+- `apps/web/src/app/api/share/create/route.ts` — POST (create link), GET (list links)
+- `apps/web/src/app/api/share/revoke/route.ts` — POST (revoke link)
+- `apps/web/src/app/api/share/[token]/route.ts` — GET (validate token, return receipt)
+- `apps/web/src/app/api/share/review/route.ts` — POST (submit educator review)
+- `apps/web/app/(app)/documents/[documentId]/receipt/ShareSection.tsx` — Client component with create/copy/revoke UI
+- `apps/web/app/share/[token]/SubmitReviewForm.tsx` — Client review form component
+
+**Files updated:**
+- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — Added ShareSection import and rendering before disclaimer
+- `apps/web/app/share/[token]/page.tsx` — Completely replaced with full server component showing receipt + review form + existing reviews
+- `docs/database-spec.md` — Updated SharedLink and EducatorReview sections
+
+**API endpoints:**
+- `POST /api/share/create` — Auth required. Creates cryptographically random share token (256-bit base64url). Returns {token, url, expiresAt}.
+- `GET /api/share/create?receiptId=xxx` — Auth required. Lists existing share links for receipt.
+- `POST /api/share/revoke` — Auth required. Revokes a share link (only creator can revoke).
+- `GET /api/share/[token]` — Public. Validates token, returns receipt data or 404.
+- `POST /api/share/review` — Public. Submits educator review (no auth required for educators).
+
+**Security model:**
+- Share tokens: 256-bit cryptographically random (base64url encoding) — never guessable
+- Revocation: Only the link creator can revoke
+- Expiration: Optional (null = never expires)
+- Token validation: Returns 404 for invalid, revoked, or expired tokens (no information leakage)
+- Educator reviews: Public form — no authentication required for educators
+
+**Known pre-existing issues (not introduced by Phase 8):**
+- Duplicate Next.js routes: `app/(app)/documents/[documentId]/page.tsx` vs `app/documents/[documentId]/page.tsx`
+- Module resolution: `@authorship-receipt/db` prisma export uses `.js` extension

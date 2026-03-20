@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@authorship-receipt/db";
+import { ShareSection } from "./ShareSection";
 
 export default async function ReceiptPage({
   params,
@@ -195,6 +196,9 @@ export default async function ReceiptPage({
           </div>
         );
       })}
+
+      {/* Share with Educator */}
+      <ShareSection receiptId={receipt.id} />
 
       {/* Disclaimer */}
       <div className="bg-gray-100 border border-gray-200 rounded-lg p-4">
