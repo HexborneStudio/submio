@@ -4,15 +4,13 @@
 
 ## NOW (Current Phase)
 
-### Phase 4: Document Ingestion
-- [ ] Create document creation page
-- [ ] Create document detail page
-- [ ] Build upload flow (file input → validate → store → create version)
-- [ ] Build paste flow (text input → create version)
-- [ ] Add file validation (type + size)
-- [ ] Create document/version API routes
-- [ ] Set up storage helper (local dev, S3 prod)
-- [ ] Update document status on version creation
+### Phase 5: Analysis Job System
+- [ ] Set up Redis + BullMQ queues
+- [ ] Build worker job runner
+- [ ] Create job status tracking
+- [ ] Implement retry logic with exponential backoff
+- [ ] Add failure handling
+- [ ] Wire version creation API to dispatch analyzeDocument job
 
 ---
 
@@ -31,21 +29,13 @@
 - [ ] Implement retry logic
 - [ ] Add failure handling
 
-### Phase 4: Document Ingestion
-- [ ] Create document API routes
-- [ ] Implement file upload flow
-- [ ] Implement paste text flow
-- [ ] Set up storage integration
-- [ ] Add file validation
-- [ ] Create version tracking
-
 ### Phase 5: Analysis Job System
-- [ ] Set up Redis
-- [ ] Configure BullMQ queues
+- [ ] Set up Redis + BullMQ queues
 - [ ] Build worker job runner
 - [ ] Create job status tracking
-- [ ] Implement retry logic
+- [ ] Implement retry logic with exponential backoff
 - [ ] Add failure handling
+- [ ] Wire version creation API to dispatch analyzeDocument job
 
 ---
 

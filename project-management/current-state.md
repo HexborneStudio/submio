@@ -46,6 +46,17 @@
 - [x] AuthSecret generated and added to .env
 - [x] jose dependency added to web package
 
+### Phase 4: Document Ingestion ✅
+- [x] Document creation page with paste/upload mode selector
+- [x] Document detail page with version list
+- [x] File upload flow with MIME type + size validation (.docx, .pdf, 10MB max)
+- [x] Paste text flow storing content in DocumentVersion.content
+- [x] Storage abstraction (local filesystem, swappable to S3)
+- [x] Document/version API routes (POST, GET, PATCH)
+- [x] Version creation API (handles both multipart upload + JSON paste)
+- [x] Document status transitions to PROCESSING on version creation
+- [x] Shared types synced with Prisma schema (UploadType enum)
+
 ---
 
 ## What Works
@@ -76,8 +87,7 @@
 - No share link generation with tokens
 - No PDF export
 - No admin functionality (placeholders only)
-- No actual storage integration
-- No document creation/upload flow (Phase 4)
+- No Redis/BullMQ job queue (Phase 5)
 
 ---
 

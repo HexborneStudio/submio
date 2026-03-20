@@ -356,3 +356,44 @@ None yet.
 - File-based queue — More complexity for MVP
 
 **Status:** Accepted
+
+---
+
+## 2026-03-20 (Phase 4)
+
+### DEC-019: Ingestion via Versioned Document Model
+
+**Decision:** All document content (uploaded files and pasted text) is stored as a DocumentVersion linked to a Document.
+
+**Rationale:**
+- Documents have multiple versions over time — each upload/paste creates a new immutable version
+- Version stores the content (paste) or a reference to stored file (upload)
+- Allows comparing authorship indicators across versions
+- Clear audit trail of document history
+- Receipts link to a specific version, not the document
+
+**Alternatives Considered:**
+- Store all content in a single Document record — loses version history, harder to track changes
+- Store only latest version — no historical comparison, breaks receipt reproducibility
+
+**Status:** Accepted
+
+---
+
+### DEC-020: Storage Abstraction with Local Default
+
+**Decision:** A storage abstraction layer (`saveFile`, `deleteFile`, `getFileUrl`) with local filesystem as the default development implementation.
+
+**Rationale:**
+- Interface is designed to swap to S3/GCS/Azure Blob without changing any call sites
+- Local dev requires no cloud credentials — just set `STORAGE_LOCAL_DIR`
+- `getFileUrl` normalizes the returned URL so routing works identically in dev and prod
+- Production storage vars are optional until S3 is configured
+- Uploaded files get unique names (`timestamp-random.ext`) to avoid collisions and path exposure
+
+**Alternatives Considered:**
+- Use S3 directly in dev — Requires cloud credentials for every developer
+- Use base64 data URIs — Works for small files but poor for 10MB documents
+- Store files in database as BLOBs — Bad for large files, performance degrades
+
+**Status:** Accepted

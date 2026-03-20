@@ -230,3 +230,48 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - AUTH_SECRET added to .env (generated)
 - .env.example updated
 - jose@^5.2.0 added to apps/web/package.json
+
+---
+
+## 2026-03-20
+
+### TASK 4: Document Ingestion ✅ COMPLETE
+
+**Completed at:** 01:30 CDT
+
+**Shared types updated — packages/shared/types/index.ts:**
+- `DocumentVersion` interface now has `content: string | null` and `fileType: UploadType | null`
+- `FileType` replaced with `UploadType` enum matching Prisma schema values (`FILE_UPLOAD`, `PASTE`)
+- Removed `filePath` and `fileSize` fields (those live in DocumentUpload)
+
+**Validation schemas added — packages/shared/validation/index.ts:**
+- `createDocumentSchema` — title (1-500 chars), optional description
+- `uploadFileSchema` — documentId + optional title
+- `pasteContentSchema` — optional documentId, title, content
+- `ALLOWED_MIME_TYPES` — pdf + docx only
+- `MAX_FILE_SIZE` — 10MB
+- `validateFileType()` and `validateFileSize()` helpers
+
+**Storage abstraction — apps/web/src/lib/storage/:**
+- `index.ts` — re-exports from local
+- `local.ts` — local filesystem implementation with `saveFile()`, `deleteFile()`, `getFileUrl()`
+- Unique filenames: `timestamp-random.hex.ext`
+- Configurable via `STORAGE_LOCAL_DIR` env var (defaults to `/tmp/authorship-receipt/uploads`)
+- Interface designed to swap to S3 without changing call sites
+
+**API routes created:**
+- `POST /api/documents` — create document (auth-gated, zod validation)
+- `GET /api/documents` — list documents with pagination
+- `GET /api/documents/[documentId]` — get single document with versions + uploads
+- `PATCH /api/documents/[documentId]` — update document title
+- `POST /api/documents/[documentId]/versions` — create version via upload OR paste
+  - Multipart/form-data → file upload path → DocumentUpload record
+  - application/json → paste text path → stores content in DocumentVersion.content
+  - Both paths update document status to PROCESSING
+
+**Pages created/updated:**
+- `app/(app)/documents/new/page.tsx` — mode selector (paste vs upload), full forms
+- `app/(app)/documents/[documentId]/page.tsx` — document detail with version list, status badge, analysis placeholder
+
+**Environment:**
+- `.env.example` updated with `STORAGE_LOCAL_DIR`, `STORAGE_S3_BUCKET`, `STORAGE_S3_REGION`

@@ -17,7 +17,7 @@ export interface User {
 
 // Document types
 export type DocumentStatus = "DRAFT" | "PROCESSING" | "READY" | "FAILED";
-export type FileType = "docx" | "pdf" | "text";
+export type UploadType = "FILE_UPLOAD" | "PASTE";
 
 export interface Document {
   id: string;
@@ -33,9 +33,18 @@ export interface DocumentVersion {
   documentId: string;
   version: number;
   content: string | null;
-  filePath: string | null;
-  fileType: FileType | null;
-  fileSize: number | null;
+  fileType: UploadType | null;
+  createdAt: Date;
+}
+
+export interface DocumentUpload {
+  id: string;
+  versionId: string;
+  originalName: string;
+  storedPath: string;
+  mimeType: string;
+  size: number;
+  fileType: UploadType;
   createdAt: Date;
 }
 
