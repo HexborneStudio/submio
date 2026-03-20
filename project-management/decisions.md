@@ -163,3 +163,99 @@
 ## Superseded Decisions
 
 None yet.
+
+---
+
+## 2026-03-19 (Phase 2)
+
+### DEC-009: PostgreSQL as Primary Database
+
+**Decision:** Use PostgreSQL as the relational database.
+
+**Rationale:**
+- Robust, mature, well-supported
+- Excellent JSONB support for semi-structured receipt data
+- Strong indexing capabilities for audit log queries
+- Works excellently with Prisma
+- Easy Docker setup for local dev
+
+**Alternatives Considered:**
+- MySQL — Less flexible JSON support
+- SQLite — Not suitable for production multi-user workloads
+- MongoDB — Less structured, harder to enforce relations
+
+**Status:** Accepted
+
+---
+
+### DEC-010: Prisma as ORM
+
+**Decision:** Use Prisma as the ORM for database access.
+
+**Rationale:**
+- Best-in-class TypeScript integration with generated types
+- Excellent migration tooling
+- Type-safe queries with autocomplete
+- Clean, readable schema syntax
+- Works well across multiple apps in the monorepo
+
+**Alternatives Considered:**
+- Drizzle — Lighter but less mature migration tooling
+- TypeORM — More boilerplate, less ergonomic
+- Raw SQL — No type safety, high error risk
+
+**Status:** Accepted
+
+---
+
+### DEC-011: Multi-Tenant Structure from Day One
+
+**Decision:** Include organizations and memberships in the schema even though MVP is student-first.
+
+**Rationale:**
+- Adding multi-tenancy later is painful (DEC-011)
+- Organizations and memberships are lightweight now
+- Enables Phase 3 institution dashboard without schema migration
+- No performance cost for null/missing data
+
+**Alternatives Considered:**
+- Add later — More painful migration, potential data loss
+- Single-tenant only — Limits long-term scalability
+
+**Status:** Accepted
+
+---
+
+### DEC-012: Version-Level Receipt History
+
+**Decision:** A document version can have multiple AuthorshipReceipts over time.
+
+**Rationale:**
+- Users may want to re-analyze after edits
+- Version is immutable content snapshot; receipt is a separate event
+- Allows tracking "v1 receipt" vs "v2 receipt" after re-analysis
+- No reason to restrict this relationship
+
+**Alternatives Considered:**
+- One receipt per version — Too restrictive
+- Receipts linked only to document — Loses version precision
+
+**Status:** Accepted
+
+---
+
+### DEC-013: Citation Linked to Version, Not Receipt
+
+**Decision:** Citation model links directly to DocumentVersion, not through AuthorshipReceipt.
+
+**Rationale:**
+- Citations are properties of the document content itself
+- Receipts come and go; citations persist with the version
+- Simpler queries for citation analysis
+- Can reconstruct any receipt's citation state from version citations
+
+**Alternatives Considered:**
+- Citation → Receipt — Would duplicate citations across receipts for same version
+- Citation → Document — Loses version precision
+
+**Status:** Accepted

@@ -26,6 +26,14 @@
 - [x] .gitignore created
 - [x] README.md created
 
+### Phase 2: Data Model ✅ (COMPLETE — not yet applied)
+- [x] packages/db restructured into src/ layout
+- [x] Prisma schema finalized with 15 models and 11 enums
+- [x] docs/database-spec.md created
+- [x] prisma/seed.ts placeholder created
+- [x] package.json scripts updated
+- [x] Schema NOT yet applied to a live database
+
 ---
 
 ## What Works
@@ -34,7 +42,7 @@
 - TypeScript configured across all packages
 - Next.js 15 apps scaffolded with App Router
 - Tailwind CSS configured for web/admin apps
-- Prisma schema with all core entities defined (15+ models)
+- Prisma schema with all core entities defined (15 models, 11 enums)
 - All MVP pages created as placeholders
 - Worker has stub implementations for jobs and services
 - Analysis package has stubs for parsing and heuristics
@@ -46,7 +54,7 @@
 ## What Does Not Exist Yet
 
 - No actual authentication implemented (no login/signup logic)
-- No database migrations run (schema defined but not deployed)
+- No database migrations applied (schema defined but not deployed)
 - No actual document parsing (stubs only)
 - No real authorship analysis (stubs only)
 - No receipt generation logic
@@ -65,21 +73,24 @@ authorship-receipt/
 ├── apps/admin (Next.js 15, Tailwind) - 6 pages
 ├── apps/worker (BullMQ, Redis) - 5 services + 2 jobs
 ├── packages/
-│   ├── db (Prisma schema with 15+ models)
+│   ├── db/
+│   │   ├── prisma/schema.prisma (15 models, 11 enums)
+│   │   ├── prisma/seed.ts
+│   │   ├── src/index.ts
+│   │   └── src/client.ts
 │   ├── shared (types, constants, zod validation)
 │   ├── analysis (4 parsers, 3 heuristic modules)
 │   └── config (3 tsconfig files)
 ├── infra/
 │   ├── docker/ (Dockerfile, docker-compose)
 │   └── nginx/ (nginx.conf, site config)
-└── docs/ + project-management/
-    - 3 docs + 5 management files
+├── docs/ (4 docs) + project-management/ (5 files)
 ```
 
 ---
 
 ## Next Priority
 
-**Phase 2: Data Model** — Run Prisma migrations and set up database.
+**Phase 3: Auth + App Shell** — Scaffold auth flow and protected dashboard.
 
 See: [next-step.md](./next-step.md)

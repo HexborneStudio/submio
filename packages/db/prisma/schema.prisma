@@ -1,5 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ============================================================
+// Authorship Receipt — Prisma Schema
+// Phase 2: Data Model
+//
+// Notes:
+// - MVP-focused: no billing, no LMS, no SSO, no cheating features
+// - Multi-tenant-ready via organizations + memberships
+// - All timestamps are UTC
+// - IDs use cuid() for portability
+// ============================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -10,16 +18,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
+// ============================================================
 // ENUMS
-// ============================================
+// ============================================================
 
+// User roles
 enum UserRole {
   STUDENT
   EDUCATOR
   ADMIN
 }
 
+// Organization membership roles
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+// Document lifecycle status
 enum DocumentStatus {
   DRAFT
   PROCESSING
@@ -27,35 +44,84 @@ enum DocumentStatus {
   FAILED
 }
 
-enum JobStatus {
+// Analysis job lifecycle
+enum AnalysisJobStatus {
   PENDING
   PROCESSING
   COMPLETED
   FAILED
 }
 
-enum ShareLinkStatus {
+// Receipt lifecycle
+// A document/version can have multiple receipts over time (v1, v2, etc.)
+enum ReceiptStatus {
+  GENERATING
+  AVAILABLE
+  EXPIRED
+  REVOKED
+}
+
+// Uploaded file type
+enum UploadType {
+  FILE_UPLOAD
+  PASTE
+}
+
+// Citation type classification
+enum CitationType {
+  WEB
+  BOOK
+  JOURNAL
+  OTHER
+}
+
+// Source reference type
+enum SourceReferenceType {
+  DIRECT_QUOTE
+  PARAPHRASE
+  CITATION
+  WEB_SOURCE
+}
+
+// Shared link status
+enum SharedLinkStatus {
   ACTIVE
   REVOKED
   EXPIRED
 }
 
+// Educator review status
 enum ReviewStatus {
   PENDING
   REVIEWED
   FLAGGED
 }
 
-// ============================================
-// CORE ENTITIES
-// ============================================
+// Export format/status
+enum ExportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
 
+// ============================================================
+// CORE ENTITIES
+// ============================================================
+
+// User — students, educators, and admins
+// Auth is magic-link based; no passwords stored
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String?
   role          UserRole  @default(STUDENT)
+
+  // Auth
   emailVerified DateTime?
+
+  // Timestamps
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -65,36 +131,47 @@ model User {
   educatorReviews EducatorReview[]
   exports         Export[]
   auditLogs       AuditLog[]
+
+  // Indexes
+  @@index([email])
+  @@index([role])
 }
 
+// Organization — schools, teams, institutions
+// Lightly used in MVP; enables Phase 3 multi-tenancy
 model Organization {
   id        String   @id @default(cuid())
   name      String
-  type      String   @default("school") // school, team, institution
+  type      String   @default("school") // school | team | institution
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
   memberships Membership[]
+
+  @@index([type])
 }
 
+// Membership — user to organization relationship
 model Membership {
-  id             String       @id @default(cuid())
+  id             String         @id @default(cuid())
   userId         String
   organizationId String
-  role           String       @default("member") // admin, member
-  createdAt      DateTime     @default(now())
+  role           MembershipRole @default(MEMBER)
+  createdAt      DateTime       @default(now())
 
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, organizationId])
+  @@index([organizationId])
 }
 
-// ============================================
+// ============================================================
 // DOCUMENT ENTITIES
-// ============================================
+// ============================================================
 
+// Document — top-level user document record
 model Document {
   id          String         @id @default(cuid())
   userId      String
@@ -104,198 +181,246 @@ model Document {
   updatedAt   DateTime       @updatedAt
 
   // Relations
-  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  versions         DocumentVersion[]
-  analysisJobs     AnalysisJob[]
-  authorshipReceipt AuthorshipReceipt?
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions          DocumentVersion[]
+  analysisJobs      AnalysisJob[]
+  authorshipReceipt AuthorshipReceipt[]
+
+  @@index([userId])
+  @@index([status])
 }
 
+// DocumentVersion — version snapshot of content
+// Supports both pasted text (content) and uploaded files (uploads relation)
 model DocumentVersion {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   documentId String
   version    Int
-  content    String?  // For pasted text
-  filePath   String?  // For uploaded files
-  fileType   String?  // docx, pdf, text
-  fileSize   Int?     // bytes
-  createdAt  DateTime @default(now())
+  content    String?   // Populated for paste flow
+  fileType   UploadType? // Populated for upload flow
+  createdAt  DateTime  @default(now())
 
   // Relations
-  document           Document            @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  authorshipReceipt  AuthorshipReceipt?
-  analysisJob        AnalysisJob?
+  document          Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  uploads          DocumentUpload[]
+  analysisJob      AnalysisJob?
+  authorshipReceipt AuthorshipReceipt?
+  citations        Citation[]
+  sourceReferences SourceReference[]
 
   @@unique([documentId, version])
+  @@index([documentId])
 }
 
+// DocumentUpload — original uploaded file metadata
+// Links uploaded files to a version; file content stored in object storage
 model DocumentUpload {
-  id          String   @id @default(cuid())
-  versionId   String   @unique
+  id           String      @id @default(cuid())
+  versionId    String      @unique
   originalName String
-  storedPath  String
-  mimeType    String
-  size        Int      // bytes
-  createdAt   DateTime @default(now())
+  storedPath   String      // Object storage path
+  mimeType     String
+  size         Int         // bytes
+  fileType     UploadType  @default(FILE_UPLOAD)
+  createdAt    DateTime   @default(now())
 
-  // Relations
   version DocumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
 }
 
-// ============================================
+// ============================================================
 // ANALYSIS + RECEIPT ENTITIES
-// ============================================
+// ============================================================
 
+// AnalysisJob — queued and completed document processing jobs
+// One version can have multiple analysis jobs over time (retry, re-analysis)
 model AnalysisJob {
-  id          String    @id @default(cuid())
+  id          String           @id @default(cuid())
   documentId  String
-  versionId   String    @unique
-  status      JobStatus @default(PENDING)
-  progress    Int       @default(0)
-  result      Json?     // Analysis result data
+  versionId   String
+  status      AnalysisJobStatus @default(PENDING)
+  progress    Int              @default(0) // 0-100
+  result      Json?            // Structured analysis result
   error       String?
   startedAt   DateTime?
   completedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
-  // Relations
   document Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  version DocumentVersion  @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  version  DocumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([versionId])
+  @@index([status])
 }
 
+// AuthorshipReceipt — canonical generated receipt for a document version
+// A version can have multiple receipts over its lifetime (v1, v2, re-analysis)
 model AuthorshipReceipt {
-  id          String   @id @default(cuid())
-  documentId  String   @unique
-  versionId   String   @unique
-  receiptData Json     // Structured receipt data
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String        @id @default(cuid())
+  documentId  String
+  versionId   String
+  receiptData Json          // Full structured receipt payload
+  status      ReceiptStatus @default(GENERATING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   // Relations
-  document           Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  version            DocumentVersion    @relation(fields: [versionId], references: [id], onDelete: Cascade)
-  sharedLinks        SharedLink[]
-  educatorReviews    EducatorReview[]
-  exports            Export[]
+  document         Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  version          DocumentVersion    @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  receiptSections  ReceiptSection[]
+  sharedLinks      SharedLink[]
+  educatorReviews  EducatorReview[]
+  exports          Export[]
+
+  @@index([documentId])
+  @@index([versionId])
+  @@index([status])
 }
 
+// ReceiptSection — structured section within a receipt
+// e.g. timeline, citation-summary, authorship-indicators, etc.
 model ReceiptSection {
-  id        String   @id @default(cuid())
-  receiptId String
-  type      String   // overview, timeline, citations, etc.
-  title     String
-  content   Json     // Section-specific data
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  receiptId  String
+  type       String   // section identifier: overview | timeline | citations | ...
+  title      String
+  content    Json     // Section-specific structured data
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
 
-  // Relations
   receipt AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
 
   @@unique([receiptId, type])
+  @@index([receiptId])
 }
 
-// ============================================
+// ============================================================
 // CITATION ENTITIES
-// ============================================
+// ============================================================
 
+// Citation — extracted citations from a document version
+// TODO: link to AuthorshipReceipt once citation extraction is more mature
 model Citation {
-  id         String   @id @default(cuid())
-  versionId  String
-  type       String   // web, book, journal, other
-  raw        String   // Raw citation text
-  title      String?
-  authors    String[]
-  year       String?
-  url        String?
-  createdAt  DateTime @default(now())
+  id        String       @id @default(cuid())
+  versionId String
+  type      CitationType @default(OTHER)
+  raw       String       // Raw citation text as it appears
+  title     String?
+  authors   String[]     // Extracted author names
+  year      String?
+  url       String?
+  createdAt DateTime    @default(now())
 
-  // Relations
-  version       DocumentVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  version         DocumentVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
   sourceReferences SourceReference[]
+
+  @@index([versionId])
+  @@index([type])
 }
 
+// SourceReference — specific text excerpt referenced by a citation
+// Captures where in the document a source was used
 model SourceReference {
-  id         String   @id @default(cuid())
-  citationId String
-  text       String   // The referenced text excerpt
-  startPos   Int?     // Position in document
-  endPos     Int?
-  createdAt  DateTime @default(now())
+  id              String           @id @default(cuid())
+  citationId      String
+  type            SourceReferenceType @default(CITATION)
+  text            String           // The quoted/referenced text excerpt
+  startPos        Int?             // Character offset in source document
+  endPos          Int?
+  createdAt       DateTime         @default(now())
 
-  // Relations
   citation Citation @relation(fields: [citationId], references: [id], onDelete: Cascade)
+
+  @@index([citationId])
 }
 
-// ============================================
+// ============================================================
 // SHARE + REVIEW ENTITIES
-// ============================================
+// ============================================================
 
+// SharedLink — signed, time-limited access link to a receipt
+// Token is a cryptographically random string; signed URLs in Phase 3
 model SharedLink {
-  id          String         @id @default(cuid())
-  receiptId   String
-  token       String         @unique
-  status      ShareLinkStatus @default(ACTIVE)
-  expiresAt   DateTime?
-  createdAt   DateTime       @default(now())
+  id             String          @id @default(cuid())
+  receiptId      String
+  token          String          @unique
+  status         SharedLinkStatus @default(ACTIVE)
+  expiresAt      DateTime?
+  createdAt      DateTime        @default(now())
   lastAccessedAt DateTime?
 
-  // Relations
   receipt AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+  @@index([status])
 }
 
+// EducatorReview — educator feedback on a shared receipt
+// Educators can review anonymously (via email link) or with an account
 model EducatorReview {
-  id         String       @id @default(cuid())
-  receiptId  String
-  educatorId String?       // Optional: if educator has an account
-  educatorEmail String?   // For anonymous educators
-  status     ReviewStatus @default(PENDING)
-  notes      String?      // Review notes
-  reviewedAt DateTime?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id             String       @id @default(cuid())
+  receiptId      String
+  educatorId     String?      // Set if educator has an Authorship Receipt account
+  educatorEmail  String?      // Used for anonymous educators
+  status         ReviewStatus @default(PENDING)
+  notes          String?      @db.Text // Free-text review notes
+  reviewedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
-  // Relations
   receipt  AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
   educator User?             @relation(fields: [educatorId], references: [id], onDelete: SetNull)
+
+  @@index([receiptId])
+  @@index([status])
 }
 
-// ============================================
+// ============================================================
 // EXPORT ENTITIES
-// ============================================
+// ============================================================
 
+// Export — PDF and other export artifacts
+// Tracks export history per receipt per user
 model Export {
-  id        String   @id @default(cuid())
-  receiptId String
-  userId    String
-  format    String   @default("pdf")
-  filePath  String
-  fileSize  Int
-  expiresAt DateTime?
-  createdAt DateTime @default(now())
+  id         String       @id @default(cuid())
+  receiptId  String
+  userId     String
+  format     String       @default("pdf")
+  status     ExportStatus @default(PENDING)
+  filePath   String       // Object storage path
+  fileSize   Int?         // bytes
+  expiresAt  DateTime?
+  createdAt  DateTime     @default(now())
 
-  // Relations
   receipt AuthorshipReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
   user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+  @@index([userId])
+  @@index([status])
 }
 
-// ============================================
+// ============================================================
 // AUDIT + LOGGING
-// ============================================
+// ============================================================
 
+// AuditLog — sensitive action and system event log
+// Captures user actions, admin actions, and system events for accountability
 model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String?
-  action    String   // e.g., "receipt.view", "document.create"
-  entity    String?  // e.g., "Document", "Receipt"
-  entityId  String?
-  metadata  Json?    // Additional context
-  ipAddress String?
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String?  // Nil for system-initiated events
+  action     String   // e.g. "receipt.view" | "document.create" | "admin.user.ban"
+  entity     String?  // e.g. "Document" | "Receipt" | "User"
+  entityId   String?
+  metadata   Json?    // Additional context (request ID, IP, user agent, etc.)
+  ipAddress  String?
+  createdAt  DateTime @default(now())
 
-  // Relations
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([action])
+  @@index([entity, entityId])
   @@index([createdAt])
 }

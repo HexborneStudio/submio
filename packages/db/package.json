@@ -2,29 +2,37 @@
   "name": "@authorship-receipt/db",
   "version": "0.1.0",
   "private": true,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "description": "Database package — Prisma schema, client, and generated types",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./client": "./dist/client.js",
-    "./schema": "./dist/schema.js"
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./client": {
+      "import": "./src/client.ts",
+      "types": "./src/client.ts"
+    }
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "prisma generate",
+    "dev": "prisma generate --watch",
+    "clean": "rm -rf node_modules/.prisma",
     "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
+    "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "clean": "rm -rf dist"
+    "db:validate": "prisma validate"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0"
   },
   "devDependencies": {
     "prisma": "^5.10.0",
-    "typescript": "^5.4.0",
-    "tsx": "^4.7.0"
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
   }
 }

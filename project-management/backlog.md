@@ -4,25 +4,32 @@
 
 ## NOW (Current Phase)
 
-### Phase 2: Data Model
-- [ ] Copy .env.example to .env and configure
-- [ ] Run npm install
-- [ ] Generate Prisma client
-- [ ] Run initial database migration
-- [ ] Verify database connection
-- [ ] Seed placeholder data
+### Phase 3: Auth + App Shell
+- [ ] Install auth dependencies
+- [ ] Create auth API routes for magic link
+- [ ] Implement email sending (mock in MVP)
+- [ ] Add session management
+- [ ] Create auth middleware
+- [ ] Update dashboard with real data
+- [ ] Add user menu / sign-out
+- [ ] Gate admin routes by role
 
 ---
 
 ## NEXT (Queued)
 
-### Phase 3: Auth + App Shell
-- [ ] Implement magic link auth
-- [ ] Create login/signup pages
-- [ ] Set up protected routes
-- [ ] Build dashboard shell
-- [ ] Add user settings
-- [ ] Scaffold admin auth gate
+### Phase 2 (Prerequisite — apply schema)
+- [ ] Apply schema to database (npm run db:push)
+- [ ] Generate Prisma client
+- [ ] Verify connection
+
+### Phase 4: Document Ingestion
+- [ ] Create document API routes
+- [ ] Implement file upload flow
+- [ ] Implement paste text flow
+- [ ] Set up storage integration
+- [ ] Add file validation
+- [ ] Create version tracking
 
 ### Phase 4: Document Ingestion
 - [ ] Create document API routes
