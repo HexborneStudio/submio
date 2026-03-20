@@ -1,5 +1,5 @@
 /**
- * Analysis job processor — Phase 6: Real parsing + analysis.
+ * Analysis job processor — Phase 7: Analysis + Receipt Generation.
  */
 
 import { Job } from "bullmq";
@@ -14,14 +14,15 @@ import {
   updateDocumentStatus,
   getJobForProcessing,
 } from "../services/jobLifecycleService.js";
-import { analyzeDocumentVersion } from "@authorship-receipt/analysis";
+import { persistReceipt } from "../services/receiptService.js";
+import { analyzeDocumentVersion, assembleReceipt } from "@authorship-receipt/analysis";
 
 export async function processAnalyzeDocumentJob(
   job: Job<AnalysisJobData>
 ): Promise<void> {
   const { jobId, documentId, versionId } = job.data;
 
-  logger.info("Starting analysis job", { jobId, documentId, versionId });
+  logger.info("Starting analysis + receipt job", { jobId, documentId, versionId });
 
   let jobRecord: { maxAttempts: number } | null = null;
 
@@ -30,13 +31,12 @@ export async function processAnalyzeDocumentJob(
     await markJobStarted(jobId);
     await updateDocumentStatus(documentId, "PROCESSING");
 
-    // Load job + version data from DB
-    jobRecord = (await getJobForProcessing(jobId)) as { maxAttempts: number } | null;
+    // Load job + version data
     const jobData = await getJobForProcessing(jobId);
-
     if (!jobData) {
       throw new Error(`AnalysisJob ${jobId} not found in database`);
     }
+    jobRecord = jobData as { maxAttempts: number };
 
     const version = jobData.version;
 
@@ -76,8 +76,8 @@ export async function processAnalyzeDocumentJob(
     await updateJobProgress(jobId, 20);
     await job.updateProgress(20);
 
-    // Run the real analysis pipeline
-    const result = await analyzeDocumentVersion({
+    // ---- PHASE 6: Run analysis ----
+    const analysisResult = await analyzeDocumentVersion({
       versionId: version.id,
       content: version.content || undefined,
       storedPath: storedPath || undefined,
@@ -85,32 +85,47 @@ export async function processAnalyzeDocumentJob(
       originalName,
     });
 
-    // Progress: 90%
-    await updateJobProgress(jobId, 90);
-    await job.updateProgress(90);
+    // Progress: 70%
+    await updateJobProgress(jobId, 70);
+    await job.updateProgress(70);
 
-    if (result.status === "failed") {
-      throw new Error(result.error || "Analysis returned failed status");
+    if (analysisResult.status === "failed") {
+      throw new Error(analysisResult.error || "Analysis returned failed status");
     }
 
+    // ---- PHASE 7: Assemble receipt ----
+    const receipt = assembleReceipt(documentId, version.id, analysisResult);
+
+    // Progress: 85%
+    await updateJobProgress(jobId, 85);
+    await job.updateProgress(85);
+
+    // ---- Persist receipt ----
+    const receiptId = await persistReceipt(documentId, version.id, receipt);
+
+    logger.info("Receipt persisted", { jobId, receiptId });
+
+    // Progress: 95%
+    await updateJobProgress(jobId, 95);
+    await job.updateProgress(95);
+
     // Mark complete
-    await markJobCompleted(jobId, result);
+    await markJobCompleted(jobId, { analysis: analysisResult, receiptId });
     await updateDocumentStatus(documentId, "READY");
 
-    logger.info("Job completed", { jobId, documentId, versionId });
+    logger.info("Job completed with receipt", { jobId, documentId, versionId, receiptId });
+
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     const attempts = await incrementJobAttempts(jobId);
 
     logger.error("Job failed", error, { jobId, documentId, versionId, attempts });
 
-    // If we've exhausted retries, mark as permanently failed
     if (attempts >= (jobRecord?.maxAttempts || 3)) {
       await markJobFailed(jobId, errorMessage);
       await updateDocumentStatus(documentId, "FAILED");
     }
 
-    // Re-throw so BullMQ can handle retry
-    throw error;
+    throw error; // Re-throw for BullMQ retry
   }
 }

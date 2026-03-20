@@ -66,6 +66,11 @@ export default async function DocumentDetailPage({
               View Receipt
             </Link>
           )}
+          {document.status === "PROCESSING" && (
+            <span className="px-4 py-2 bg-yellow-100 text-yellow-800 text-sm rounded-md">
+              Processing...
+            </span>
+          )}
           <Link
             href={`/documents/${document.id}/upload`}
             className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50"

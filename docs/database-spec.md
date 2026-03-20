@@ -180,6 +180,23 @@ EducatorReview → User? (nullable for anonymous educators)
 
 ---
 
+### Receipt Storage
+
+Structured receipt data is stored across two models:
+
+**AuthorshipReceipt** stores the top-level receipt:
+- `receiptData` (JSON) — Full `AssembledReceipt` payload from `packages/analysis`
+- `status` — GENERATING | AVAILABLE | EXPIRED | REVOKED
+
+**ReceiptSection** stores individual sections:
+- `type` — section identifier (overview | parsing | citations | etc.)
+- `title` — human-readable section title
+- `content` (JSON) — Full section payload including items, warnings, notes
+
+No schema changes were required — existing models handle receipt storage.
+
+---
+
 ## Migration Commands
 
 ```bash

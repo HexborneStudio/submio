@@ -78,6 +78,14 @@
 - [x] Analysis result stored in AnalysisJob.result (JSON)
 - [x] TypeScript compilation successful for analysis package
 
+### Phase 7: Receipt Generation ✅
+- [x] Receipt assembly package (buildReceiptSummary, buildReceiptSections, assembleReceipt)
+- [x] 8 receipt sections (overview, parsing, text-metrics, citations, sources, structural, confidence, processing)
+- [x] Receipt persistence service (persistReceipt, getReceiptForVersion, getLatestReceiptForDocument)
+- [x] Receipt page UI with confidence badge, warnings, notes, and disclaimer
+- [x] Worker updated to assemble + persist receipt after analysis
+- [x] Document detail page updated with processing status indicator
+
 ---
 
 ## What Works
@@ -108,7 +116,7 @@
 - No database migrations applied (schema defined but not deployed)
 - No actual email sending (magic link logged to console in dev)
 - No real authorship analysis beyond citation extraction and text metrics
-- No receipt generation (Phase 7)
+- No receipt generation (Phase 7) ✅ DONE
 - No share link generation with tokens (Phase 8)
 - No PDF export (Phase 9)
 - No admin functionality (placeholders only)
@@ -122,6 +130,7 @@ authorship-receipt/
 ├── apps/web (Next.js 15, Tailwind)
 │   ├── app/(public)/ — landing, pricing, privacy, terms
 │   ├── app/(app)/ — dashboard, documents, settings (auth-gated)
+│   ├── app/(app)/documents/[documentId]/ — document detail + receipt page
 │   ├── app/api/auth/ — login, signup, callback, logout, me
 │   ├── app/api/documents/ — document CRUD, versions, enqueue
 │   ├── app/auth/callback/
@@ -134,14 +143,14 @@ authorship-receipt/
 ├── apps/worker (BullMQ, Redis)
 │   ├── src/utils/ — env.ts, logger.ts
 │   ├── src/queues/ — BullMQ analysisQueue
-│   ├── src/services/ — jobLifecycleService, existing services
-│   ├── src/jobs/ — analyzeDocumentJob (placeholder), exportReceiptJob
+│   ├── src/services/ — jobLifecycleService, receiptService
+│   ├── src/jobs/ — analyzeDocumentJob (analysis + receipt), exportReceiptJob
 │   ├── src/routes/ — enqueue (HTTP endpoint)
 │   └── src/http-server.ts — native Node.js HTTP server
 ├── packages/
 │   ├── db/prisma/schema.prisma (16 models, 12 enums)
 │   ├── shared (types, constants, zod validation)
-│   ├── analysis (4 parsers, 3 heuristic stubs)
+│   ├── analysis (4 parsers, citation heuristics, signals, receipts)
 │   └── config (3 tsconfig files)
 ├── infra/ — docker/, nginx/
 ├── docs/ (5 docs) + project-management/ (5 files)

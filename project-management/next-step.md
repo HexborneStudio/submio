@@ -4,36 +4,35 @@
 
 ---
 
-## TASK: Phase 7 - Receipt Generation
+## TASK: Phase 8 - Share + Educator Review
 
-**Objective:** Build the receipt data model, receipt assembly service, and receipt UI sections.
+**Objective:** Build share link generation, public receipt view, and educator review form.
 
 **Dependencies:**
-- Phase 6 analysis pipeline running (document parsing, citation extraction)
+- Phase 7 receipt generation (receipts are persisted and viewable)
 - Phase 4 document ingestion (documents can be created with content)
-- Phase 5 job system (worker can process analysis jobs)
 
 **Expected Files to Change:**
-- `packages/db/prisma/schema.prisma` — Add `AuthorshipReceipt` and `ReceiptSection` models
-- `packages/analysis/src/services/assembleReceiptService.ts` — Build structured receipt data
-- `apps/worker/src/services/assembleReceiptService.ts` — Call analysis signals → receipt data
-- `apps/web/app/(app)/receipt/[receiptId]/page.tsx` — Receipt view page
-- `apps/web/app/share/[token]/page.tsx` — Public share view page
-- `apps/worker/src/jobs/generateReceiptJob.ts` — Receipt generation job processor
+- `packages/db/prisma/schema.prisma` — Check SharedLink + EducatorReview models
+- `apps/web/src/lib/share.ts` — Share link generation service
+- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — Add "Share" button
+- `apps/web/app/share/[token]/page.tsx` — Public read-only receipt view
+- `apps/web/app/api/share/route.ts` — POST to create share link
+- `apps/worker/src/services/reviewService.ts` — Educator review persistence
+- `apps/web/app/api/review/route.ts` — POST to submit educator review
 
 **Steps:**
-1. Finalize `AuthorshipReceipt` and `ReceiptSection` Prisma models (already in schema)
-2. Build receipt assembly service that transforms `AnalysisResult` into receipt sections
-3. Design receipt UI sections: overview, authorship signals, citations, sources, originality
-4. Create receipt view page with all sections
-5. Add share link generation and public receipt view
-6. Add educator review form
+1. Create share link generation with signed token
+2. Build public receipt view page (unauthenticated, token-gated)
+3. Implement educator review form with notes and status
+4. Add review status tracking to receipt view
+5. Create review notes display on public receipt
 
 **Completion Criteria:**
-- Documents with processed versions show a complete receipt
-- Receipt includes: overview, authorship indicators, citation list, source references
-- Educator can review and annotate a shared receipt
-- Share link provides public read-only access
+- User can generate a share link for any available receipt
+- Share link opens public receipt view without authentication
+- Educator can submit review with notes and status (Verified, Concerns, Rejected)
+- Review appears on the shared receipt view
 
 ---
 
@@ -44,8 +43,8 @@
 3. ~~Phase 4: Document Ingestion~~ ✅ DONE
 4. ~~Phase 5: Analysis Job System~~ ✅ DONE
 5. ~~Phase 6: Document Parsing + Analysis V1~~ ✅ DONE
-6. Phase 7: Receipt Generation (current)
-7. Phase 8: Share + Educator Review
+6. ~~Phase 7: Receipt Generation~~ ✅ DONE
+7. Phase 8: Share + Educator Review (current)
 8. Phase 9: PDF Export
 9. Phase 10: Admin Tools
 10. Phase 11: Product Polish

@@ -4,17 +4,24 @@
 
 ## NOW (Current Phase)
 
-### Phase 7: Receipt Generation
-- [ ] Build receipt data model (AuthorshipReceipt + ReceiptSection)
-- [ ] Create receipt assembly service
-- [ ] Design receipt UI sections
-- [ ] Build receipt view page
-- [ ] Add share link generation
-- [ ] Add educator review form
+### Phase 8: Share + Educator Review
+- [ ] Create signed share links
+- [ ] Build public receipt view
+- [ ] Implement educator review form
+- [ ] Add review status tracking
+- [ ] Create review notes
 
 ---
 
 ## DONE
+
+### Phase 7: Receipt Generation ✅
+- [x] Build receipt data model (AuthorshipReceipt + ReceiptSection)
+- [x] Create receipt assembly service
+- [x] Design receipt UI sections
+- [x] Build receipt view page
+- [x] Add share link generation (share link is Phase 8)
+- [x] Add educator review form (educator review is Phase 8)
 
 ### Phase 6: Document Parsing + Analysis V1 ✅
 - [x] Install mammoth (docx) and pdf-parse (pdf) libraries
@@ -28,14 +35,6 @@
 ---
 
 ## NEXT (Queued)
-
-### Phase 7: Receipt Generation
-- [ ] Build receipt data model (AuthorshipReceipt + ReceiptSection)
-- [ ] Create receipt assembly service
-- [ ] Design receipt UI sections
-- [ ] Build receipt view page
-- [ ] Add share link generation
-- [ ] Add educator review form
 
 ### Phase 8: Share + Educator Review
 - [ ] Create signed share links

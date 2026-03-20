@@ -513,3 +513,79 @@ None yet.
 - Use a "todo" comment instead of runnable code — Can't verify job infrastructure until Phase 6
 
 **Status:** Accepted
+
+---
+
+## 2026-03-20 (Phase 7)
+
+### DEC-027: Receipt Assembly in Analysis Package
+
+**Decision:** Receipt assembly logic (`buildReceiptSummary`, `buildReceiptSections`, `assembleReceipt`) lives in `packages/analysis/src/receipts/` rather than in the worker.
+
+**Rationale:**
+- Keeps analysis logic centralized in one package
+- Enables future use cases (preview receipt before persisting, receipt diffing)
+- Worker only needs to call `assembleReceipt()` and `persistReceipt()` — clean separation
+- Receipt shape is defined by the analysis package, not the persistence layer
+
+**Alternatives Considered:**
+- Receipt assembly in worker service — Tighter coupling, harder to test in isolation
+- Receipt assembly in web app — Worker needs to know receipt shape before persisting
+
+**Status:** Accepted
+
+---
+
+### DEC-028: Dual Storage: Full Receipt + Individual Sections
+
+**Decision:** Store both the complete `AssembledReceipt` JSON in `AuthorshipReceipt.receiptData` AND individual `ReceiptSection` records in `ReceiptSection` table.
+
+**Rationale:**
+- `receiptData` JSON provides full audit trail and export capability (complete snapshot)
+- `ReceiptSection` records enable flexible, section-by-section rendering in the UI
+- Section-level storage allows future partial updates (re-analyze just citations section)
+- Both are derived from the same data at write time — no duplication of business logic
+
+**Alternatives Considered:**
+- Store only JSON — Simpler but harder to query sections individually
+- Store only sections — Requires reconstructing the full receipt for exports
+- Store sections in separate receipt-specific tables — Over-engineering for current needs
+
+**Status:** Accepted
+
+---
+
+### DEC-029: Ordered Sections via sortOrder Column
+
+**Decision:** `ReceiptSection` uses an integer `sortOrder` column to define display order rather than relying on array order in the JSON.
+
+**Rationale:**
+- Explicit `sortOrder` is simpler to query and render (ORDER BY sortOrder ASC)
+- Allows adding/removing sections without re-serializing the full JSON
+- Future section additions can be slotted in without renumbering (e.g., insert at position 3.5)
+- Consistent with how database-ordered lists are handled elsewhere in the system
+
+**Alternatives Considered:**
+- Array order in JSON — Fragile, requires re-reading full JSON to render correctly
+- Enum for section order — More type-safe but requires schema change to add sections
+
+**Status:** Accepted
+
+---
+
+### DEC-030: Receipt Disclaimer Always Visible
+
+**Decision:** The evidence-based receipt disclaimer is displayed on every receipt view and printed/exported receipt.
+
+**Rationale:**
+- Core principle from DEC-007: receipts are evidence-based indicators, not definitive judgments
+- Educator and student users must see the disclaimer prominently on every view
+- Disclaimer appears in: summary block, confidence section (yellow caution box), and footer disclaimer box
+- Builds trust and sets correct expectations about what the tool does and does not claim
+
+**Alternatives Considered:**
+- Disclaimer only on export — Students might not see it before sharing
+- Disclaimer only once on first view — Important context should always be visible
+- Disclaimer in hover/tooltip — Too subtle for a legal-safety message
+
+**Status:** Accepted

@@ -366,3 +366,50 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - `apps/worker/package.json`, `apps/web/package.json`, `apps/admin/package.json` all updated
 
 **Note:** `pdf-parse` has no @types package; created `src/pdf-parse.d.ts` with manual type declarations.
+
+---
+
+## 2026-03-20
+
+### TASK 7: Receipt Generation ✅ COMPLETE
+
+**Completed at:** ~08:20 CDT
+
+**Files created:**
+
+`packages/analysis/src/receipts/` (new directory):
+- `buildReceiptSummary.ts` — `ReceiptSummary` interface + `buildReceiptSummary()` function
+- `buildReceiptSections.ts` — `ReceiptSection` interface + `buildReceiptSections()` with 8 section builders (overview, parsing, text-metrics, citations, sources, structural, confidence, processing)
+- `assembleReceipt.ts` — `AssembledReceipt` interface + `assembleReceipt()` combining summary + sections with disclaimer
+- `index.ts` — barrel export
+
+`packages/analysis/src/index.ts` (created):
+- Exports `analyzeDocumentVersion` and all receipts exports
+
+`apps/worker/src/services/receiptService.ts` (new):
+- `persistReceipt()` — creates `AuthorshipReceipt` + ordered `ReceiptSection` records
+- `getReceiptForVersion()` — fetch receipt by version
+- `getLatestReceiptForDocument()` — fetch latest receipt for document
+
+`apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` (new):
+- Server component rendering full receipt UI
+- Shows confidence badge, summary block, all sections, warnings, notes, disclaimer
+- Graceful empty state when no receipt exists
+
+**Worker updates:**
+- `apps/worker/src/jobs/analyzeDocumentJob.ts` — Phase 7 full replacement
+  - Progress: 10% → 20% (load) → 70% (analysis) → 85% (receipt assembly) → 95% (persist) → 100% (complete)
+  - Calls `assembleReceipt()` + `persistReceipt()` after successful analysis
+  - Result stored as `{ analysis, receiptId }`
+
+**Web app updates:**
+- `apps/web/app/(app)/documents/[documentId]/page.tsx` — Added PROCESSING status indicator in header button area
+
+**Docs updates:**
+- `docs/database-spec.md` — Added "Receipt Storage" section after Indexes
+
+**Key decisions:**
+- Receipt sections stored separately in `ReceiptSection` table for flexible rendering
+- `receiptData` JSON on `AuthorshipReceipt` stores the full `AssembledReceipt` for audit/export
+- Disclaimer appears on every receipt (evidence-based, not definitive)
+- Confidence level (low/medium/high) drives badge color in UI
