@@ -4,35 +4,36 @@
 
 ---
 
-## TASK: Phase 9 - PDF Export
+## TASK: Phase 10 - Admin Tools
 
-**Objective:** Build printable receipt view and PDF generation with export history.
+**Objective:** Build admin dashboard with user/receipt lookup, job inspection, audit logs, and support views.
 
 **Dependencies:**
-- Phase 7 receipt generation (receipts are rendered)
-- Phase 8 share links (receipt is shareable)
+- Phase 9 PDF export (current phase)
 
 **Expected Files to Change:**
-- `packages/db/prisma/schema.prisma` — Check Export model exists
-- `apps/web/src/lib/exportService.ts` — PDF generation service
-- `apps/web/app/(app)/documents/[documentId]/receipt/export/route.ts` — Trigger export
-- `apps/web/app/(app)/documents/[documentId]/receipt/print/page.tsx` — Printable receipt view
-- `apps/web/app/api/share/[token]/print/page.tsx` — Printable shared receipt
-- `apps/worker/src/services/exportPdfService.ts` — Worker-side PDF generation
-- `apps/worker/src/jobs/exportReceiptJob.ts` — Export queue job
+- `apps/admin/app/page.tsx` — Admin dashboard home
+- `apps/admin/app/users/page.tsx` — User lookup
+- `apps/admin/app/receipts/page.tsx` — Receipt lookup
+- `apps/admin/app/jobs/page.tsx` — Job inspection
+- `apps/admin/app/logs/page.tsx` — Audit log viewer
+- `apps/admin/app/support/page.tsx` — Support ticket view
+- `packages/db/prisma/schema.prisma` — Admin role check on User
 
 **Steps:**
-1. Build printable receipt page (print CSS, no nav)
-2. Implement PDF generation (puppeteer or @react-pdf/renderer)
-3. Create export history tracking (Export model)
-4. Wire export through worker queue
-5. Add download button to receipt page
+1. Build admin middleware gate (requireAdmin from session)
+2. Create user lookup with document/receipt counts
+3. Create receipt lookup by ID or document
+4. Build job inspection view (status, progress, attempts)
+5. Create audit log viewer
+6. Build support logs view
 
 **Completion Criteria:**
-- User can download receipt as PDF
-- Shared receipt can be downloaded as PDF
-- Export history is tracked per receipt per user
-- PDF is stored and retrievable
+- Admin can view all users and their documents
+- Admin can inspect any receipt by ID
+- Admin can view job queue status
+- Admin can view audit logs
+- Non-admin users cannot access admin routes
 
 ---
 
@@ -45,8 +46,8 @@
 5. ~~Phase 6: Document Parsing + Analysis V1~~ ✅ DONE
 6. ~~Phase 7: Receipt Generation~~ ✅ DONE
 7. ~~Phase 8: Share + Educator Review~~ ✅ DONE
-8. Phase 9: PDF Export (current)
-9. Phase 10: Admin Tools
+8. ~~Phase 9: PDF Export~~ ✅ DONE
+9. Phase 10: Admin Tools (current)
 10. Phase 11: Product Polish
 11. Phase 12: Hardening
 

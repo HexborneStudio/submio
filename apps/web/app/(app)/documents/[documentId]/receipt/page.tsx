@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@authorship-receipt/db";
 import { ShareSection } from "./ShareSection";
+import { ExportPdfButton } from "./ExportPdfButton";
 
 export default async function ReceiptPage({
   params,
@@ -199,6 +200,15 @@ export default async function ReceiptPage({
 
       {/* Share with Educator */}
       <ShareSection receiptId={receipt.id} />
+
+      {/* Export PDF */}
+      <div className="bg-white border rounded-lg p-6">
+        <h3 className="font-semibold text-gray-900 mb-2">Export Receipt</h3>
+        <p className="text-gray-500 text-sm mb-4">
+          Download a PDF copy of this authorship receipt for your records.
+        </p>
+        <ExportPdfButton receiptId={receipt.id} />
+      </div>
 
       {/* Disclaimer */}
       <div className="bg-gray-100 border border-gray-200 rounded-lg p-4">

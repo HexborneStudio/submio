@@ -95,6 +95,15 @@
 - [x] SubmitReviewForm client component for educator reviews
 - [x] Prisma schema: SharedLink and EducatorReview models updated with proper relations
 
+### Phase 9: PDF Export ✅
+- [x] PDF template component (PdfReceiptDocument using @react-pdf/renderer)
+- [x] PDF generation service (generateReceiptPdf, saveExportedPdf)
+- [x] Export API route (POST /api/export/[receiptId])
+- [x] Export history API route (GET /api/export/history)
+- [x] ExportPdfButton client component on receipt page
+- [x] Export record tracked in existing Export model
+- [x] Owner-only access control via document ownership check
+
 ---
 
 ## What Works
@@ -127,7 +136,7 @@
 - No real authorship analysis beyond citation extraction and text metrics
 - No receipt generation (Phase 7) ✅ DONE
 - No share link generation with tokens (Phase 8) ✅ DONE
-- No PDF export (Phase 9)
+- No PDF export (Phase 9) ✅ DONE
 - No admin functionality (placeholders only)
 
 ---

@@ -465,3 +465,61 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 **Known pre-existing issues (not introduced by Phase 8):**
 - Duplicate Next.js routes: `app/(app)/documents/[documentId]/page.tsx` vs `app/documents/[documentId]/page.tsx`
 - Module resolution: `@authorship-receipt/db` prisma export uses `.js` extension
+
+---
+
+## 2026-03-20
+
+### TASK 9: PDF Export ✅ COMPLETE
+
+**Completed at:** ~09:55 CDT
+
+**Files created:**
+
+`apps/web/src/components/receipt/PdfReceiptDocument.tsx`:
+- PDF template using @react-pdf/renderer Document/Page/Text/View components
+- Styled with confidence badge (color-coded low/medium/high), summary box, caution notice
+- Renders all receipt sections with items, warnings, and notes
+- Includes disclaimer and footer with receipt ID and export timestamp
+
+`apps/web/src/lib/pdf/exportReceiptPdf.ts`:
+- `generateReceiptPdf()` — Fetches receipt + sections from DB, renders PDF via `renderToBuffer()`
+- `saveExportedPdf()` — Saves PDF via storage abstraction, creates Export record
+
+`apps/web/app/api/export/[receiptId]/route.ts`:
+- POST endpoint with owner-only access control
+- Verifies receipt exists and user owns the document
+- Returns PDF as downloadable response (Content-Type: application/pdf)
+
+`apps/web/app/api/export/history/route.ts`:
+- GET endpoint returning last 20 exports for current user
+
+`apps/web/app/documents/[documentId]/receipt/ExportPdfButton.tsx`:
+- Client component with loading state and error handling
+- Downloads PDF blob and triggers browser save-as
+
+**Files updated:**
+
+`apps/web/app/(app)/documents/[documentId]/receipt/page.tsx`:
+- Added ExportPdfButton import and rendered in "Export Receipt" section below ShareSection
+
+`docs/database-spec.md`:
+- Added Export model documentation section
+
+`project-management/backlog.md`, `current-state.md`, `next-step.md`, `decisions.md`:
+- Phase 9 marked done, Phase 10 set as current, DEC-035/DEC-036 added
+
+**API endpoints:**
+- `POST /api/export/[receiptId]` — Generate + download PDF (auth required, owner only)
+- `GET /api/export/history` — List recent exports (auth required)
+
+**Key decisions:**
+- PDF generated synchronously in API route (no worker queue needed)
+- Uses existing Export model (receiptId, format, status, filePath, fileSize)
+- Storage abstraction (`saveFile`) handles local filesystem
+- Owner check: `receipt.document.userId !== user.id` returns 403
+- Caustion/disclaimer language included in PDF (evidence-based indicators, not definitive judgment)
+
+**Known issues:**
+- `@react-pdf/renderer` requires React 16-19 — works with current setup (React 19)
+- Package already installed at root (hoisted from web workspace dependency)

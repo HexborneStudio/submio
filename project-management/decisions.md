@@ -660,3 +660,44 @@ None yet.
 - Preserves backwards compatibility with any code that checks for FLAGGED
 
 **Status:** Accepted
+
+---
+
+### DEC-035: PDF Generation Uses @react-pdf/renderer (Client-Side Reactive)
+
+**Decision:** Use `@react-pdf/renderer` (version 4.x) for server-side PDF generation of authorship receipts. The `renderToBuffer()` function is called in API route handlers (not client-side).
+
+**Rationale:**
+- React-native library that works in Node.js without requiring Chrome/headless browser
+- Component-based templating matches the existing React/Next.js codebase
+- Supports React 19 (`^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0`)
+- No external binary dependencies (unlike puppeteer/chromium)
+- `renderToBuffer` is synchronous and works in Next.js App Router route handlers
+
+**Alternatives Considered:**
+- `html-pdf-node` — Requires HTML template separate from React components; deprecated puppeteer dependency
+- `puppeteer-core` / `@sparticuz/chromium` — Requires Chrome binary; heavier footprint
+- `@react-pdf/renderer` client-side (browser) — Would expose generation logic to client; not chosen
+
+**Status:** Accepted
+
+---
+
+### DEC-036: PDF Export Is Synchronous (No Worker Queue)
+
+**Decision:** PDF export is handled synchronously in the web app's API route handler rather than via the BullMQ worker queue.
+
+**Rationale:**
+- PDF generation is fast (receipt data is already assembled)
+- No external binary dependency (using @react-pdf/renderer)
+- Reduces queue complexity for a simple operation
+- Export record created immediately with COMPLETED status
+- If PDF generation fails, user gets an immediate error response
+
+**Alternatives Considered:**
+- Worker queue export (via exportReceiptJob) — Adds latency and complexity; overkill for simple PDF generation
+- Async (fire-and-forget) — User wouldn't get immediate download; poor UX
+
+**Note:** If PDF generation becomes slow or requires external services (e.g., headless Chrome), this decision should be revisited and the worker queue approach implemented.
+
+**Status:** Accepted

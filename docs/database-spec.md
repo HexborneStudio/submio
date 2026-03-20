@@ -201,6 +201,23 @@ No schema changes were required — existing models handle receipt storage.
 
 ---
 
+### Export
+
+Tracks all export operations (PDF downloads, future formats).
+
+**Export** model fields:
+- `receiptId` — FK to AuthorshipReceipt (Cascade delete)
+- `userId` — FK to User (Cascade delete)
+- `format` — Export format string (default: "pdf")
+- `status` — PENDING | PROCESSING | COMPLETED | FAILED | EXPIRED
+- `filePath` — Object storage path (local filesystem or S3)
+- `fileSize` — File size in bytes (nullable)
+- `expiresAt` — Optional expiration for time-limited downloads
+
+Indexes: `(receiptId)`, `(userId)`, `(status)`
+
+---
+
 ## Migration Commands
 
 ```bash
