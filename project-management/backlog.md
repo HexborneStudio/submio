@@ -82,3 +82,12 @@
 - [ ] LMS integrations — waiting for Phase 2-10
 - [ ] Advanced source analysis — waiting for Phase 6
 - [ ] Collaboration features — future consideration
+
+## Post-MVP Soft Launch Prep
+- [x] Internal test plan — DONE
+- [x] Soft launch checklist — DONE
+- [x] Bug triage tracker — DONE
+- [x] Feedback log — DONE
+- [ ] Internal testing (3-5 users)
+- [ ] Bug fixes from testing
+- [ ] Soft launch (if criteria met)

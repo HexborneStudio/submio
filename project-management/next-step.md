@@ -4,35 +4,21 @@
 
 ---
 
-## TASK: Fix Web App Build Infrastructure (CRITICAL)
+## TASK: Run Internal Testing (Soft Launch)
 
-**Objective:** Resolve the Next.js static generation failure caused by PrismaClient module resolution through workspace package imports.
+**Objective:** Validate all MVP flows with 3-5 internal testers before any external launch.
 
-**Root Cause:** TypeScript path aliases in `apps/web/tsconfig.json` point to source files (`../../packages/db/src/index.ts`) instead of compiled output. When Next.js bundles these imports, the `PrismaClient` class from `@prisma/client` is not properly resolved through the re-export chain.
-
-**Options:**
-
-1. **Option A (Recommended):** Restructure workspace packages to build to `dist/` and consume from there
-   - Modify `apps/web/tsconfig.json` to remove source file aliases
-   - Ensure workspace packages build before web app
-   - Use compiled JS output instead of TS source
-
-2. **Option B:** Lazy-load PrismaClient in service files
-   - Move `const prisma = new PrismaClient()` to function scope
-   - Use singleton pattern with lazy initialization
-
-3. **Option C:** Accept web app requires Node.js runtime
-   - Use `next start` instead of static export
-   - Configure for serverless-compatible deployment
-
-**Dependencies:**
-- Phase 12: Hardening (completed)
+**Next Steps:**
+1. Distribute internal-test-plan.md to testers
+2. Each tester runs through the test cases
+3. Record bugs in bug-triage.md (BUG-001, BUG-002, etc.)
+4. Record feedback in feedback-log.md
+5. Fix any BLOCKER or HIGH severity bugs
+6. Re-assess launch readiness score
 
 **Verification:**
-```bash
-cd ~/authorship-receipt && npm run build --workspace=apps/web
-# Should complete without PrismaClient errors
-```
+- MVP readiness score moves toward 8/10 or higher
+- All HIGH severity tests pass
 
 ---
 
@@ -73,7 +59,8 @@ cd ~/authorship-receipt && npm run build --workspace=apps/web
 9. ~~Phase 10: Admin Tools~~ ✅ DONE
 10. ~~Phase 11: Product Polish~~ ✅ DONE
 11. ~~Phase 12: Hardening~~ ✅ DONE
-12. Phase 13: Post-MVP Planning (current)
+12. Soft Launch Prep ✅ DONE
+13. Internal Testing (current)
 
 ---
 

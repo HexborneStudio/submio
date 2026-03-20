@@ -860,3 +860,11 @@ None yet.
 1. Consume compiled `dist/` output instead of TypeScript source
 2. Lazy-load PrismaClient in service files
 3. Accept Node.js runtime requirement (no static export)
+
+### DEC-046: Soft Launch Scope
+
+**Decision:** Internal testing with 3-5 real users before any external launch.
+
+**Rationale:** Catch real-world usage issues before exposing to public. MVP is feature-complete for core flows.
+
+**Status:** Accepted

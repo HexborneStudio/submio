@@ -127,6 +127,12 @@
 - [x] Route conflict fixed (removed duplicate app/documents/ directory)
 - [x] docs/deployment.md and docs/security-hardening.md created
 
+### Soft Launch Preparation ✅
+- [x] Internal test plan (33 test cases across student/educator/admin/edge flows)
+- [x] Soft launch checklist (env, security, deployment, monitoring, rollback)
+- [x] Bug triage tracker (severity-ranked, empty template)
+- [x] Feedback log (structured capture template)
+
 ---
 
 ## What Works
@@ -203,6 +209,6 @@ authorship-receipt/
 
 ## Next Priority
 
-**Phase 13: Post-MVP Planning** — Review what's been built, prioritize educator dashboard, organization accounts, LMS integrations, and other high-value next features.
+**Internal Testing (Soft Launch Prep)** — MVP is feature-complete. Run internal testing with 3-5 real users to validate all flows. Record bugs in bug-triage.md and feedback in feedback-log.md.
 
 See: [next-step.md](./next-step.md)

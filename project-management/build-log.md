@@ -676,3 +676,19 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Web app cannot be statically generated due to PrismaClient initialization through workspace package imports
 - Root cause: TypeScript path aliases point to source files, not compiled output
 - Recommendation: Use `next dev` for development, or restructure workspace package consumption
+
+---
+
+## 2026-03-20 (Soft Launch Prep)
+
+### TASK: Soft Launch Preparation ✅ COMPLETE
+
+**Completed at:** 18:37 CDT
+
+**Documents created:**
+- project-management/internal-test-plan.md — 33 test cases across student/educator/admin/edge flows
+- project-management/soft-launch-checklist.md — env, security, deployment, monitoring, rollback checklists
+- project-management/bug-triage.md — severity-ranked bug tracker with template
+- project-management/feedback-log.md — structured feedback capture template
+
+**Launch readiness:** 5.7/10 — MVP ready for internal testing
