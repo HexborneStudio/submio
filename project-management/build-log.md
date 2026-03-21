@@ -805,3 +805,27 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - "Questions? Sign in to contact support" → "Questions? Get in touch"
 - Landing page section header → "What to Know Before You Start" (less defensive)
 - Receipt empty state → warmer explanation of what to expect
+
+---
+
+## 2026-03-21 (Phase 13D)
+
+### TASK: Founder Walkthrough + Critical Bug Fixes ✅ COMPLETE
+
+**Bug fixes applied:**
+- `apps/web/app/auth/callback/page.tsx` — Completely rewritten as client component to properly process magic link token (was just redirecting without verification)
+- `apps/web/app/api/auth/callback/route.ts` — Added POST handler for client component to call
+- `apps/web/app/(app)/documents/[documentId]/page.tsx` — Fixed Prisma include: `authorshipReceipt` → `receipts` (2 lines)
+
+**Critical blockers found (NOT YET FIXED):**
+- No `/api/share/create` route — ShareSection calls non-existent API (share links completely broken)
+- No `/api/share/review` route — review submission completely broken
+- These are Phase 6 sub-agent gaps: service functions exist but no HTTP API routes
+
+**Copy issues identified (NOT YET FIXED):**
+- "LOW CONFIDENCE" in ALL CAPS — sounds like a failing grade
+- "Processing Metadata" section exposes internal IDs and debug info
+- "Ingestion Method" — technical word for students
+- "Direct Quotes: 0" — sounds accusatory under "Originality Signals"
+
+**Full walkthrough report:** project-management/founder-walkthrough.md

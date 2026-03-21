@@ -18,7 +18,7 @@ export default async function DocumentDetailPage({
         orderBy: { version: "desc" },
         include: {
           uploads: true,
-          authorshipReceipt: {
+          receipts: {
             orderBy: { createdAt: "desc" },
             take: 1,
             include: {
@@ -37,7 +37,7 @@ export default async function DocumentDetailPage({
   }
 
   const latestVersion = document.versions[0];
-  const latestReceipt = latestVersion?.authorshipReceipt?.[0];
+  const latestReceipt = latestVersion?.receipts?.[0];
   const receiptData = latestReceipt?.receiptData as {
     status: string;
     summary: {

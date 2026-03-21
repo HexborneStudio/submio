@@ -245,6 +245,6 @@ curl http://localhost:3001/health
 
 ## Next Priority
 
-**Founder Live Review** — Run one live founder review of the student flow from landing page to paper check result. Verify all copy feels natural, trustworthy, and student-friendly in a real browser.
+**Fix critical blockers:** Create missing API routes for share link creation and instructor review submission. Then apply high-confidence copy fixes (remove Processing Metadata section, change "LOW CONFIDENCE" badge, fix "Ingestion Method" label). Then re-test share and review flows.
 
 See: [next-step.md](./next-step.md)

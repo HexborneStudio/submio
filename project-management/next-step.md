@@ -1,1 +1,1 @@
-Run one live founder review of the student flow from landing page to paper check result.
+Apply only the high-confidence fixes from the authenticated founder walkthrough.
