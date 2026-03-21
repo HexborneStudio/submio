@@ -117,7 +117,7 @@ export default async function ReceiptPage({
               confidenceColors[receiptData?.summary?.overallConfidence || "low"]
             }`}
           >
-            {receiptData?.summary?.overallConfidence?.toUpperCase() || "UNKNOWN"} CONFIDENCE
+            {receiptData?.summary?.overallConfidence ? receiptData.summary.overallConfidence.charAt(0).toUpperCase() + receiptData.summary.overallConfidence.slice(1) : "Unknown"} confidence
           </span>
         </div>
       </div>

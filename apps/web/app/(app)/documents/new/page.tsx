@@ -148,7 +148,7 @@ export default function NewDocumentPage() {
               disabled={isLoading || !pastedContent.trim()}
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
             >
-              {isLoading ? "Starting Check..." : "Start Check"}
+              {isLoading ? "Starting Paper Check..." : "Start Paper Check"}
             </button>
             <button
               type="button"

@@ -185,7 +185,7 @@ export function PdfReceiptDocument({ receipt, exportedAt }: PdfReceiptData) {
             ]}
           >
             <Text style={{ color: colors.text, fontSize: 8 }}>
-              {confidence.toUpperCase()} CONFIDENCE
+              {confidence.charAt(0).toUpperCase() + confidence.slice(1)} confidence
             </Text>
           </View>
         </View>

@@ -170,6 +170,20 @@
 - No organization/team account support
 - No storage cleanup job (orphaned files accumulate)
 
+## Recent Fixes (2026-03-21 Evening)
+
+**Share API routes fixed:** API routes were in wrong directory (`src/app/api/` instead of `app/api/`). All 4 routes now properly wired: POST/GET /api/share/create, POST /api/share/revoke, POST /api/share/review, GET /api/share/[token].
+
+**Copy cleanup:**
+- Removed "Processing Metadata" receipt section (was exposing version IDs, analysis version, raw character counts)
+- Changed "Ingestion Method" → "Content Type"
+- Changed ALL CAPS confidence labels → sentence case (Low/Medium/High confidence)
+- Changed "Direct Quotes" → "Direct Quotes (est.)"
+- Changed "Est. Paraphrases" → "Estimated Paraphrases"
+- Changed "Start Check" button → "Start Paper Check"
+
+**Known remaining issue:** Share page review form — the status dropdown (combobox) may not fire the `onChange` event properly when clicked in the browser, causing form validation to fail. Fix needed in SubmitReviewForm client component (set a default status in form state rather than relying solely on the dropdown's onChange).
+
 ---
 
 ## Current Architecture Snapshot

@@ -84,7 +84,7 @@ export default async function SharedReceiptPage({
               confidenceColors[receiptData?.summary?.overallConfidence || "low"]
             }`}
           >
-            {receiptData?.summary?.overallConfidence?.toUpperCase() || "UNKNOWN"} CONFIDENCE
+            {receiptData?.summary?.overallConfidence ? receiptData.summary.overallConfidence.charAt(0).toUpperCase() + receiptData.summary.overallConfidence.slice(1) : "Unknown"} confidence
           </span>
           <span className="text-sm text-gray-500">
             Paper Check — shared for instructor review

@@ -817,15 +817,34 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - `apps/web/app/api/auth/callback/route.ts` — Added POST handler for client component to call
 - `apps/web/app/(app)/documents/[documentId]/page.tsx` — Fixed Prisma include: `authorshipReceipt` → `receipts` (2 lines)
 
-**Critical blockers found (NOT YET FIXED):**
-- No `/api/share/create` route — ShareSection calls non-existent API (share links completely broken)
-- No `/api/share/review` route — review submission completely broken
-- These are Phase 6 sub-agent gaps: service functions exist but no HTTP API routes
+**CRITICAL BLOCKER FIX — Share API routes created:**
+- `apps/web/app/api/share/create/route.ts` — POST (create link) + GET (list links) — the old routes in `src/app/api/share/` were in the WRONG directory; Next.js App Router uses `app/` as root, not `src/app/`
+- `apps/web/app/api/share/revoke/route.ts` — POST to revoke links
+- `apps/web/app/api/share/review/route.ts` — POST for instructor review submission
+- `apps/web/app/api/share/[token]/route.ts` — GET for token validation
+- Root cause: share routes existed in `apps/web/src/app/api/share/` but Next.js was using `apps/web/app/` as the App Router root — creating a parallel unused directory structure
 
-**Copy issues identified (NOT YET FIXED):**
-- "LOW CONFIDENCE" in ALL CAPS — sounds like a failing grade
-- "Processing Metadata" section exposes internal IDs and debug info
-- "Ingestion Method" — technical word for students
-- "Direct Quotes: 0" — sounds accusatory under "Originality Signals"
+**Copy fixes applied:**
+- `packages/analysis/src/receipts/buildReceiptSections.ts`:
+  - Removed `buildProcessingSection` entirely (was exposing: version IDs, analysis version, raw text character count)
+  - Changed "Ingestion Method" → "Content Type"
+  - Changed "Direct Quotes" → "Direct Quotes (est.)"
+  - Changed "Est. Paraphrases" → "Estimated Paraphrases"
+  - Changed confidence level ALL CAPS → sentence case (`Low`, `Medium`, `High`)
+- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx`:
+  - Confidence badge: `{value} CONFIDENCE` → `{value} confidence`
+  - Removed `Document Version: {receipt.versionId}` from footer
+- `apps/web/app/(app)/documents/[documentId]/page.tsx`:
+  - Confidence badge: ALL CAPS → sentence case
+- `apps/web/app/share/[token]/page.tsx`:
+  - Confidence badge: ALL CAPS → sentence case
+  - Fixed duplicate `getReviewsForReceipt` import
+- `apps/web/src/components/receipt/PdfReceiptDocument.tsx`:
+  - Confidence badge: ALL CAPS → sentence case
+- `apps/web/app/(app)/documents/new/page.tsx`:
+  - "Start Check" button → "Start Paper Check"
+
+**Known remaining issue:**
+- Share page review form: status dropdown defaults to "REVIEWED" in JS state but form submit may fail silently if dropdown selection event didn't fire — needs a status field default fix in the form component
 
 **Full walkthrough report:** project-management/founder-walkthrough.md

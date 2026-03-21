@@ -44,7 +44,6 @@ export function buildReceiptSections(
     buildSourcesSection(signals),
     buildStructuralSection(signals),
     buildConfidenceSection(signals, summary),
-    buildProcessingSection(signals, analysis),
   ];
 }
 
@@ -136,9 +135,9 @@ function buildSourcesSection(signals: AnalysisResult["signals"]): ReceiptSection
     summary: `${signals.sources.count} source reference(s) identified from citation patterns.`,
     items: [
       { label: "Unique Sources", value: signals.sources.count },
-      { label: "Direct Quotes", value: signals.sources.directQuotes },
+      { label: "Direct Quotes (est.)", value: signals.sources.directQuotes },
       { label: "Web Sources", value: signals.sources.webSources },
-      { label: "Est. Paraphrases", value: signals.sources.paraphrases },
+      { label: "Estimated Paraphrases", value: signals.sources.paraphrases },
     ],
     warnings: [],
     notes: [
@@ -181,7 +180,7 @@ function buildConfidenceSection(signals: AnalysisResult["signals"], summary: Rec
     title: "Confidence & Caution",
     summary: `Analysis confidence: ${confidenceLabel[summary.overallConfidence]}.`,
     items: [
-      { label: "Confidence Level", value: summary.overallConfidence.toUpperCase() },
+      { label: "Confidence Level", value: summary.overallConfidence.charAt(0).toUpperCase() + summary.overallConfidence.slice(1) },
       { label: "Confidence Explanation", value: confidenceLabel[summary.overallConfidence] },
     ],
     warnings: signals.indicators.warnings,
