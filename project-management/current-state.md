@@ -245,6 +245,6 @@ curl http://localhost:3001/health
 
 ## Next Priority
 
-**Day 1 Internal Testing** — Run sessions with 2 student testers. Use `day1-runbook.md` and `day1-test-sessions.md`. Record bugs in `bug-triage.md` and feedback in `feedback-log.md`.
+**Copy & UX Review** — Final review of student-first copy and UX changes across all pages. Verify terminology consistency, clarity, and student trust. Then: Day 1 internal testing with 2 student testers.
 
 See: [next-step.md](./next-step.md)

@@ -102,7 +102,7 @@ export default async function SharedReceiptPage({
         {/* Existing Reviews */}
         {reviews.length > 0 && (
           <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-            <h2 className="font-semibold text-purple-900 mb-3">Instructor Review</h2>
+            <h2 className="font-semibold text-purple-900 mb-3">Instructor Feedback</h2>
             {reviews.map((review) => (
               <div key={review.id} className="border-b border-purple-100 last:border-0 pb-3 last:pb-0 mb-3 last:mb-0">
                 <div className="flex items-center gap-2 mb-1">
@@ -127,7 +127,7 @@ export default async function SharedReceiptPage({
         <div className="bg-white border rounded-lg p-6">
           <h2 className="font-semibold text-gray-900 mb-1">Submit Review</h2>
           <p className="text-gray-500 text-xs mb-4">
-            As an instructor, you can leave feedback on this report. All reviews are visible to the student.
+            As an instructor, you can review this report and leave feedback. The student can see your review.
           </p>
           <SubmitReviewForm receiptId={receipt.id} sharedLinkId={link.id} />
         </div>

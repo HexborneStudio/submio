@@ -754,3 +754,25 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Detailed report is secondary investigation layer
 - Instructor sharing is optional post-submission action
 - All backend logic preserved — only presentation layer changed
+
+---
+
+## 2026-03-21 (Phase 13B)
+
+### TASK: Copy & UX Polish — Student-First ✅ COMPLETE
+
+**Files updated:**
+- `apps/web/app/(public)/page.tsx` — Caution section rewritten warmer, "What You Get" bullets made concrete, Step 3 rewritten to "See What to Fix"
+- `apps/web/app/(public)/pricing/page.tsx` — Free tier feature list clarified, "What's included" renamed to plain English, Pro CTA changed to "Join Waitlist"
+- `apps/web/app/(app)/dashboard/page.tsx` — "Recent Paper Checks" → "Recent Checks"
+- `apps/web/app/(app)/documents/[documentId]/page.tsx` — "Add Version" → "Upload New Version", "Paper Versions" → "Versions Checked", Next Steps made conditional on whether issues were found
+- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — Export section text made more specific
+- `apps/web/app/(app)/documents/[documentId]/receipt/ShareSection.tsx` — Share link explanatory text made more specific about pre/post-submission use
+- `apps/web/app/share/[token]/page.tsx` — "Instructor Review" → "Instructor Feedback", review form text softened
+
+**Copy improvements made:**
+- Caution section: from defensive/legal to warm/encouraging ("think of it like a spell-checker for your sources")
+- What You Get: from generic features to specific student benefits
+- Next Steps: conditional — different advice if issues found vs. clean report
+- Share link: more specific about timing (before submission for feedback, after for records)
+- Review form: softened framing, removed "all reviews are visible" (implied, not stated)

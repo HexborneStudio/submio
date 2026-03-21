@@ -66,7 +66,7 @@ export default async function DashboardPage() {
       {/* Recent Papers */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Paper Checks</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Recent Checks</h2>
           <a href="/documents" className="text-sm text-blue-600 hover:underline">
             View all
           </a>

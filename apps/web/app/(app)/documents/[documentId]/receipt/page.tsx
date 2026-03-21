@@ -214,7 +214,7 @@ export default async function ReceiptPage({
       <div className="bg-white border rounded-lg p-6">
         <h3 className="font-semibold text-gray-900 mb-2">Export Report</h3>
         <p className="text-gray-500 text-sm mb-4">
-          Download a PDF copy of this detailed report for your records.
+          Download a PDF copy of your detailed report — keep it for your records or share it with your instructor.
         </p>
         <ExportPdfButton receiptId={receipt.id} />
       </div>

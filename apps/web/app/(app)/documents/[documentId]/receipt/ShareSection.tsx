@@ -133,7 +133,7 @@ export function ShareSection({ receiptId }: Props) {
 
       {activeLinks.length === 0 && !showCreate && (
         <p className="text-gray-400 text-sm">
-          No active share links. Create one to share this report with your instructor before or after submission.
+          No active share links. Create one to share your report — your instructor can review it before you submit, or after for their records.
         </p>
       )}
 

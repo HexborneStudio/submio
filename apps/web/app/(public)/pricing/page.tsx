@@ -27,11 +27,11 @@ export default function PricingPage() {
             <ul className="space-y-3">
               {[
                 "Up to 5 paper checks per month",
-                "Basic citation analysis",
-                "Source signal detection",
+                "Full citation and source analysis",
+                "Submission readiness summary",
                 "Detailed report view",
-                "PDF export",
-                "Share report with instructor",
+                "PDF export of your report",
+                "Share report with your instructor",
               ].map((f) => (
                 <li key={f} className="flex items-start gap-2 text-sm">
                   <span className="text-green-500 mt-0.5">✓</span>
@@ -80,7 +80,7 @@ export default function PricingPage() {
               href="/signup"
               className="mt-6 block w-full text-center px-4 py-2 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-50"
             >
-              Coming Soon
+              Join Waitlist
             </Link>
           </div>
         </div>
@@ -90,14 +90,14 @@ export default function PricingPage() {
           <h3 className="font-semibold mb-4">What&apos;s included in every check:</h3>
           <div className="grid grid-cols-2 gap-4">
             {[
-              "Document text extraction",
-              "Citation pattern detection",
-              "Bibliography identification",
-              "Word count and text metrics",
-              "Structural analysis",
-              "Source signal indicators",
-              "Confidence level assessment",
-              "Shareable report link",
+              "Reads your paper (PDF or DOCX)",
+              "Finds all citations and references",
+              "Checks your bibliography",
+              "Word count and section breakdown",
+              "Analyzes paper structure",
+              "Flags source patterns to review",
+              "Shows your submission confidence",
+              "Generates a shareable report link",
             ].map((f) => (
               <div key={f} className="flex items-center gap-2 text-sm text-gray-600">
                 <span className="text-green-500">✓</span>

@@ -44,7 +44,7 @@ export default function LandingPage() {
             {[
               { step: "1", title: "Upload or Paste Your Paper", desc: "Submit your paper — as a file (.docx, .pdf) or pasted text." },
               { step: "2", title: "We Check It", desc: "We analyze citation patterns, source references, and formatting for potential issues." },
-              { step: "3", title: "Get Your Report", desc: "Receive a detailed report — fix issues before you submit." },
+              { step: "3", title: "See What to Fix", desc: "Get a clear summary of issues and what's solid — then fix what matters before submission." },
             ].map((item) => (
               <div key={item.step} className="text-center">
                 <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-4">
@@ -64,12 +64,12 @@ export default function LandingPage() {
           <h2 className="text-2xl font-bold text-center mb-8">What You Get</h2>
           <div className="grid grid-cols-2 gap-4">
             {[
-              "Citation coverage analysis",
-              "Source signal detection",
-              "Formatting checks",
-              "Plain-English explanations",
-              "Detailed report you can share with your instructor",
-              "PDF export for your records",
+              "See which citations might be missing or incomplete",
+              "Spot source patterns that could look risky",
+              "Get a plain-English summary anyone can understand",
+              "Know exactly what to fix before you submit",
+              "Share a detailed report with your instructor",
+              "Download a PDF copy for your records",
             ].map((feature) => (
               <div key={feature} className="flex items-center gap-2 text-sm text-gray-600">
                 <span className="text-green-500">✓</span>
@@ -86,10 +86,10 @@ export default function LandingPage() {
           <div className="text-3xl mb-3">⚠️</div>
           <h2 className="text-xl font-bold mb-3">Important: What This Is Not</h2>
           <p className="text-gray-300 text-sm leading-relaxed">
-            Paper Check is <strong>not</strong> a plagiarism checker, not a cheating detection tool,
-            and does <strong>not</strong> make academic integrity judgments. It is a transparency tool
-            that helps <strong>you</strong> catch issues before submission. Think of it as a
-            pre-flight check for your paper — giving you a chance to fix problems first.
+            Paper Check gives you <strong>honest, evidence-based feedback</strong> — it shows you what your paper
+            looks like from a citation and structure standpoint. It&apos;s not a verdict on your work. Think of it
+            like a spell-checker for your sources: it points out gaps and patterns so <strong>you</strong> can
+            decide what to fix before your professor sees it.
           </p>
         </div>
       </section>

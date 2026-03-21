@@ -116,7 +116,7 @@ export default async function DocumentDetailPage({
             href={`/documents/${document.id}/upload`}
             className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50"
           >
-            Add Version
+            Upload New Version
           </Link>
         </div>
       </div>
@@ -216,9 +216,19 @@ export default async function DocumentDetailPage({
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h3 className="font-medium text-blue-900 mb-2">Next Steps</h3>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>Review the detailed report for a complete breakdown</li>
-                <li>Check any warnings above and address them before submission</li>
-                <li>Share the report with your instructor if desired</li>
+                {receiptData?.summary?.processingWarnings && receiptData.summary.processingWarnings.length > 0 ? (
+                  <>
+                    <li>Review the issues flagged above and decide what to address</li>
+                    <li>Check the detailed report for a full breakdown</li>
+                    <li>Re-upload your paper after making changes to see updated results</li>
+                  </>
+                ) : (
+                  <>
+                    <li>Your paper looks solid — review the detailed report to confirm</li>
+                    <li>Share the report with your instructor before or after submission if helpful</li>
+                    <li>Download the PDF for your records</li>
+                  </>
+                )}
               </ul>
             </div>
 
@@ -238,7 +248,7 @@ export default async function DocumentDetailPage({
       {/* Versions */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Paper Versions ({document.versions.length})
+          Versions Checked ({document.versions.length})
         </h2>
 
         {document.versions.length === 0 ? (
@@ -248,7 +258,7 @@ export default async function DocumentDetailPage({
               href={`/documents/${document.id}/upload`}
               className="text-blue-600 hover:underline text-sm"
             >
-              Add the first version
+              Upload your first version
             </Link>
           </div>
         ) : (
