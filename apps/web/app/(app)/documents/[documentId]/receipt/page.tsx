@@ -61,7 +61,7 @@ export default async function ReceiptPage({
             No Check Results Yet
           </h2>
           <p className="text-gray-500 mb-4">
-            The analysis is still processing or no document version exists yet.
+            Check back once your paper is done analyzing — results will appear here automatically.
           </p>
           <Link
             href={`/documents/${documentId}`}
@@ -162,12 +162,12 @@ export default async function ReceiptPage({
                 <p className="text-gray-600 text-sm mb-3">{data.summary}</p>
                 <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
                   <p className="text-yellow-800 text-sm font-medium mb-1">
-                    ⚠️ Important Caution
+                    ⚠️ A Note About This Report
                   </p>
                   <p className="text-yellow-700 text-xs leading-relaxed">
-                    This report provides EVIDENCE-BASED INDICATORS only. It does NOT
-                    constitute a definitive judgment on authorship, originality, or academic
-                    integrity. All findings should be reviewed in appropriate academic context.
+                    This report shows patterns and indicators — it is not a verdict on your work
+                    or academic integrity. It is a transparency tool to help you understand what
+                    your paper looks like from a citation and structure standpoint.
                   </p>
                 </div>
               </div>

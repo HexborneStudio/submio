@@ -21,14 +21,14 @@ export default async function SharedReceiptPage({
           <div className="text-5xl mb-4">🔗</div>
           <h1 className="text-xl font-bold text-gray-900 mb-2">
             {tokenResult.reason === "revoked"
-              ? "Link Revoked"
+              ? "Link Disabled"
               : tokenResult.reason === "expired"
               ? "Link Expired"
               : "Invalid Link"}
           </h1>
           <p className="text-gray-500 text-sm">
             {tokenResult.reason === "revoked"
-              ? "This share link has been revoked by the student."
+              ? "This share link has been disabled by the student."
               : tokenResult.reason === "expired"
               ? "This share link has expired."
               : "This link is invalid or has been removed."}
@@ -155,10 +155,11 @@ export default async function SharedReceiptPage({
                 <div className="mb-4">
                   <p className="text-gray-600 text-sm mb-3">{data.summary}</p>
                   <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                    <p className="text-yellow-800 text-sm font-medium mb-1">⚠️ Important Caution</p>
+                    <p className="text-yellow-800 text-sm font-medium mb-1">⚠️ A Note About This Report</p>
                     <p className="text-yellow-700 text-xs leading-relaxed">
-                      This receipt provides EVIDENCE-BASED INDICATORS only. It does NOT
-                      constitute a definitive judgment on authorship, originality, or academic integrity.
+                      This report shows patterns and indicators — it is not a verdict on the student&apos;s work
+                      or academic integrity. It is a transparency tool to help understand what the paper
+                      looks like from a citation and structure standpoint.
                     </p>
                   </div>
                 </div>

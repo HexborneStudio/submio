@@ -11,7 +11,7 @@ export default function PricingPage() {
       </header>
 
       <div className="max-w-3xl mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold text-center mb-3">Simple, Student-Friendly Pricing</h1>
+        <h1 className="text-3xl font-bold text-center mb-3">Straightforward Pricing</h1>
         <p className="text-gray-500 text-center mb-12">Start free. Upgrade when you need more features.</p>
 
         {/* Free Tier */}
@@ -64,9 +64,9 @@ export default function PricingPage() {
             <ul className="space-y-3">
               {[
                 "Unlimited paper checks",
-                "Priority processing",
-                "Advanced citation verification",
-                "Export history",
+                "Faster results",
+                "Deeper citation analysis",
+                "Full history of past checks",
                 "Multiple instructor shares",
                 "Email support",
               ].map((f) => (
@@ -87,7 +87,7 @@ export default function PricingPage() {
 
         {/* Features comparison */}
         <div className="bg-white rounded-lg border p-6">
-          <h3 className="font-semibold mb-4">What&apos;s included in every check:</h3>
+          <h3 className="font-semibold mb-4">What every check includes:</h3>
           <div className="grid grid-cols-2 gap-4">
             {[
               "Reads your paper (PDF or DOCX)",
@@ -108,7 +108,7 @@ export default function PricingPage() {
         </div>
 
         <p className="text-center text-gray-400 text-sm mt-8">
-          Questions? <Link href="/login" className="text-blue-600 hover:underline">Sign in to contact support</Link>
+          Questions? <Link href="/login" className="text-blue-600 hover:underline">Get in touch</Link>
         </p>
       </div>
     </div>

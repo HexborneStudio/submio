@@ -168,7 +168,7 @@ export function ShareSection({ receiptId }: Props) {
 
       {links.filter((l) => l.status === "REVOKED").length > 0 && (
         <div className="mt-3 pt-3 border-t">
-          <p className="text-xs text-gray-400 mb-1">Revoked links</p>
+          <p className="text-xs text-gray-400 mb-1">Disabled links</p>
           {links.filter((l) => l.status === "REVOKED").map((link) => (
             <div key={link.id} className="flex items-center gap-2 text-sm text-gray-400">
               <span className="flex-1 truncate font-mono text-xs">

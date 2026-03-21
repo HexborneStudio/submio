@@ -245,6 +245,6 @@ curl http://localhost:3001/health
 
 ## Next Priority
 
-**Copy & UX Review** — Final review of student-first copy and UX changes across all pages. Verify terminology consistency, clarity, and student trust. Then: Day 1 internal testing with 2 student testers.
+**Founder Live Review** — Run one live founder review of the student flow from landing page to paper check result. Verify all copy feels natural, trustworthy, and student-friendly in a real browser.
 
 See: [next-step.md](./next-step.md)

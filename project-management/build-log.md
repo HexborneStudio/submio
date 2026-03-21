@@ -776,3 +776,32 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Next Steps: conditional — different advice if issues found vs. clean report
 - Share link: more specific about timing (before submission for feedback, after for records)
 - Review form: softened framing, removed "all reviews are visible" (implied, not stated)
+
+---
+
+## 2026-03-21 (Phase 13C)
+
+### TASK: Final Copy Review & Fixes ✅ COMPLETE
+
+**Files updated:**
+- `apps/web/app/(public)/page.tsx` — "Important: What This Is Not" → "What to Know Before You Start"
+- `apps/web/app/(public)/pricing/page.tsx` — "Simple, Student-Friendly Pricing" → "Straightforward Pricing", Pro tier cleaned up, "Questions? Sign in to contact support" → "Questions? Get in touch", "every check" → "every check includes"
+- `apps/web/app/(app)/documents/[documentId]/page.tsx` — "Text content detected" → "Your paper contains" (What's Good section)
+- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — Caution section rewritten warmer, "No Check Results Yet" empty state improved
+- `apps/web/app/(app)/documents/[documentId]/receipt/ShareSection.tsx` — "Revoked links" → "Disabled links"
+- `apps/web/app/share/[token]/page.tsx` — "Link Revoked" → "Link Disabled", "revoked by the student" → "disabled by the student", caution section rewritten warmer
+
+**MUST-FIX issues resolved:**
+- ALL CAPS evidence-based indicators → sentence case, warmer framing
+- "Important Caution" → "A Note About This Report"
+- "revoked" → "disabled" throughout (feels less punitive)
+- "Text content detected" → "Your paper contains" (sounds less like a scanner)
+
+**NICE-TO-HAVE issues resolved:**
+- "Student-Friendly Pricing" → "Straightforward Pricing" (less patronizing)
+- "Priority processing" → "Faster results" (student-friendly language)
+- "Advanced citation verification" → "Deeper citation analysis" (less official-sounding)
+- "Export history" → "Full history of past checks" (clearer)
+- "Questions? Sign in to contact support" → "Questions? Get in touch"
+- Landing page section header → "What to Know Before You Start" (less defensive)
+- Receipt empty state → warmer explanation of what to expect

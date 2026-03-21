@@ -84,7 +84,7 @@ export default function LandingPage() {
       <section className="py-12 bg-gray-900 text-white">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <div className="text-3xl mb-3">⚠️</div>
-          <h2 className="text-xl font-bold mb-3">Important: What This Is Not</h2>
+          <h2 className="text-xl font-bold mb-3">What to Know Before You Start</h2>
           <p className="text-gray-300 text-sm leading-relaxed">
             Paper Check gives you <strong>honest, evidence-based feedback</strong> — it shows you what your paper
             looks like from a citation and structure standpoint. It&apos;s not a verdict on your work. Think of it

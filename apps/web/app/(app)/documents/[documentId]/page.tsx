@@ -188,7 +188,7 @@ export default async function DocumentDetailPage({
                   {latestVersion?.content && (
                     <li className="flex items-start gap-2">
                       <span className="text-green-500">✓</span>
-                      Text content detected ({latestVersion.content.split(/\s+/).filter(Boolean).length.toLocaleString()} words)
+                      Your paper contains {latestVersion.content.split(/\s+/).filter(Boolean).length.toLocaleString()} words
                     </li>
                   )}
                   <li className="flex items-start gap-2">
