@@ -22,12 +22,12 @@ export default function NewDocumentPage() {
       const docRes = await fetch("/api/documents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim() || "Untitled Document" }),
+        body: JSON.stringify({ title: title.trim() || "Untitled Paper" }),
       });
 
       if (!docRes.ok) {
         const data = await docRes.json();
-        throw new Error(data.error || "Failed to create document");
+        throw new Error(data.error || "Failed to create paper");
       }
 
       const { document } = await docRes.json();
@@ -38,7 +38,7 @@ export default function NewDocumentPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            title: title.trim() || "Untitled Document",
+            title: title.trim() || "Untitled Paper",
             content: pastedContent,
           }),
         });
@@ -72,8 +72,8 @@ export default function NewDocumentPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">New Document</h1>
-        <p className="text-gray-600 mt-1">Create a new document to analyze</p>
+        <h1 className="text-2xl font-bold text-gray-900">Start Paper Check</h1>
+        <p className="text-gray-600 mt-1">Upload or paste your paper to check for issues before submission</p>
       </div>
 
       {error && (
@@ -92,7 +92,7 @@ export default function NewDocumentPage() {
             <div className="text-3xl mb-3">📝</div>
             <div className="font-semibold text-gray-900">Paste Text</div>
             <div className="text-sm text-gray-500 mt-1">
-              Paste your document text directly
+              Paste your paper text directly
             </div>
           </button>
 
@@ -114,7 +114,7 @@ export default function NewDocumentPage() {
         <form onSubmit={handleCreateDoc} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Document Title
+              Paper Title
             </label>
             <input
               type="text"
@@ -127,12 +127,12 @@ export default function NewDocumentPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Document Content
+              Paper Content
             </label>
             <textarea
               value={pastedContent}
               onChange={(e) => setPastedContent(e.target.value)}
-              placeholder="Paste your document text here..."
+              placeholder="Paste your paper text here..."
               rows={20}
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none font-mono text-sm"
               required
@@ -148,7 +148,7 @@ export default function NewDocumentPage() {
               disabled={isLoading || !pastedContent.trim()}
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
             >
-              {isLoading ? "Creating..." : "Create Document"}
+              {isLoading ? "Starting Check..." : "Start Check"}
             </button>
             <button
               type="button"
@@ -166,7 +166,7 @@ export default function NewDocumentPage() {
         <form onSubmit={handleCreateDoc} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Document Title
+              Paper Title
             </label>
             <input
               type="text"
@@ -215,7 +215,7 @@ export default function NewDocumentPage() {
               disabled={isLoading || !file}
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
             >
-              {isLoading ? "Uploading..." : "Upload & Create"}
+              {isLoading ? "Uploading..." : "Upload & Check"}
             </button>
             <button
               type="button"

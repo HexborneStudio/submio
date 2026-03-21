@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Authorship Receipt",
-  description: "Document authorship transparency platform",
+  title: "Paper Check",
+  description: "Pre-submission paper checker for students",
 };
 
 export default function RootLayout({

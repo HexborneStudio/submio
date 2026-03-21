@@ -27,11 +27,11 @@ export default function AppShell({ user, children }: AppShellProps) {
       <header className="bg-white border-b">
         <nav className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link href="/dashboard" className="text-xl font-bold text-blue-600">
-            Authorship Receipt
+            Paper Check
           </Link>
           <div className="flex items-center gap-6">
             <Link href="/documents" className="text-sm hover:text-blue-600">
-              Documents
+              Papers
             </Link>
             <Link href="/settings" className="text-sm hover:text-blue-600">
               Settings

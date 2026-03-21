@@ -707,3 +707,50 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - project-management/next-step.md — Already pointed to internal testing (no change needed)
 
 **Ready for:** Day 1 internal testing with 2 student testers
+
+---
+
+## 2026-03-21 (Phase 13)
+
+### TASK: Student-First Product Restructure ✅ COMPLETE
+
+**Completed at:** 2026-03-21 09:XX CDT
+
+**Presentation layer changes only — no backend modifications.**
+
+**Files updated:**
+- `apps/web/app/(public)/page.tsx` — Complete landing page rewrite with student-first messaging
+- `apps/web/app/(public)/pricing/page.tsx` — Student-friendly pricing tiers (Free/Pro)
+- `apps/web/app/(app)/dashboard/page.tsx` — "Your Papers" heading, student onboarding banner
+- `apps/web/app/(app)/documents/page.tsx` — "Your Papers" title, "Start New Check" CTA
+- `apps/web/app/(app)/documents/new/page.tsx` — "Start Paper Check" heading, paper-focused copy
+- `apps/web/app/(app)/documents/[documentId]/page.tsx` — Summary-first UX with submission readiness
+- `apps/web/app/(app)/documents/[documentId]/receipt/page.tsx` — "Detailed Report" page title, back-to-summary note
+- `apps/web/app/(app)/documents/[documentId]/receipt/ShareSection.tsx` — "Share with Instructor" label
+- `apps/web/src/components/app/AppShell.tsx` — "Paper Check" brand, "Papers" nav label
+- `docs/product-spec.md` — Updated positioning to pre-submission checker
+- `project-management/decisions.md` — Added DEC-047 through DEC-050
+
+**Terminology changes:**
+| FROM | TO |
+|------|-----|
+| "Authorship Receipt" | "Paper Check" / "Detailed Report" |
+| "Document" (nav) | "Papers" |
+| "Create Document" | "Start Paper Check" |
+| "Receipt" | "Detailed Report" |
+| "Share with educator" | "Share with instructor" |
+| "Processing" | "Checking" |
+
+**Summary-first UX implementation:**
+- Document detail page now shows paper check result summary FIRST
+- Clear status banner: "Ready to Submit" / "Needs Review" / "Issues Found"
+- Confidence badge displayed prominently
+- Bulleted issues to review and what's good sections
+- "Next Steps" with plain English actions
+- "View Detailed Report" button leads to full breakdown
+
+**Key decisions:**
+- Summary-first approach prioritizes student immediate feedback needs
+- Detailed report is secondary investigation layer
+- Instructor sharing is optional post-submission action
+- All backend logic preserved — only presentation layer changed

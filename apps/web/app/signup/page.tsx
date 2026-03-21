@@ -48,11 +48,11 @@ export default function SignupPage() {
       <div className="w-full max-w-md px-4">
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-blue-600">
-            Authorship Receipt
+            Paper Check
           </Link>
           <h1 className="text-2xl font-bold mt-6">Create your account</h1>
           <p className="text-gray-600 mt-2">
-            Start documenting your writing process
+            Start checking your papers before submission
           </p>
         </div>
 

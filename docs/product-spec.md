@@ -1,32 +1,35 @@
-# Product Specification: Authorship Receipt
+# Product Specification: Paper Check
 
-> Last updated: 2026-03-19
+> Last updated: 2026-03-21
 
 ## Overview
 
-**Authorship Receipt** is a document authorship transparency platform that helps students prove how their documents were created and helps educators review writing-process evidence.
+**Paper Check** is a pre-submission paper checker that helps students catch citation gaps, source signals, and formatting issues before they submit their work to an instructor.
 
-**Positioning:** This is NOT a plagiarism-cheating tool or an "undetectable" writing tool. It is a writing-process transparency product.
+**Positioning:** This is NOT a plagiarism checker or an "undetectable" writing tool. It is a transparency tool that helps students identify and fix issues before submission.
 
 ---
 
 ## Core Value
 
-- Help students demonstrate their document creation process
-- Help educators review writing-process evidence
-- Help institutions manage authorship review workflows
+- Help students catch issues before submission
+- Provide clear, actionable feedback on papers
+- Help instructors see evidence of writing process
+- Support academic integrity through transparency
 
 ---
 
 ## Target Customers
 
-### Phase 1: Students
-- Primary users who create documents
-- Want to prove authorship transparently
+### Phase 1: Students (Primary)
+- Primary users who submit papers
+- Want to catch and fix issues before submission
+- May share detailed reports with instructors
 
-### Phase 2: Educators
-- Review shared receipts
-- Provide feedback on writing evidence
+### Phase 2: Instructors
+- Review shared reports
+- See evidence of writing process
+- Provide feedback on submitted work
 
 ### Phase 3: Institutions
 - Admin dashboards
@@ -37,32 +40,34 @@
 
 ## Core Product Features
 
-### Document Workspace
-- Create document projects
+### Paper Check Workspace
+- Create paper check projects
 - Upload files (.docx, .pdf) or paste text
 - Version tracking
 
-### Authorship Analysis
-- Writing timeline evidence
-- Typing vs pasting estimation
-- Citation/source analysis
-- Originality indicators
+### Pre-Submission Analysis
+- Citation coverage analysis
+- Source signal detection
+- Text metrics and formatting checks
+- Plain-English explanations
 
-### Receipt Generation
-- Structured receipt with evidence sections
+### Check Result Summary
+- Clear submission readiness status (Ready / Needs Review / Issues Found)
+- Bulleted issues to review
+- Bulleted positive signals
+- Plain-English next steps
+
+### Detailed Report
+- Full breakdown of all analysis findings
+- Citation pattern details
+- Source reference information
 - Exportable PDF
-- Shareable educator links
+- Shareable with instructor
 
-### Educator Review
-- Public receipt view
-- Review notes
-- Review status tracking
-
-### Admin Tools
-- User management
-- Receipt lookup
-- Audit logs
-- Support tools
+### Instructor Sharing
+- Share read-only report with instructor
+- Optional post-submission sharing
+- Instructor review form (public, no auth)
 
 ---
 
@@ -72,31 +77,29 @@
 - ❌ NOT a "beat Turnitin" tool
 - ❌ NOT an undetectable AI writing tool
 - ❌ NOT a paper-writing service
+- ❌ NOT a definitive judgment on academic integrity
 
 ---
 
 ## Key Principles
 
-1. **Evidence-Based, Not Definitive:** All findings are presented as indicators and evidence summaries, never as definitive judgments
-2. **Transparency-First:** Help users understand what the analysis shows and what it cannot show
-3. **Privacy-Respecting:** Secure handling of user documents and data
+1. **Student-First:** All features designed to help students succeed and catch issues early
+2. **Evidence-Based, Not Definitive:** All findings are presented as indicators and evidence summaries, never as definitive judgments
+3. **Transparency-First:** Help users understand what the analysis shows and what it cannot show
 4. **Academic Integrity:** Designed to support academic honesty, not circumvent it
 
 ---
 
-## Receipt Sections
+## Report Sections
 
 1. Document Overview
 2. Version Metadata
-3. Writing Timeline Summary
-4. Typed vs Pasted Estimate
-5. Revision/Change Summary
-6. Citation and Attribution Summary
-7. Source-Use Notes
-8. Originality Risk Notes
-9. Student Disclosure Section
-10. Educator Review Section
-11. Final Verification Metadata
+3. Writing Timeline Summary (if available)
+4. Citation and Attribution Summary
+5. Source-Use Notes
+6. Formatting Checks
+7. Confidence Assessment
+8. Processing Notes
 
 ---
 
@@ -113,12 +116,13 @@
 ### Included in MVP
 - ✅ Marketing site
 - ✅ Auth and user accounts
-- ✅ Document workspace
+- ✅ Paper check workspace
 - ✅ Text ingestion
-- ✅ Document analysis pipeline
-- ✅ Authorship receipt generator
-- ✅ Shareable receipt links
-- ✅ Educator review page
+- ✅ Paper analysis pipeline
+- ✅ Check result summary (summary-first UX)
+- ✅ Detailed report generation
+- ✅ Shareable report links with instructor
+- ✅ Instructor review page
 - ✅ PDF export
 - ✅ Admin/internal moderation tools
 
@@ -135,11 +139,11 @@
 ## Pricing Phases
 
 ### Phase 1 (Student-Facing)
-- Free limited plan
-- Paid student plan for more receipts/export/history
+- Free limited plan (5 paper checks/month)
+- Pro plan for unlimited checks, priority processing, advanced features
 
-### Phase 2 (Educator-Facing)
-- Educator plan for review workflow
+### Phase 2 (Instructor-Facing)
+- Instructor plan for review workflow
 
 ### Phase 3 (Institution-Facing)
 - Institution plan for dashboards and policy tools

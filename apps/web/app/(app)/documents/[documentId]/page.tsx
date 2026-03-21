@@ -18,6 +18,15 @@ export default async function DocumentDetailPage({
         orderBy: { version: "desc" },
         include: {
           uploads: true,
+          authorshipReceipt: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            include: {
+              receiptSections: {
+                orderBy: { sortOrder: "asc" },
+              },
+            },
+          },
         },
       },
     },
@@ -27,12 +36,44 @@ export default async function DocumentDetailPage({
     notFound();
   }
 
+  const latestVersion = document.versions[0];
+  const latestReceipt = latestVersion?.authorshipReceipt?.[0];
+  const receiptData = latestReceipt?.receiptData as {
+    status: string;
+    summary: {
+      overallConfidence: string;
+      summaryText: string;
+      processingWarnings: string[];
+    };
+    disclaimer: string;
+  } | null;
+
   const statusColors: Record<string, string> = {
     DRAFT: "bg-gray-100 text-gray-800",
     PROCESSING: "bg-yellow-100 text-yellow-800",
     READY: "bg-green-100 text-green-800",
     FAILED: "bg-red-100 text-red-800",
   };
+
+  const confidenceColors: Record<string, string> = {
+    low: "bg-red-100 text-red-800 border-red-200",
+    medium: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    high: "bg-green-100 text-green-800 border-green-200",
+  };
+
+  // Determine submission readiness based on confidence
+  const getSubmissionStatus = () => {
+    if (document.status === "PROCESSING") return { label: "Checking in Progress", color: "yellow" };
+    if (document.status === "FAILED") return { label: "Check Failed", color: "red" };
+    if (document.status !== "READY") return { label: "Not Ready", color: "gray" };
+    
+    const confidence = receiptData?.summary?.overallConfidence || "medium";
+    if (confidence === "high") return { label: "Ready to Submit", color: "green" };
+    if (confidence === "medium") return { label: "Needs Review", color: "yellow" };
+    return { label: "Issues Found", color: "red" };
+  };
+
+  const submissionStatus = getSubmissionStatus();
 
   return (
     <div className="space-y-6">
@@ -43,7 +84,7 @@ export default async function DocumentDetailPage({
             href="/documents"
             className="text-sm text-gray-500 hover:text-gray-700 mb-2 inline-block"
           >
-            ← Back to Documents
+            ← Back to Papers
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">{document.title}</h1>
           <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
@@ -53,7 +94,7 @@ export default async function DocumentDetailPage({
                 statusColors[document.status] || "bg-gray-100 text-gray-800"
               }`}
             >
-              {document.status}
+              {document.status === "PROCESSING" ? "Checking" : document.status === "READY" ? "Ready" : document.status}
             </span>
           </div>
         </div>
@@ -63,12 +104,12 @@ export default async function DocumentDetailPage({
               href={`/documents/${document.id}/receipt`}
               className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
             >
-              View Receipt
+              View Detailed Report
             </Link>
           )}
           {document.status === "PROCESSING" && (
             <span className="px-4 py-2 bg-yellow-100 text-yellow-800 text-sm rounded-md">
-              Processing...
+              Checking...
             </span>
           )}
           <Link
@@ -80,10 +121,124 @@ export default async function DocumentDetailPage({
         </div>
       </div>
 
+      {/* Paper Check Result Summary - ONLY shown when ready */}
+      {document.status === "READY" && receiptData && (
+        <div className="bg-white border rounded-lg overflow-hidden">
+          {/* Status Banner */}
+          <div className={`px-6 py-4 border-b ${
+            submissionStatus.color === "green" ? "bg-green-50 border-green-200" :
+            submissionStatus.color === "yellow" ? "bg-yellow-50 border-yellow-200" :
+            submissionStatus.color === "red" ? "bg-red-50 border-red-200" :
+            "bg-gray-50 border-gray-200"
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Paper Check Result</h2>
+                <p className={`text-sm font-medium ${
+                  submissionStatus.color === "green" ? "text-green-700" :
+                  submissionStatus.color === "yellow" ? "text-yellow-700" :
+                  submissionStatus.color === "red" ? "text-red-700" :
+                  "text-gray-700"
+                }`}>
+                  {submissionStatus.label}
+                </p>
+              </div>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium border ${
+                  confidenceColors[receiptData?.summary?.overallConfidence || "medium"]
+                }`}
+              >
+                {receiptData?.summary?.overallConfidence?.toUpperCase() || "UNKNOWN"} CONFIDENCE
+              </span>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* Summary Text */}
+            <div>
+              <h3 className="font-medium text-gray-900 mb-2">Overall Summary</h3>
+              <p className="text-gray-600 text-sm">
+                {receiptData?.summary?.summaryText || "Analysis completed. See the detailed report for full findings."}
+              </p>
+            </div>
+
+            {/* Issues and What's Good */}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2">Issues to Review</h3>
+                {receiptData?.summary?.processingWarnings && receiptData.summary.processingWarnings.length > 0 ? (
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    {receiptData.summary.processingWarnings.map((warning, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-amber-500">⚠️</span>
+                        {warning}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-green-600 flex items-center gap-2">
+                    <span>✓</span> No major issues detected
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2">What&apos;s Good</h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  {latestVersion?.content && (
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500">✓</span>
+                      Text content detected ({latestVersion.content.split(/\s+/).filter(Boolean).length.toLocaleString()} words)
+                    </li>
+                  )}
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-500">✓</span>
+                    Document structure analyzed
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Citation Coverage */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-medium text-gray-900 mb-2">Citation Coverage</h3>
+              {latestReceipt?.receiptSections?.find(s => {
+                const data = s.content as { key?: string };
+                return data.key === "citations";
+              }) ? (
+                <p className="text-sm text-gray-600">Citation analysis complete — see detailed report.</p>
+              ) : (
+                <p className="text-sm text-gray-600">No citation issues detected.</p>
+              )}
+            </div>
+
+            {/* Next Steps */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-medium text-blue-900 mb-2">Next Steps</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>Review the detailed report for a complete breakdown</li>
+                <li>Check any warnings above and address them before submission</li>
+                <li>Share the report with your instructor if desired</li>
+              </ul>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-2">
+              <Link
+                href={`/documents/${document.id}/receipt`}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+              >
+                View Detailed Report
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Versions */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Versions ({document.versions.length})
+          Paper Versions ({document.versions.length})
         </h2>
 
         {document.versions.length === 0 ? (
@@ -163,7 +318,7 @@ export default async function DocumentDetailPage({
               href={`/documents/${document.id}/receipt`}
               className="text-blue-600 hover:underline"
             >
-              View receipt →
+              View detailed report →
             </Link>
           </p>
         ) : (

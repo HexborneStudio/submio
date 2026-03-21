@@ -1,6 +1,8 @@
 # Current State
 
-> Last updated: 2026-03-20
+> Last updated: 2026-03-21
+
+**Product Positioning:** Paper Check — Pre-submission paper checker for students
 
 ## What Has Been Built
 

@@ -19,7 +19,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Your Papers</h1>
         <p className="text-gray-600 mt-1">
           Welcome back, {user!.name || user!.email}
         </p>
@@ -31,16 +31,16 @@ export default async function DashboardPage() {
           <div className="flex items-start gap-3">
             <span className="text-2xl">👋</span>
             <div>
-              <h2 className="font-semibold text-blue-900 mb-1">Welcome to Authorship Receipt</h2>
+              <h2 className="font-semibold text-blue-900 mb-1">Welcome to Paper Check</h2>
               <p className="text-blue-800 text-sm mb-3">
-                Upload or paste your first academic document to generate an authorship receipt.
-                Share it with your educator to start a transparent conversation.
+                Upload or paste your first paper to check for citation gaps, source signals,
+                and formatting issues — before you submit to your instructor.
               </p>
               <a
                 href="/documents/new"
                 className="inline-block px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
               >
-                Create Your First Document
+                Start Your First Paper Check
               </a>
             </div>
           </div>
@@ -51,11 +51,11 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg border">
           <div className="text-3xl font-bold text-gray-900">{stats.total}</div>
-          <div className="text-sm text-gray-500 mt-1">Total Documents</div>
+          <div className="text-sm text-gray-500 mt-1">Total Papers</div>
         </div>
         <div className="bg-white p-6 rounded-lg border">
           <div className="text-3xl font-bold text-yellow-600">{stats.processing}</div>
-          <div className="text-sm text-gray-500 mt-1">Processing</div>
+          <div className="text-sm text-gray-500 mt-1">Checking</div>
         </div>
         <div className="bg-white p-6 rounded-lg border">
           <div className="text-3xl font-bold text-green-600">{stats.ready}</div>
@@ -63,10 +63,10 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Documents */}
+      {/* Recent Papers */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Documents</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Recent Paper Checks</h2>
           <a href="/documents" className="text-sm text-blue-600 hover:underline">
             View all
           </a>
@@ -74,12 +74,12 @@ export default async function DashboardPage() {
 
         {documents.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg border border-dashed">
-            <p className="text-gray-500 mb-4">No documents yet</p>
+            <p className="text-gray-500 mb-4">No papers checked yet</p>
             <a
               href="/documents/new"
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
             >
-              Create your first document
+              Start Your First Paper Check
             </a>
           </div>
         ) : (
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
                 <div>
                   <div className="font-medium text-gray-900">{doc.title}</div>
                   <div className="text-sm text-gray-500">
-                    Updated {new Date(doc.updatedAt).toLocaleDateString()}
+                    Checked {new Date(doc.updatedAt).toLocaleDateString()}
                   </div>
                 </div>
                 <span
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
                       : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {doc.status}
+                  {doc.status === "PROCESSING" ? "Checking" : doc.status === "READY" ? "Ready" : doc.status}
                 </span>
               </a>
             ))}

@@ -113,7 +113,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md px-4">
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-blue-600">
-            Authorship Receipt
+            Paper Check
           </Link>
           <h1 className="text-2xl font-bold mt-6">Sign in to your account</h1>
           <p className="text-gray-600 mt-2">

@@ -3,7 +3,7 @@ export default function PrivacyPage() {
     <main className="min-h-screen">
       <header className="border-b">
         <nav className="container mx-auto flex items-center justify-between px-4 py-4">
-          <a href="/" className="text-xl font-bold">Authorship Receipt</a>
+          <a href="/" className="text-xl font-bold">Paper Check</a>
         </nav>
       </header>
 

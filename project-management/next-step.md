@@ -4,73 +4,57 @@
 
 ---
 
-## TASK: Run Internal Testing (Soft Launch)
+## TASK: Validate Student-First Restructure
 
-**Objective:** Validate all MVP flows with 3-5 internal testers before any external launch.
+**Objective:** Review all updated copy, flows, labels, and summary-first result experience to ensure consistency.
 
 **Next Steps:**
-1. Distribute internal-test-plan.md to testers
-2. Each tester runs through the test cases
-3. Record bugs in bug-triage.md (BUG-001, BUG-002, etc.)
-4. Record feedback in feedback-log.md
-5. Fix any BLOCKER or HIGH severity bugs
-6. Re-assess launch readiness score
+1. Run the verification grep command to catch any remaining old terminology
+2. Visually verify the landing page, pricing page, dashboard, documents list
+3. Test the summary-first flow on a document with a completed receipt
+4. Verify the "Share with Instructor" label appears correctly
+5. Ensure all empty states show the new student-first language
 
-**Verification:**
-- MVP readiness score moves toward 8/10 or higher
-- All HIGH severity tests pass
+**Verification command:**
+```bash
+cd ~/authorship-receipt
+grep -r "educator\|Educator\|Authorship Receipt\|Create Document\|receipt" apps/web/src/app --include="*.tsx" --include="*.ts" | grep -v node_modules | grep -v ".next" | head -30
+```
+
+**Success criteria:**
+- No instances of "educator" (should be "instructor") in app pages
+- No instances of "Authorship Receipt" as primary brand in visible UI
+- No instances of "Create Document" as button text
+- Summary-first UX visible on document detail page when status is READY
 
 ---
 
-## Previous TASK: Phase 13 - Post-MVP Planning
+## Previous TASK: Student-First Product Restructure (Phase 13)
 
-**Objective:** Plan the next set of features beyond the MVP core. Review what's been built, identify the highest-leverage next features, and define the Phase 13 scope.
+**Objective:** Reposition the product from educator transparency tool to pre-submission paper checker for students. Presentation layer only, no backend changes.
+
+**Changes made:**
+- Landing page rewritten with student-first messaging
+- Pricing page updated with student-friendly tiers
+- Dashboard shows "Your Papers" with student onboarding
+- Document detail page shows summary-first check result
+- Receipt page renamed to "Detailed Report"
+- Share section updated to "Share with Instructor"
+- All terminology aligned (Documents → Papers, Processing → Checking, etc.)
 
 **Dependencies:**
-- Phase 12: Hardening (current phase) — completing
-
-**Key areas to consider:**
-1. **Educator dashboard** — educators need a way to see receipts submitted by students, track review status, flag suspicious work
-2. **Organization/team accounts** — multiple users per institution, shared settings
-3. **Institution workflows** — school-wide settings, integrations
-4. **LMS integrations** — Canvas, Blackboard, Moodle, Google Classroom
-5. **Advanced source analysis** — citation databases, plagiarism detection integration
-6. **Collaboration features** — shared documents, team analysis
-7. **Storage cleanup job** — delete orphaned uploaded files
-
-**Steps:**
-1. Review current backlog items and prioritize by user value vs. implementation complexity
-2. Define scope for Phase 13 (target: 3-5 features)
-3. Create implementation plan with clear acceptance criteria
-4. Begin with highest-leverage feature
+- Phase 12: Hardening (complete)
+- Internal testing (pending)
 
 ---
 
-## Next Five Tasks (Queue)
-
-1. ~~Phase 2: Data Model~~ ✅ DONE
-2. ~~Phase 3: Auth + App Shell~~ ✅ DONE
-3. ~~Phase 4: Document Ingestion~~ ✅ DONE
-4. ~~Phase 5: Analysis Job System~~ ✅ DONE
-5. ~~Phase 6: Document Parsing + Analysis V1~~ ✅ DONE
-6. ~~Phase 7: Receipt Generation~~ ✅ DONE
-7. ~~Phase 8: Share + Educator Review~~ ✅ DONE
-8. ~~Phase 9: PDF Export~~ ✅ DONE
-9. ~~Phase 10: Admin Tools~~ ✅ DONE
-10. ~~Phase 11: Product Polish~~ ✅ DONE
-11. ~~Phase 12: Hardening~~ ✅ DONE
-12. Soft Launch Prep ✅ DONE
-13. Internal Testing (current)
-
----
-
-## To Run the Worker
+## To Run the App
 
 ```bash
 # 1. Start Redis
 docker run -d -p 6379:6379 redis:7-alpine
 
-# 2. Apply schema (Phases 2-5)
+# 2. Apply schema
 npm run db:push --workspace=packages/db
 npm run db:generate --workspace=packages/db
 

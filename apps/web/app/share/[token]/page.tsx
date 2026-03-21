@@ -67,7 +67,7 @@ export default async function SharedReceiptPage({
       <div className="bg-white border-b px-4 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div>
-            <div className="text-xs text-gray-400 uppercase tracking-wide">Shared Receipt</div>
+            <div className="text-xs text-gray-400 uppercase tracking-wide">Shared Report</div>
             <h1 className="text-lg font-bold text-gray-900">{receipt.document.title}</h1>
           </div>
           <div className="text-xs text-gray-400">
@@ -87,7 +87,7 @@ export default async function SharedReceiptPage({
             {receiptData?.summary?.overallConfidence?.toUpperCase() || "UNKNOWN"} CONFIDENCE
           </span>
           <span className="text-sm text-gray-500">
-            Authorship Receipt — shared for educator review
+            Paper Check — shared for instructor review
           </span>
         </div>
 
@@ -102,7 +102,7 @@ export default async function SharedReceiptPage({
         {/* Existing Reviews */}
         {reviews.length > 0 && (
           <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-            <h2 className="font-semibold text-purple-900 mb-3">Educator Review</h2>
+            <h2 className="font-semibold text-purple-900 mb-3">Instructor Review</h2>
             {reviews.map((review) => (
               <div key={review.id} className="border-b border-purple-100 last:border-0 pb-3 last:pb-0 mb-3 last:mb-0">
                 <div className="flex items-center gap-2 mb-1">
@@ -127,7 +127,7 @@ export default async function SharedReceiptPage({
         <div className="bg-white border rounded-lg p-6">
           <h2 className="font-semibold text-gray-900 mb-1">Submit Review</h2>
           <p className="text-gray-500 text-xs mb-4">
-            As an educator, you can leave feedback on this receipt. All reviews are visible to the student.
+            As an instructor, you can leave feedback on this report. All reviews are visible to the student.
           </p>
           <SubmitReviewForm receiptId={receipt.id} sharedLinkId={link.id} />
         </div>

@@ -50,15 +50,15 @@ export default async function ReceiptPage({
             href="/documents"
             className="text-sm text-gray-500 hover:text-gray-700 mb-2 inline-block"
           >
-            ← Back to Documents
+            ← Back to Papers
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Receipt</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Detailed Report</h1>
         </div>
 
         <div className="bg-gray-50 border border-dashed rounded-lg p-12 text-center">
           <div className="text-4xl mb-4">📋</div>
           <h2 className="text-lg font-semibold text-gray-900 mb-2">
-            Receipt Not Ready
+            No Check Results Yet
           </h2>
           <p className="text-gray-500 mb-4">
             The analysis is still processing or no document version exists yet.
@@ -67,7 +67,7 @@ export default async function ReceiptPage({
             href={`/documents/${documentId}`}
             className="text-blue-600 hover:underline text-sm"
           >
-            View Document →
+            View Paper →
           </Link>
         </div>
       </div>
@@ -97,16 +97,19 @@ export default async function ReceiptPage({
         <Link
           href={`/documents/${documentId}`}
           className="text-sm text-gray-500 hover:text-gray-700 mb-2 inline-block"
-        >
-          ← Back to Document
+          >
+          ← Back to Check Result
         </Link>
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Authorship Receipt
+              Detailed Report
             </h1>
             <p className="text-gray-500 text-sm mt-1">
               {document.title}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              This is a detailed breakdown. For a summary, go back to your check result.
             </p>
           </div>
           <span
@@ -162,7 +165,7 @@ export default async function ReceiptPage({
                     ⚠️ Important Caution
                   </p>
                   <p className="text-yellow-700 text-xs leading-relaxed">
-                    This receipt provides EVIDENCE-BASED INDICATORS only. It does NOT
+                    This report provides EVIDENCE-BASED INDICATORS only. It does NOT
                     constitute a definitive judgment on authorship, originality, or academic
                     integrity. All findings should be reviewed in appropriate academic context.
                   </p>
@@ -204,14 +207,14 @@ export default async function ReceiptPage({
         );
       })}
 
-      {/* Share with Educator */}
+      {/* Share with Instructor */}
       <ShareSection receiptId={receipt.id} />
 
       {/* Export PDF */}
       <div className="bg-white border rounded-lg p-6">
-        <h3 className="font-semibold text-gray-900 mb-2">Export Receipt</h3>
+        <h3 className="font-semibold text-gray-900 mb-2">Export Report</h3>
         <p className="text-gray-500 text-sm mb-4">
-          Download a PDF copy of this authorship receipt for your records.
+          Download a PDF copy of this detailed report for your records.
         </p>
         <ExportPdfButton receiptId={receipt.id} />
       </div>
@@ -220,13 +223,13 @@ export default async function ReceiptPage({
       <div className="bg-gray-100 border border-gray-200 rounded-lg p-4">
         <p className="text-xs text-gray-600 leading-relaxed">
           {receiptData?.disclaimer ||
-            "This receipt provides evidence-based indicators only and does not constitute a definitive judgment."}
+            "This report provides evidence-based indicators only and does not constitute a definitive judgment."}
         </p>
       </div>
 
       {/* Metadata */}
       <div className="text-xs text-gray-400 text-center">
-        Receipt ID: {receipt.id} · Generated: {new Date(receipt.createdAt).toLocaleString()} · Document Version: {receipt.versionId}
+        Report ID: {receipt.id} · Generated: {new Date(receipt.createdAt).toLocaleString()} · Document Version: {receipt.versionId}
       </div>
     </div>
   );

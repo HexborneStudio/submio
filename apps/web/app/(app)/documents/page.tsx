@@ -14,12 +14,12 @@ export default async function DocumentsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">My Documents</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Your Papers</h1>
         <a
           href="/documents/new"
           className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
         >
-          New Document
+          Start New Check
         </a>
       </div>
 
@@ -27,9 +27,9 @@ export default async function DocumentsPage() {
         <div className="bg-white rounded-lg border">
           <EmptyState
             icon="📄"
-            title="No documents yet"
-            description="Upload or paste your first document to generate an authorship receipt."
-            action={{ label: "Create Document", href: "/documents/new" }}
+            title="No paper checks yet"
+            description="Start your first check to see what your paper looks like before submission."
+            action={{ label: "Start Paper Check", href: "/documents/new" }}
           />
         </div>
       ) : (
@@ -44,7 +44,7 @@ export default async function DocumentsPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900">{doc.title}</h3>
                   <p className="text-sm text-gray-500 mt-1">
-                    Created {new Date(doc.createdAt).toLocaleDateString()}
+                    Checked {new Date(doc.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <span
@@ -58,7 +58,7 @@ export default async function DocumentsPage() {
                       : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {doc.status}
+                  {doc.status === "PROCESSING" ? "Checking" : doc.status === "READY" ? "Ready" : doc.status}
                 </span>
               </div>
             </Link>

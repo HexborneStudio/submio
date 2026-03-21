@@ -87,7 +87,7 @@ export function ShareSection({ receiptId }: Props) {
   return (
     <div className="bg-white border rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-900">Share with Educator</h2>
+        <h2 className="font-semibold text-gray-900">Share with Instructor</h2>
         {!showCreate && (
           <button
             onClick={() => setShowCreate(true)}
@@ -133,7 +133,7 @@ export function ShareSection({ receiptId }: Props) {
 
       {activeLinks.length === 0 && !showCreate && (
         <p className="text-gray-400 text-sm">
-          No active share links. Create one to share this receipt with an educator.
+          No active share links. Create one to share this report with your instructor before or after submission.
         </p>
       )}
 

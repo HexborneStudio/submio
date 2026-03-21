@@ -4,11 +4,23 @@
 
 ## NOW (Current Phase)
 
-### Phase 13: Post-MVP Planning
+### Phase 13: Student-First Validation
 
 ---
 
 ## DONE
+
+### Phase 13: Student-First Product Restructure ✅
+- [x] Landing page rewrite (student-first messaging)
+- [x] Pricing page (student-friendly tiers)
+- [x] Dashboard update ("Your Papers" heading)
+- [x] Documents list update ("Start New Check" CTA)
+- [x] Document detail page (summary-first UX)
+- [x] Receipt page renamed to "Detailed Report"
+- [x] Share section ("Share with Instructor")
+- [x] AppShell nav ("Papers" label)
+- [x] Product spec updated
+- [x] Decisions documented (DEC-047 through DEC-050)
 
 ### Phase 9: PDF Export ✅
 - [x] Build PDF template component (PdfReceiptDocument using @react-pdf/renderer)
@@ -76,12 +88,21 @@
 ## BLOCKED
 
 ### Phase 13: Post-MVP
-- [ ] Educator dashboard — waiting for Phase 2-10
+- [ ] Student feedback collection — validate restructure effectiveness
+- [ ] Instructor dashboard — deferred (share links work without it)
 - [ ] Organization/team accounts — waiting for Phase 2-10
-- [ ] Institution workflows — waiting for Phase 2-10
-- [ ] LMS integrations — waiting for Phase 2-10
+- [ ] Institution workflows — deferred
+- [ ] LMS integrations — deferred
 - [ ] Advanced source analysis — waiting for Phase 6
 - [ ] Collaboration features — future consideration
+
+## DEFERRED (Educator-Facing)
+
+These items are educator/institution facing and are lower priority than student-facing improvements:
+- [ ] Educator dashboard for reviewing submitted reports
+- [ ] Institution admin panels
+- [ ] Bulk receipt review workflows
+- [ ] Educator notification system
 
 ## Post-MVP Soft Launch Prep
 - [x] Internal test plan — DONE

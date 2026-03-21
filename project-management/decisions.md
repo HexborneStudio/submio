@@ -868,3 +868,62 @@ None yet.
 **Rationale:** Catch real-world usage issues before exposing to public. MVP is feature-complete for core flows.
 
 **Status:** Accepted
+
+---
+
+## 2026-03-21 (Phase 13)
+
+### DEC-047: Student-First Product Positioning
+
+**Decision:** Reposition the product from "educator transparency tool" to "pre-submission paper checker for students."
+
+**Rationale:**
+- Primary value prop is helping students catch issues before submission
+- Instructor sharing is repositioned as optional post-submission action
+- "Authorship Receipt" brand → "Paper Check" branding
+- Target user: student preparing to submit work
+- Core promise: catch issues before your professor does
+
+**Status:** Accepted
+
+---
+
+### DEC-048: Summary-First UX on Document Detail Page
+
+**Decision:** The document detail page (paper check result page) shows a summary-first layout with clear submission readiness status before any detailed report.
+
+**Rationale:**
+- Students need immediate actionable feedback
+- Summary-first matches the "pre-flight check" mental model
+- Detailed report is secondary/investigation layer
+- Clear status: "Ready to Submit" / "Needs Review" / "Issues Found"
+
+**Status:** Accepted
+
+---
+
+### DEC-049: Detailed Report Demoted to Secondary Layer
+
+**Decision:** The detailed report (formerly "Authorship Receipt") is accessible via "View Detailed Report" button, not shown by default.
+
+**Rationale:**
+- Summary provides immediate value
+- Detailed report is for investigation when issues are found
+- Reduces cognitive load for students just wanting quick feedback
+- Maintains full data access for those who need it
+
+**Status:** Accepted
+
+---
+
+### DEC-050: Share with Instructor Repositioned
+
+**Decision:** "Share with Educator" renamed to "Share with Instructor" and repositioned as an optional post-submission action.
+
+**Rationale:**
+- Student is the primary user
+- Instructor sharing is optional, not the core use case
+- Explanatory text updated to clarify it's for sharing before or after submission
+- Reinforces that the tool helps students first
+
+**Status:** Accepted
