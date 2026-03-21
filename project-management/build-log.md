@@ -692,3 +692,18 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - project-management/feedback-log.md — structured feedback capture template
 
 **Launch readiness:** 5.7/10 — MVP ready for internal testing
+
+### TASK: Day 1 Internal Testing Preparation ✅ COMPLETE
+
+**Completed at:** 20:05 CDT
+
+**Documents created:**
+- project-management/day1-test-sessions.md — Per-tester session tracker with pass/fail checklist, confusion slots, observer notes, bug references
+- project-management/day1-runbook.md — Full setup/runbook: start services, prepare test materials, observer setup, during-session recording, post-session actions, quick reference card
+
+**Files updated:**
+- project-management/current-state.md — Added Day 1 readiness check section with health check commands and known-working commit hash
+- project-management/backlog.md — Already contained correct Post-MVP Soft Launch Prep section
+- project-management/next-step.md — Already pointed to internal testing (no change needed)
+
+**Ready for:** Day 1 internal testing with 2 student testers

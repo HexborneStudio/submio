@@ -207,8 +207,42 @@ authorship-receipt/
 
 ---
 
+## Day 1 Readiness Check
+
+**Pre-testing verification (run before each session):**
+```bash
+# Health check
+curl http://localhost:3000/api/health
+# Expect: {"status":"ok",...}
+
+# Worker health
+curl http://localhost:3001/health
+# Expect: {"status":"ok"}
+
+# Check no recent failed jobs in worker output
+```
+
+**Must be running:**
+- PostgreSQL on port 5432 (Docker or local)
+- Redis on port 6379
+- `npm run dev --workspace=apps/worker` (Tab 2, port 3001)
+- `npm run dev --workspace=apps/web` (Tab 3, port 3000)
+
+**Known working commit:** `572bde5` (build fix) + `636561e` (launch docs)
+
+**If broken:** `git checkout 636561e && npm install`
+
+**Test materials needed:**
+- Sample PDF file (< 10MB)
+- Sample DOCX file (< 10MB)
+- `day1-test-sessions.md` — open during sessions
+- `feedback-log.md` — open during sessions
+- `bug-triage.md` — open during sessions
+
+---
+
 ## Next Priority
 
-**Internal Testing (Soft Launch Prep)** — MVP is feature-complete. Run internal testing with 3-5 real users to validate all flows. Record bugs in bug-triage.md and feedback in feedback-log.md.
+**Day 1 Internal Testing** — Run sessions with 2 student testers. Use `day1-runbook.md` and `day1-test-sessions.md`. Record bugs in `bug-triage.md` and feedback in `feedback-log.md`.
 
 See: [next-step.md](./next-step.md)
