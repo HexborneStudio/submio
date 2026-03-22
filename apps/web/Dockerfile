@@ -1,20 +1,34 @@
-FROM node:20-alpine AS base
+FROM node:25-alpine AS base
+
 WORKDIR /app
-RUN corepack enable
 
-COPY package.json package-lock.json ./
-RUN npm ci --frozen-lockfile
+# Install dependencies
+FROM base AS deps
+COPY package.json package-lock.json* ./
+RUN npm ci --ignore-scripts
 
+# Build Next.js
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build --workspace=apps/web
+RUN npm run build
 
-FROM node:20-alpine AS runner
+# Production image
+FROM base AS runner
 WORKDIR /app
-ENV NODE_ENV=production
 
-COPY --from=base /app/apps/web/.next/standalone ./
-COPY --from=base /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=base /app/public ./public
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Install only production deps
+COPY package.json package-lock.json* ./
+RUN npm ci --ignore-scripts && npm cache clean --force
+
+# Copy built output and server
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./
 
 EXPOSE 3000
-CMD ["node", "server.js"]
+
+CMD ["npm", "start"]

@@ -1,18 +1,18 @@
-FROM node:20-alpine AS base
+FROM node:25-alpine
+
 WORKDIR /app
-RUN corepack enable
 
-COPY package.json package-lock.json ./
-RUN npm ci --frozen-lockfile
+# Install dependencies (including tsx for running TypeScript)
+COPY package.json package-lock.json* ./
+RUN npm ci --ignore-scripts && npm cache clean --force
 
+# Copy source
 COPY . .
-RUN npm run build --workspace=apps/worker
 
-FROM node:20-alpine AS runner
-WORKDIR /app
 ENV NODE_ENV=production
-
-COPY --from=base /app/apps/worker/dist ./dist
+ENV PORT=3001
 
 EXPOSE 3001
-CMD ["node", "dist/index.js"]
+
+# Run with tsx (fast TypeScript execution, production-safe)
+CMD ["npm", "run", "dev"]
