@@ -43,3 +43,13 @@ packages/db/prisma/migrations/**/migration_lock.toml
 
 # Misc
 *.tsbuildinfo
+
+# Build outputs
+.next/
+dist/
+.next/
+apps/web/.next/
+apps/web/dist/
+apps/worker/dist/
+packages/analysis/dist/
+packages/db/dist/
