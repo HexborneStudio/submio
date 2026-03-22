@@ -37,7 +37,26 @@ railway whoami
 
 ---
 
-## Step 2: Create Railway Project
+## Step 2: Get Railway API Token
+
+1. Go to [dashboard.railway.app](https://dashboard.railway.app) → Account → API Tokens
+2. Create a new token (name it "GitHub Actions" or "CLI")
+3. Copy the token immediately — it only shows once
+
+**For Railway CLI:**
+```bash
+export RAILWAY_TOKEN="your-token-here"
+railway whoami
+```
+
+**For GitHub Actions (recommended):**
+1. Go to your GitHub repo → Settings → Secrets and Variables → Actions
+2. Add a new repository secret: `RAILWAY_TOKEN` = your Railway API token
+3. Push the code and the deploy workflow will run automatically
+
+---
+
+## Step 3: Create Railway Project
 
 ```bash
 cd ~/authorship-receipt
@@ -98,6 +117,17 @@ WORKER_PORT=3001
 ---
 
 ## Step 5: Deploy Services
+
+### Option A: GitHub Actions (Recommended — Fully Automated)
+
+1. Push this repo to GitHub
+2. Add `RAILWAY_TOKEN` to GitHub repo Secrets (Settings → Secrets and Variables → Actions)
+3. The workflow `.github/workflows/deploy.yml` runs automatically on push to main
+4. Or: go to Actions tab → "Deploy to Railway" → Run workflow
+
+No manual deployment after setup — every push to `main` deploys automatically.
+
+### Option B: Railway CLI (Manual)
 
 ### Option A: Deploy from GitHub (Recommended)
 
