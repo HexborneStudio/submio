@@ -734,7 +734,7 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 **Terminology changes:**
 | FROM | TO |
 |------|-----|
-| "Authorship Receipt" | "Paper Check" / "Detailed Report" |
+| "Submio" | "Paper Check" / "Detailed Report" |
 | "Document" (nav) | "Papers" |
 | "Create Document" | "Start Paper Check" |
 | "Receipt" | "Detailed Report" |

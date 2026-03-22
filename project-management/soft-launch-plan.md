@@ -1,8 +1,8 @@
-# Soft Launch Plan — Authorship Receipt MVP
+# Soft Launch Plan — Submio MVP
 
 **Status:** Ready to proceed
 **Date:** 2026-03-22
-**Product:** Authorship Receipt — paper check tool for students
+**Product:** Submio — paper check tool for students
 
 ---
 
