@@ -244,9 +244,9 @@ curl http://localhost:3001/health
 - `npm run dev --workspace=apps/worker` (Tab 2, port 3001)
 - `npm run dev --workspace=apps/web` (Tab 3, port 3000)
 
-**Known working commit:** `572bde5` (build fix) + `636561e` (launch docs)
+**Known working commit:** Latest commit with all share API + copy cleanup fixes (see build log)
 
-**If broken:** `git checkout 636561e && npm install`
+**If broken:** Check git log for last known good state; services must be started from `apps/web/` and `apps/worker/` directories directly
 
 **Test materials needed:**
 - Sample PDF file (< 10MB)

@@ -139,7 +139,7 @@ export function extractCitations(text: string): CitationAnalysisResult {
     indicators.push("High number of footnote markers — academic document likely");
   }
 
-  if (citations.length === 0 && text.length > 500) {
+  if (citations.length === 0 && text.length > 1000) {
     warnings.push("No citation patterns detected in a document of substantial length");
   }
   if (bibliographyDetected && citations.length < 3) {

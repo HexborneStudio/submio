@@ -37,6 +37,7 @@ export function buildAuthorshipSignals(input: BuildSignalsInput): AuthorshipSign
   // Build indicators
   const indicators: string[] = [];
   const notes: string[] = [];
+  const processingWarnings: string[] = [];
   const warnings: string[] = [...parsingWarnings];
 
   if (ingestionType === "paste") {
@@ -52,7 +53,7 @@ export function buildAuthorshipSignals(input: BuildSignalsInput): AuthorshipSign
     indicators.push("Substantial document length (>5000 words)");
   } else if (normalizedText.metrics.wordCount < 100) {
     indicators.push("Very short document — limited analysis possible");
-    warnings.push("Document is very short; authorship signals may be unreliable");
+    processingWarnings.push("Document is very short; authorship signals may be unreliable");
   }
 
   if (sectionHeaders.length > 3) {

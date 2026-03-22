@@ -58,9 +58,13 @@ export function buildReceiptSummary(analysis: AnalysisResult | null): ReceiptSum
     bibliographyFound: hasBibliography,
     overallConfidence: signals.indicators.confidence,
     summaryText,
-    processingWarnings: [
-      ...signals.processing.warnings,
-      ...signals.indicators.warnings,
-    ],
+    // Filter out citation-specific warnings that appear in their own sections
+    // Don't duplicate — citation warnings shown in Citation section, "very short" in Confidence
+    processingWarnings: signals.processing.warnings.filter(
+      (w) =>
+        !signals.indicators.warnings.includes(w) &&
+        !w.toLowerCase().includes("citation") &&
+        !w.toLowerCase().includes("very short")
+    ),
   };
 }

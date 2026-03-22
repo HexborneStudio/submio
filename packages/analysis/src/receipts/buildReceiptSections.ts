@@ -48,37 +48,42 @@ export function buildReceiptSections(
 }
 
 function buildOverviewSection(analysis: AnalysisResult, summary: ReceiptSummary): ReceiptSection {
+  const items = [
+    { label: "Check Status", value: analysis.status === "success" ? "Complete" : analysis.status },
+    { label: "Content Type", value: analysis.signals.ingestion.type === "paste" ? "Pasted Text" : "File Upload" },
+  ];
+
+  if (analysis.signals.ingestion.type === "file_upload" && analysis.signals.ingestion.fileName) {
+    items.push({ label: "Original File", value: analysis.signals.ingestion.fileName });
+  }
+
   return {
     key: "overview",
     title: "Document Overview",
     summary: summary.summaryText,
-    items: [
-      { label: "Processing Status", value: analysis.status },
-      { label: "Text Extracted", value: summary.textExtracted ? "Yes" : "No" },
-      { label: "Word Count", value: analysis.signals.text.wordCount },
-      { label: "Ingestion Method", value: analysis.signals.ingestion.type === "paste" ? "Pasted Text" : "File Upload" },
-      { label: "Original File", value: analysis.signals.ingestion.fileName || "N/A" },
-    ],
+    items,
     warnings: [],
-    notes: [
-      "This receipt was generated automatically based on document analysis.",
-    ],
+    notes: [],
   };
 }
 
 function buildParsingSection(signals: AnalysisResult["signals"]): ReceiptSection {
+  const items: Array<{ label: string; value: string | number | boolean }> = [
+    { label: "Extraction Status", value: signals.parsing.success ? "Success" : "Issues detected" },
+  ];
+
+  // Only show file-specific fields when a file was uploaded
+  if (signals.ingestion.type === "file_upload" && signals.parsing.pagesExtracted) {
+    items.splice(1, 0, { label: "Pages", value: signals.parsing.pagesExtracted });
+  }
+
   return {
     key: "parsing",
     title: "Parsing Summary",
     summary: signals.parsing.success
       ? "Document text was extracted successfully."
       : "Document parsing completed with warnings.",
-    items: [
-      { label: "Parsing Success", value: signals.parsing.success ? "Yes" : "No" },
-      { label: "Parser Library", value: signals.parsing.library || "N/A" },
-      { label: "Pages Extracted", value: signals.parsing.pagesExtracted || "N/A" },
-      { label: "Character Count", value: signals.text.characterCount },
-    ],
+    items,
     warnings: signals.parsing.warnings,
     notes: signals.parsing.notes,
   };
@@ -91,10 +96,7 @@ function buildTextMetricsSection(signals: AnalysisResult["signals"]): ReceiptSec
     summary: `${signals.text.wordCount.toLocaleString()} words extracted from the document.`,
     items: [
       { label: "Word Count", value: signals.text.wordCount.toLocaleString() },
-      { label: "Character Count", value: signals.text.characterCount.toLocaleString() },
-      { label: "Paragraphs", value: signals.text.paragraphCount.toLocaleString() },
       { label: "Sentences", value: signals.text.sentenceCount.toLocaleString() },
-      { label: "Lines", value: signals.text.lineCount.toLocaleString() },
     ],
     warnings: [],
     notes: [],
@@ -111,13 +113,9 @@ function buildCitationsSection(signals: AnalysisResult["signals"]): ReceiptSecti
       ? `${signals.citations.totalCount} citation indicator(s) detected.`
       : "No citation indicators detected in this document.",
     items: [
-      { label: "Total Citations Found", value: signals.citations.totalCount },
-      { label: "Unique Sources", value: signals.citations.uniqueSources },
-      { label: "URLs Detected", value: signals.citations.patterns.urlCount },
-      { label: "DOIs Detected", value: signals.citations.patterns.doiCount },
-      { label: "Author-Year Citations", value: signals.citations.patterns.parentheticalCitations },
-      { label: "Bracket Citations", value: signals.citations.patterns.bracketCitations },
-      { label: "Bibliography Detected", value: signals.citations.bibliographyDetected ? "Yes" : "No" },
+      { label: "Citations Found", value: signals.citations.totalCount },
+      { label: "Bibliography", value: signals.citations.bibliographyDetected ? "Yes" : "No" },
+      { label: "Web Links", value: signals.citations.patterns.urlCount },
     ],
     warnings: signals.citations.warnings,
     notes: [
@@ -131,7 +129,7 @@ function buildCitationsSection(signals: AnalysisResult["signals"]): ReceiptSecti
 function buildSourcesSection(signals: AnalysisResult["signals"]): ReceiptSection {
   return {
     key: "sources",
-    title: "Source Reference Indicators",
+    title: "Source Patterns",
     summary: `${signals.sources.count} source reference(s) identified from citation patterns.`,
     items: [
       { label: "Unique Sources", value: signals.sources.count },
@@ -148,23 +146,24 @@ function buildSourcesSection(signals: AnalysisResult["signals"]): ReceiptSection
 }
 
 function buildStructuralSection(signals: AnalysisResult["signals"]): ReceiptSection {
+  const items = [
+    { label: "References Section", value: signals.structural.hasReferences ? "Yes" : "No" },
+    { label: "Footnotes", value: signals.structural.hasFootnotes ? "Yes" : "No" },
+  ];
+
+  const warnings = signals.structural.estimatedSections.length === 0
+    ? ["Document may not follow a standard academic structure."]
+    : [];
+
   return {
     key: "structural",
     title: "Structural Notes",
     summary: signals.structural.hasReferences
       ? "Document appears to follow academic structure with a references section."
       : "Document structure could not be fully determined.",
-    items: [
-      { label: "Bibliography/References", value: signals.structural.hasBibliography ? "Detected" : "Not Detected" },
-      { label: "Footnotes", value: signals.structural.hasFootnotes ? "Detected" : "Not Detected" },
-      { label: "Section Count (Est.)", value: signals.structural.estimatedSections.length },
-    ],
-    warnings: signals.structural.estimatedSections.length === 0
-      ? ["Document may not follow a standard academic structure."]
-      : [],
-    notes: signals.structural.estimatedSections.length > 0
-      ? [`Detected section headers: ${signals.structural.estimatedSections.slice(0, 5).join(", ")}`]
-      : [],
+    items,
+    warnings,
+    notes: [],
   };
 }
 
@@ -175,6 +174,11 @@ function buildConfidenceSection(signals: AnalysisResult["signals"], summary: Rec
     high: "High — Multiple indicators confirmed",
   };
 
+  const warnings: string[] = [];
+  if (signals.text.wordCount < 100) {
+    warnings.push("Document is very short; authorship signals may be unreliable");
+  }
+
   return {
     key: "confidence",
     title: "Confidence & Caution",
@@ -183,7 +187,7 @@ function buildConfidenceSection(signals: AnalysisResult["signals"], summary: Rec
       { label: "Confidence Level", value: summary.overallConfidence.charAt(0).toUpperCase() + summary.overallConfidence.slice(1) },
       { label: "Confidence Explanation", value: confidenceLabel[summary.overallConfidence] },
     ],
-    warnings: signals.indicators.warnings,
+    warnings,
     notes: [
       "⚠️ This receipt provides EVIDENCE-BASED INDICATORS only.",
       "⚠️ It does NOT constitute a definitive judgment on authorship.",

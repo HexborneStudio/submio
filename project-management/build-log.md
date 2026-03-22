@@ -848,3 +848,49 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Share page review form: status dropdown defaults to "REVIEWED" in JS state but form submit may fail silently if dropdown selection event didn't fire — needs a status field default fix in the form component
 
 **Full walkthrough report:** project-management/founder-walkthrough.md
+
+---
+
+## 2026-03-22 (Late Evening)
+
+### TASK: Report Simplification + Final Authenticated Walkthrough ✅ COMPLETE
+
+**Files changed:**
+
+**`apps/web/app/(app)/documents/[documentId]/receipt/CollapsibleSection.tsx`** — NEW
+- Self-contained collapsible component for "Technical Details" section
+- Uses `useState` for open/close, styled with Tailwind
+
+**`apps/web/app/(app)/documents/[documentId]/receipt/page.tsx`** — MODIFIED
+- Priority sections (always visible): Summary, Citation & Source Indicators, Confidence & Caution
+- Technical Details wrapped in `<CollapsibleSection title="Technical Details" defaultOpen={false}>`
+  Contains: Document Overview, Parsing Summary, Text Metrics, Structural Notes, Source Patterns
+- Share with Instructor and Export Report placed below Technical Details
+- Removed duplicate ShareSection/ExportPdfButton renders (was appearing twice)
+- Footer disclaimer shortened to: "This report provides evidence-based indicators to support honest academic practices. It is not a verdict — always review findings in context with your instructor."
+
+**`packages/analysis/src/receipts/buildReceiptSections.ts`** — MODIFIED
+- Document Overview: removed "Text Extracted", "Word Count"; kept "Check Status", "Content Type"
+- Parsing Summary: removed "Extraction Success", kept only "Extraction Status"
+- Text Metrics: kept only "Word Count" and "Sentences" (removed Character Count, Paragraphs, Lines)
+- Citation section: trimmed to 3 items (Citations Found, Bibliography, Web Links)
+- Source Patterns: renamed from "Source Reference Indicators"
+- Structural Notes: removed section headers list, kept References/Footnotes only
+
+**`packages/analysis/src/receipts/buildReceiptSummary.ts`** — MODIFIED
+- `processingWarnings`: filter removes citation-specific warnings (already shown in Citation section)
+- `processingWarnings`: filter removes "very short" (shown in Confidence section)
+
+**`packages/analysis/src/signals/buildAuthorshipSignals.ts`** — MODIFIED
+- "Document is very short; authorship signals may be unreliable" moved from `indicators.warnings` to `processing.warnings`
+- `processingWarnings` variable declared and used properly
+
+**`packages/analysis/src/citations/extractCitations.ts`** — MODIFIED
+- Threshold for "substantial length" citation warning raised from 500→1000 characters
+
+**`packages/analysis/src/receipts/buildReceiptSections.ts`** (additional)
+- Citation section: simplified summary text, removed redundant item labels
+- Confidence section: "very short" warning now added directly based on wordCount < 100
+
+**Services restart note:** After any analysis package change, must kill all tsx processes and restart worker to force tsx to re-compile from source (tsx caches compiled output across runs)
+

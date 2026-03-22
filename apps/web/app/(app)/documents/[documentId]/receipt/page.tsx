@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@authorship-receipt/db";
 import { ShareSection } from "./ShareSection";
 import { ExportPdfButton } from "./ExportPdfButton";
+import { CollapsibleSection } from "./CollapsibleSection";
 import { trackEvent } from "@/lib/analytics";
 
 export default async function ReceiptPage({
@@ -138,74 +139,93 @@ export default async function ReceiptPage({
         )}
       </div>
 
-      {/* Sections */}
-      {receipt.receiptSections.map((section) => {
-        const data = section.content as {
-          key: string;
-          title: string;
-          summary: string;
-          items: Array<{ label: string; value: string | number | boolean }>;
-          warnings: string[];
-          notes: string[];
-        };
-
-        return (
-          <div key={section.id} className="bg-white border rounded-lg p-6">
-            <h3 className="font-semibold text-gray-900 mb-3">{data.title}</h3>
-
-            {data.key !== "confidence" && (
-              <p className="text-gray-600 text-sm mb-4">{data.summary}</p>
-            )}
-
-            {data.key === "confidence" && (
-              <div className="mb-4">
-                <p className="text-gray-600 text-sm mb-3">{data.summary}</p>
-                <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                  <p className="text-yellow-800 text-sm font-medium mb-1">
-                    ⚠️ A Note About This Report
-                  </p>
-                  <p className="text-yellow-700 text-xs leading-relaxed">
-                    This report shows patterns and indicators — it is not a verdict on your work
-                    or academic integrity. It is a transparency tool to help you understand what
-                    your paper looks like from a citation and structure standpoint.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {data.items.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {data.items.map((item, i) => (
-                  <div key={i} className="flex justify-between text-sm">
-                    <span className="text-gray-500">{item.label}</span>
-                    <span className="font-medium text-gray-900">
-                      {typeof item.value === "boolean"
-                        ? item.value ? "Yes" : "No"
-                        : String(item.value)}
-                    </span>
+      {/* Priority sections: Citation + Confidence */}
+      {receipt.receiptSections
+        .filter((s) => ["citations", "confidence"].includes((s.content as any).key))
+        .map((section) => {
+          const data = section.content as {
+            key: string; title: string; summary: string;
+            items: Array<{ label: string; value: string | number | boolean }>;
+            warnings: string[]; notes: string[];
+          };
+          return (
+            <div key={section.id} className="bg-white border rounded-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-3">{data.title}</h3>
+              {data.key === "confidence" ? (
+                <div className="mb-4">
+                  <p className="text-gray-600 text-sm mb-3">{data.summary}</p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                    <p className="text-yellow-800 text-sm font-medium mb-1">⚠️ A Note About This Report</p>
+                    <p className="text-yellow-700 text-xs leading-relaxed">
+                      This report shows patterns and indicators — it is not a verdict on your work or academic integrity. It is a transparency tool to help you understand what your paper looks like from a citation and structure standpoint.
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ) : (
+                <p className="text-gray-600 text-sm mb-4">{data.summary}</p>
+              )}
+              {data.items.length > 0 && (
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {data.items.map((item, i) => (
+                    <div key={i} className="flex justify-between text-sm">
+                      <span className="text-gray-500">{item.label}</span>
+                      <span className="font-medium text-gray-900">
+                        {typeof item.value === "boolean" ? item.value ? "Yes" : "No" : String(item.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {data.warnings.length > 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded p-3 mb-4">
+                  {data.warnings.map((w, i) => <p key={i} className="text-amber-800 text-xs">⚠️ {w}</p>)}
+                </div>
+              )}
+              {data.notes.length > 0 && data.key !== "confidence" && (
+                <div className="text-xs text-gray-400 space-y-1">
+                  {data.notes.map((n, i) => <p key={i}>{n}</p>)}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
-            {data.warnings.length > 0 && (
-              <div className="bg-amber-50 border border-amber-200 rounded p-3 mb-4">
-                {data.warnings.map((w, i) => (
-                  <p key={i} className="text-amber-800 text-xs">⚠️ {w}</p>
-                ))}
-              </div>
-            )}
-
-            {data.notes.length > 0 && data.key !== "confidence" && (
-              <div className="text-xs text-gray-400 space-y-1">
-                {data.notes.map((n, i) => (
-                  <p key={i}>{n}</p>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {/* Technical Details — collapsed by default */}
+      {receipt.receiptSections.filter((s) => !["citations", "confidence"].includes((s.content as any).key)).length > 0 && (
+        <CollapsibleSection title="Technical Details" defaultOpen={false}>
+          {receipt.receiptSections
+            .filter((s) => !["citations", "confidence"].includes((s.content as any).key))
+            .map((section) => {
+              const data = section.content as {
+                key: string; title: string; summary: string;
+                items: Array<{ label: string; value: string | number | boolean }>;
+                warnings: string[];
+              };
+              return (
+                <div key={section.id} className="mb-3 last:mb-0">
+                  <p className="text-gray-400 text-xs mb-1.5">{data.title}</p>
+                  {data.items.length > 0 && (
+                    <div className="grid grid-cols-2 gap-1.5 mb-1.5">
+                      {data.items.map((item, i) => (
+                        <div key={i} className="flex justify-between text-xs">
+                          <span className="text-gray-400">{item.label}</span>
+                          <span className="text-gray-700">
+                            {typeof item.value === "boolean" ? item.value ? "Yes" : "No" : String(item.value)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {data.warnings.length > 0 && (
+                    <div className="bg-amber-50 border border-amber-100 rounded px-2 py-1">
+                      {data.warnings.map((w, i) => <p key={i} className="text-amber-700 text-xs">⚠️ {w}</p>)}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+        </CollapsibleSection>
+      )}
 
       {/* Share with Instructor */}
       <ShareSection receiptId={receipt.id} />
@@ -220,16 +240,10 @@ export default async function ReceiptPage({
       </div>
 
       {/* Disclaimer */}
-      <div className="bg-gray-100 border border-gray-200 rounded-lg p-4">
-        <p className="text-xs text-gray-600 leading-relaxed">
-          {receiptData?.disclaimer ||
-            "This report provides evidence-based indicators only and does not constitute a definitive judgment."}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+        <p className="text-xs text-gray-500 leading-relaxed">
+          This report provides evidence-based indicators to support honest academic practices. It is not a verdict — always review findings in context with your instructor.
         </p>
-      </div>
-
-      {/* Metadata */}
-      <div className="text-xs text-gray-400 text-center">
-        Report ID: {receipt.id} · Generated: {new Date(receipt.createdAt).toLocaleString()} · Document Version: {receipt.versionId}
       </div>
     </div>
   );
