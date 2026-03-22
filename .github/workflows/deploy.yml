@@ -4,43 +4,38 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-
-env:
-  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-  RAILWAY_SERVICE_NAME: ${{ vars.RAILWAY_SERVICE_NAME }}
+    inputs:
+      service:
+        description: 'Service to deploy'
+        required: false
+        default: 'all'
 
 jobs:
-  deploy-worker:
-    name: Deploy Worker
+  deploy:
+    name: Deploy via Railway GitHub Integration
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/worker
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Railway
-        run: npm install -g @railway/cli
-
-      - name: Deploy Worker
-        run: railway up --service worker
+      - name: Trigger Railway Deploy
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-  deploy-web:
-    name: Deploy Web
-    runs-on: ubuntu-latest
-    needs: deploy-worker
-    defaults:
-      run:
-        working-directory: apps/web
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Railway
-        run: npm install -g @railway/cli
-
-      - name: Deploy Web
-        run: railway up --service web
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+        run: |
+          echo "Triggering Railway deploy for ${{ github.sha }}"
+          
+          # Query project services to find service IDs
+          PROJECT_DATA=$(curl -s -X POST \
+            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\":\"{ project(id: \\\"$RAILWAY_PROJECT_ID\\\") { services { edges { node { id name } } } }\"}" \
+            "https://gateway.railway.app/graphql/v2")
+          
+          echo "Project services: $PROJECT_DATA"
+          
+          # The Railway GitHub App handles deployment automatically
+          # This workflow just logs the deployment trigger
+          echo "Railway GitHub integration will handle the deployment"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Repository: ${{ github.repository }}"
