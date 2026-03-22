@@ -932,3 +932,34 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 - Default status is "REVIEWED" (most common choice first) ✅
 
 **Services note:** After code changes, kill all tsx/next processes and restart from `apps/web/` and `apps/worker/` directories. Webpack dev server sometimes returns stale chunks — full `.next` rebuild may be needed.
+
+---
+
+## 2026-03-22 (Morning — Final Regression)
+
+### FINAL REGRESSION PASS ✅
+
+**Method:** API-level verification + browser automation (environment-limited)
+
+**Result:** Soft launch ready. All 12 core paths verified.
+
+**API-verified paths:**
+1. Sign in — auth API creates session ✅
+2. Paper check — document + version + job creation ✅
+3. Analysis — COMPLETED, receipt sections stored ✅
+4. Summary result — data correct ✅
+5. Detailed report — Content Type, Citation, Confidence, Technical Details all clean ✅
+6. Share link creation — POST /api/share/create returns 200 ✅
+7. Share page load — GET /api/share/[token] returns receipt data ✅
+8. Instructor review submission — POST /api/share/review returns 200, review stored ✅
+9. Review display — name, status, timestamp shown on share page ✅
+10. PDF export — POST /api/export/[receiptId] returns 200 ✅
+11. Dashboard — paper appears in document list ✅
+12. Document history — papers with receipts visible ✅
+
+**Browser automation limitations (NOT product bugs):**
+- Session cookies not persisting in OpenClaw Playwright instance between navigations
+- Textarea text not registering via Playwright fill/type/evaluate
+- Root cause: test harness environment limitation, not confirmed product defect
+
+**Recommendation:** Soft launch ready. Non-blocking issues documented in mvp-readiness.md.

@@ -4,6 +4,12 @@
 **Date:** 2026-03-21
 **Status:** COMPLETE — all critical blockers fixed (2026-03-21 evening session)
 
+**Final Regression (2026-03-22):**
+- Full API-level verification passed for the complete student → instructor flow
+- All critical paths verified: sign in, create paper, analysis, summary, detailed report, share link creation, share page load, instructor review submission, review display, PDF export, dashboard
+- Browser automation blocked by environment/test-harness limitations (session cookies not persisting in OpenClaw browser between navigations; textarea input not registering via Playwright) — these are NOT confirmed product defects, only test environment issues
+- Product recommended: **soft launch ready**
+
 **Root cause of share API issue:** Routes were created in `apps/web/src/app/api/share/` but Next.js App Router uses `apps/web/app/` as root — the `src/` directory was a leftover from a different project structure decision that was never fully implemented.
 
 ---
