@@ -1,1 +1,1 @@
-Run one final authenticated regression pass and confirm the student flow is fully working end to end.
+Run one final end-to-end regression pass on the full student and instructor flow.

@@ -182,7 +182,7 @@
 - Changed "Est. Paraphrases" → "Estimated Paraphrases"
 - Changed "Start Check" button → "Start Paper Check"
 
-**Known remaining issue:** Share page review form — the status dropdown (combobox) may not fire the `onChange` event properly when clicked in the browser, causing form validation to fail. Fix needed in SubmitReviewForm client component (set a default status in form state rather than relying solely on the dropdown's onChange).
+**Share page review form fixed:** `router.refresh()` replaced with `window.location.reload()` — SubmitReviewForm rewritten to read all field values directly from form elements on submit (avoids React state race conditions). Status dropdown uses `defaultValue` (correct for selects). Form validated, submitted, and review displays correctly with no console errors.
 
 ---
 

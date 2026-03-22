@@ -894,3 +894,41 @@ User, Organization, Membership, Document, DocumentVersion, DocumentUpload, Analy
 
 **Services restart note:** After any analysis package change, must kill all tsx processes and restart worker to force tsx to re-compile from source (tsx caches compiled output across runs)
 
+
+---
+
+## 2026-03-22 (Early AM)
+
+### TASK: Fix Share Page Review Form Dropdown ✅ COMPLETE
+
+**Root cause identified:**
+- `router.refresh()` in SubmitReviewForm was crashing the share page
+- The share page is a Server Component that calls `getReviewsForReceipt` via direct Prisma — this is server-only code
+- When `router.refresh()` triggered a client-side navigation, the server tried to re-render the Server Component, which crashed
+- Additionally, the old form used React `useState` for the status dropdown, which had potential race conditions
+
+**Fixes applied:**
+
+**`apps/web/app/share/[token]/SubmitReviewForm.tsx`** — COMPLETE REWRITE
+- Removed `router.refresh()` → replaced with `window.location.reload()` (simple, reliable)
+- Removed unused `useRouter` import
+- Removed unused React state (`name`, `email`, `note` — these were redundant since form fields have their own state via `name` attributes)
+- Status dropdown now uses `defaultValue="REVIEWED"` (not React state) — correct approach for controlled/uncontrolled warning elimination
+- All field values read directly from form elements on submit via `form.elements.namedItem()` — avoids any React state race conditions
+- `sharedLinkId` is optional in the API payload (only included when defined)
+- Clear validation: name + note required, status must be valid enum
+- Clear error messages from API responses
+- Success state: shows "Review submitted! Thank you for your feedback." then reloads page to show the new review
+
+**Validated:**
+- Share page loads without errors ✅
+- Console: no errors ✅
+- Status dropdown selectable with 4 options ✅
+- Form submission: `POST /api/share/review` returns 200 ✅
+- Page reloads and shows new review ✅
+- Review shows correct status (NEEDS_FOLLOW_UP) ✅
+- Review shows reviewer name and timestamp ✅
+- No hydration issues ✅
+- Default status is "REVIEWED" (most common choice first) ✅
+
+**Services note:** After code changes, kill all tsx/next processes and restart from `apps/web/` and `apps/worker/` directories. Webpack dev server sometimes returns stale chunks — full `.next` rebuild may be needed.
