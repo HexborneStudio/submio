@@ -20,15 +20,37 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build all packages
-        run: npm run build
+      - name: Build packages/db
+        env:
+          DATABASE_URL: postgresql://dummy:5432/dummy
+        run: |
+          cd packages/db && npx prisma generate
+
+      - name: Build packages/analysis
+        run: |
+          cd packages/analysis && npm run build
+
+      - name: Build packages/shared
+        run: |
+          cd packages/shared && npm run build
+
+      - name: Build worker
+        env:
+          DATABASE_URL: postgresql://dummy:5432/dummy
+        run: |
+          cd apps/worker && npm run build
+
+      - name: Build web
+        env:
+          DATABASE_URL: postgresql://dummy:5432/dummy
+        run: |
+          cd apps/web && npm run build
 
       - name: Deploy Worker
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
         run: |
-          echo "=== Deploying Worker ==="
           cd apps/worker
           tar --exclude='.git' --exclude='node_modules' -czf /tmp/worker.tar.gz .
           curl -s -X POST \
@@ -43,7 +65,6 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
         run: |
-          echo "=== Deploying Web ==="
           cd apps/web
           tar --exclude='.git' --exclude='node_modules' -czf /tmp/web.tar.gz .
           curl -s -X POST \
@@ -55,5 +76,5 @@ jobs:
 
       - name: Done
         run: |
-          echo "=== Deploy Complete ==="
+          echo "=== Deployed ==="
           echo "Check: https://dashboard.railway.app/project/${{ vars.RAILWAY_PROJECT_ID }}"
