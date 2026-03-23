@@ -12,52 +12,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Build worker
-        run: |
-          cd apps/worker && npm ci && npm run build
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build web
-        run: |
-          cd apps/web && npm ci && npm run build
+      - name: Build all packages
+        run: npm run build
 
-      - name: Deploy to Railway
+      - name: Deploy Worker
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
         run: |
-          echo "=== Railway Deploy ==="
-          echo "Token: ${RAILWAY_TOKEN:0:8}..."
-          echo "Project: $RAILWAY_PROJECT_ID"
-          
-          # Upload worker
-          echo "Uploading worker..."
+          echo "=== Deploying Worker ==="
           cd apps/worker
           tar --exclude='.git' --exclude='node_modules' -czf /tmp/worker.tar.gz .
-          
-          WORKER_UPLOAD=$(curl -s -X POST \
+          curl -s -X POST \
             -H "Authorization: Bearer $RAILWAY_TOKEN" \
             -H "Content-Type: application/gzip" \
             --data-binary "@/tmp/worker.tar.gz" \
-            "https://backboard.railway.app/v2/upload?projectId=$RAILWAY_PROJECT_ID&serviceId=worker&environmentId=production")
-          echo "Worker upload: $WORKER_UPLOAD"
+            "https://backboard.railway.app/v2/upload?projectId=$RAILWAY_PROJECT_ID&environmentId=production&serviceName=worker"
+          echo "Worker deployed"
 
-          # Upload web
-          echo "Uploading web..."
-          cd ../apps/web
+      - name: Deploy Web
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+        run: |
+          echo "=== Deploying Web ==="
+          cd apps/web
           tar --exclude='.git' --exclude='node_modules' -czf /tmp/web.tar.gz .
-          
-          WEB_UPLOAD=$(curl -s -X POST \
+          curl -s -X POST \
             -H "Authorization: Bearer $RAILWAY_TOKEN" \
             -H "Content-Type: application/gzip" \
             --data-binary "@/tmp/web.tar.gz" \
-            "https://backboard.railway.app/v2/upload?projectId=$RAILWAY_PROJECT_ID&serviceId=web&environmentId=production")
-          echo "Web upload: $WEB_UPLOAD"
+            "https://backboard.railway.app/v2/upload?projectId=$RAILWAY_PROJECT_ID&environmentId=production&serviceName=web"
+          echo "Web deployed"
 
-          echo ""
+      - name: Done
+        run: |
           echo "=== Deploy Complete ==="
-          echo "Check: https://dashboard.railway.app/project/$RAILWAY_PROJECT_ID"
+          echo "Check: https://dashboard.railway.app/project/${{ vars.RAILWAY_PROJECT_ID }}"
