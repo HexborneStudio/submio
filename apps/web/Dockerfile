@@ -12,13 +12,16 @@ COPY packages packages/
 COPY apps/web ./apps/web
 COPY turbo.json ./
 
-# Install ALL deps including devDependencies, no scripts skipped
-RUN npm install
+# Remove packageManager field that causes corepack/yarn conflicts in Docker
+RUN sed -i '/"packageManager"/d' package.json 2>/dev/null || true
+
+# Install deps
+RUN npm ci --ignore-scripts
 
 # Generate Prisma client
 RUN cd packages/db && npx prisma generate
 
-# Build web app - next is in /app/node_modules/.bin
+# Build web app
 RUN cd apps/web && /app/node_modules/.bin/next build
 
 EXPOSE 3000
