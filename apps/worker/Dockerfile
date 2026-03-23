@@ -18,8 +18,8 @@ RUN npm ci --ignore-scripts && npm cache clean --force
 # Generate Prisma client
 RUN cd packages/db && npx prisma generate
 
-# Build
-RUN npm run build
+# Build worker
+RUN cd apps/worker && npm run build
 
 EXPOSE 3001
 
