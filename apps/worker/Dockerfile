@@ -2,20 +2,24 @@ FROM node:25-alpine
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV DATABASE_URL=postgresql://localhost/dummy
+
 # Copy entire monorepo for workspace resolution
 COPY package.json package-lock.json* ./
 COPY packages packages/
 COPY apps/worker ./apps/worker
 COPY turbo.json ./
 
-# Install all deps
+# Install deps
 RUN npm ci --ignore-scripts && npm cache clean --force
 
-# Build worker app
-RUN cd apps/worker && npm run build
+# Generate Prisma client
+RUN cd packages/db && npx prisma generate
 
-ENV NODE_ENV=production
-ENV PORT=3001
+# Build
+RUN npm run build
 
 EXPOSE 3001
 
