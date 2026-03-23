@@ -17,20 +17,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Get service IDs
-        id: services
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
-        run: |
-          # Get environments
-          ENV_DATA=$(curl -s -X POST \
-            -H "Authorization: Bearer $RAILWAY_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "{\"query\":\"{ project(id: \\\"$RAILWAY_PROJECT_ID\\\") { environments { edges { node { id name } } } }\"}" \
-            "https://gateway.railway.app/graphql/v2")
-          echo "env_data: $ENV_DATA"
-
       - name: Build worker
         run: |
           cd apps/worker && npm ci && npm run build
@@ -39,10 +25,39 @@ jobs:
         run: |
           cd apps/web && npm ci && npm run build
 
-      - name: Deploy services
+      - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
         run: |
-          echo "Build complete. Upload and deploy..."
-          echo "Check Railway dashboard: https://dashboard.railway.app/project/$RAILWAY_PROJECT_ID"
+          echo "=== Railway Deploy ==="
+          echo "Token: ${RAILWAY_TOKEN:0:8}..."
+          echo "Project: $RAILWAY_PROJECT_ID"
+          
+          # Upload worker
+          echo "Uploading worker..."
+          cd apps/worker
+          tar --exclude='.git' --exclude='node_modules' -czf /tmp/worker.tar.gz .
+          
+          WORKER_UPLOAD=$(curl -s -X POST \
+            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+            -H "Content-Type: application/gzip" \
+            --data-binary "@/tmp/worker.tar.gz" \
+            "https://backboard.railway.app/v2/upload?projectId=$RAILWAY_PROJECT_ID&serviceId=worker&environmentId=production")
+          echo "Worker upload: $WORKER_UPLOAD"
+
+          # Upload web
+          echo "Uploading web..."
+          cd ../apps/web
+          tar --exclude='.git' --exclude='node_modules' -czf /tmp/web.tar.gz .
+          
+          WEB_UPLOAD=$(curl -s -X POST \
+            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+            -H "Content-Type: application/gzip" \
+            --data-binary "@/tmp/web.tar.gz" \
+            "https://backboard.railway.app/v2/upload?projectId=$RAILWAY_PROJECT_ID&serviceId=web&environmentId=production")
+          echo "Web upload: $WEB_UPLOAD"
+
+          echo ""
+          echo "=== Deploy Complete ==="
+          echo "Check: https://dashboard.railway.app/project/$RAILWAY_PROJECT_ID"
