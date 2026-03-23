@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -58,7 +58,8 @@ jobs:
       - name: Build and push web image
         uses: docker/build-push-action@v5
         with:
-          context: ./apps/web
+          context: .
+          file: ./apps/web/Dockerfile
           push: true
           tags: ghcr.io/hexbornestudio/submio-web:latest
           cache-from: type=gha
@@ -67,7 +68,8 @@ jobs:
       - name: Build and push worker image
         uses: docker/build-push-action@v5
         with:
-          context: ./apps/worker
+          context: .
+          file: ./apps/worker/Dockerfile
           push: true
           tags: ghcr.io/hexbornestudio/submio-worker:latest
           cache-from: type=gha
@@ -81,7 +83,6 @@ jobs:
         run: |
           echo "Creating Railway services..."
           
-          # Create web service
           WEB_RESP=$(curl -s -X POST \
             -H "Authorization: Bearer $RAILWAY_TOKEN" \
             -H "Content-Type: application/json" \
@@ -101,7 +102,6 @@ jobs:
             "https://backboard.railway.app/graphql/v2")
           echo "Web service: $WEB_RESP"
 
-          # Create worker service
           WORKER_RESP=$(curl -s -X POST \
             -H "Authorization: Bearer $RAILWAY_TOKEN" \
             -H "Content-Type: application/json" \
@@ -126,8 +126,6 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
         run: |
-          echo "Triggering deployment..."
-          
           DEPLOY_RESP=$(curl -s -X POST \
             -H "Authorization: Bearer $RAILWAY_TOKEN" \
             -H "Content-Type: application/json" \
@@ -138,5 +136,5 @@ jobs:
           echo "Deploy: $DEPLOY_RESP"
           
           echo ""
-          echo "=== Deployed ==="
+          echo "=== Done ==="
           echo "Check: https://dashboard.railway.app/project/$RAILWAY_PROJECT_ID"

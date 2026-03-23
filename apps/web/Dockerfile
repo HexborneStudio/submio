@@ -1,34 +1,24 @@
-FROM node:25-alpine AS base
+FROM node:25-alpine
 
 WORKDIR /app
 
-# Install dependencies
-FROM base AS deps
+# Copy entire monorepo for workspace resolution
 COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
+COPY packages packages/
+COPY apps/web ./apps/web
+COPY turbo.json ./
 
-# Build Next.js
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build
+# Install all deps
+RUN npm ci --ignore-scripts && npm cache clean --force
 
-# Production image
-FROM base AS runner
-WORKDIR /app
+# Build web app
+RUN cd apps/web && npm run build
 
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Install only production deps
-COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts && npm cache clean --force
-
-# Copy built output and server
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./
-
 EXPOSE 3000
+
+WORKDIR /app/apps/web
 
 CMD ["npm", "start"]
