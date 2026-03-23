@@ -4,38 +4,45 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      service:
-        description: 'Service to deploy'
-        required: false
-        default: 'all'
 
 jobs:
   deploy:
-    name: Deploy via Railway GitHub Integration
+    name: Deploy to Railway
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Trigger Railway Deploy
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get service IDs
+        id: services
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
         run: |
-          echo "Triggering Railway deploy for ${{ github.sha }}"
-          
-          # Query project services to find service IDs
-          PROJECT_DATA=$(curl -s -X POST \
+          # Get environments
+          ENV_DATA=$(curl -s -X POST \
             -H "Authorization: Bearer $RAILWAY_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\":\"{ project(id: \\\"$RAILWAY_PROJECT_ID\\\") { services { edges { node { id name } } } }\"}" \
+            -d "{\"query\":\"{ project(id: \\\"$RAILWAY_PROJECT_ID\\\") { environments { edges { node { id name } } } }\"}" \
             "https://gateway.railway.app/graphql/v2")
-          
-          echo "Project services: $PROJECT_DATA"
-          
-          # The Railway GitHub App handles deployment automatically
-          # This workflow just logs the deployment trigger
-          echo "Railway GitHub integration will handle the deployment"
-          echo "Commit: ${{ github.sha }}"
-          echo "Branch: ${{ github.ref }}"
-          echo "Repository: ${{ github.repository }}"
+          echo "env_data: $ENV_DATA"
+
+      - name: Build worker
+        run: |
+          cd apps/worker && npm ci && npm run build
+
+      - name: Build web
+        run: |
+          cd apps/web && npm ci && npm run build
+
+      - name: Deploy services
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+        run: |
+          echo "Build complete. Upload and deploy..."
+          echo "Check Railway dashboard: https://dashboard.railway.app/project/$RAILWAY_PROJECT_ID"
