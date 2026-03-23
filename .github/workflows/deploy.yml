@@ -20,29 +20,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build packages/db
+      - name: Build config
+        run: |
+          cd packages/config && npm run build
+
+      - name: Build db
         env:
-          DATABASE_URL: postgresql://dummy:5432/dummy
+          DATABASE_URL: postgresql://localhost/dummy
         run: |
           cd packages/db && npx prisma generate
 
-      - name: Build packages/analysis
+      - name: Build analysis
         run: |
           cd packages/analysis && npm run build
 
-      - name: Build packages/shared
+      - name: Build shared
         run: |
           cd packages/shared && npm run build
 
       - name: Build worker
         env:
-          DATABASE_URL: postgresql://dummy:5432/dummy
+          DATABASE_URL: postgresql://localhost/dummy
         run: |
           cd apps/worker && npm run build
 
       - name: Build web
         env:
-          DATABASE_URL: postgresql://dummy:5432/dummy
+          DATABASE_URL: postgresql://localhost/dummy
         run: |
           cd apps/web && npm run build
 
